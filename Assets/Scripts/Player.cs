@@ -3,11 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Player : MonoBehaviour {
+public class Player : ControllerInteractable {
 	
 	public float speed = 5f;
 	private BoxCollider2D boxCollider;
 	private ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
+
+	// KEY INTERACTIONS
+	private List<KeyCode> UP = new List<KeyCode>() { 
+		KeyCode.W, KeyCode.UpArrow 
+	};
+	private List<KeyCode> DOWN = new List<KeyCode>() { 
+		KeyCode.S, KeyCode.DownArrow 
+	};
+	private List<KeyCode> LEFT = new List<KeyCode>() { 
+		KeyCode.A, KeyCode.LeftArrow 
+	};
+	private List<KeyCode> RIGHT = new List<KeyCode>() { 
+		KeyCode.D, KeyCode.RightArrow 
+	};
+	private bool keyPressed(List<KeyCode> input) { return input.Any(key => Input.GetKey(key)); }
 
 	void Awake () {
 		boxCollider = GetComponent<BoxCollider2D>();
@@ -18,18 +33,10 @@ public class Player : MonoBehaviour {
 		Vector3 movePos = transform.position;
 
 		// TODO: Use UniRX if the project gets bigger
-		if (Input.GetKey ("w")) {
-			movePos.y += speed * Time.deltaTime;
-		}
-		if (Input.GetKey ("s")) {
-			movePos.y -= speed * Time.deltaTime;
-		}
-		if (Input.GetKey ("d")) {
-			movePos.x += speed * Time.deltaTime;
-		}
-		if (Input.GetKey ("a")) {
-			movePos.x -= speed * Time.deltaTime;
-		}
+		if (keyPressed(UP)) { movePos.y += speed * Time.deltaTime; }
+		if (keyPressed(DOWN)) { movePos.y -= speed * Time.deltaTime; }
+		if (keyPressed(LEFT)) { movePos.x -= speed * Time.deltaTime; }
+		if (keyPressed(RIGHT)) { movePos.x += speed * Time.deltaTime; }
 
 		transform.position = movePos;
 
@@ -37,6 +44,7 @@ public class Player : MonoBehaviour {
 		Collider2D[] colliders = new Collider2D[numColliders];
 		int colliderCount = boxCollider.OverlapCollider(contactFilter, colliders);
 
+		// do this in both x and y axes, only one is working right now (can't "slide" along walls)
 		if (colliderCount > 0) {
 			for (int i = 0; i < colliderCount; i++) {
 				// this might be a poor and non-performant solution
