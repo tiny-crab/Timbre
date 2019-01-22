@@ -5,9 +5,10 @@ using UnityEngine;
 public class NPC : MonoBehaviour {
 
 	public string message;
+	public Dialog dialog;
 
 	void Awake () {
-		
+		dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
 	}
 
 	void Update () {
@@ -16,5 +17,6 @@ public class NPC : MonoBehaviour {
 
 	void PlayerInteract() {
 		print(message);
+		dialog.textBlob.text = message;
 	}
 }
