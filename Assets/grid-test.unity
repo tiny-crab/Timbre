@@ -222,6 +222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tile: {fileID: 1641320663204136, guid: 24123749a2e0c42868ff72eb62b5c861, type: 2}
+  lastClickedTile: {fileID: 0}
 --- !u!4 &1216291760
 Transform:
   m_ObjectHideFlags: 0

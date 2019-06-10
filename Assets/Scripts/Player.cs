@@ -22,6 +22,9 @@ public class Player : ControllerInteractable {
 	private List<KeyCode> RIGHT = new List<KeyCode>() { 
 		KeyCode.D, KeyCode.RightArrow 
 	};
+	private List<KeyCode> INTERACT = new List<KeyCode>() {
+		KeyCode.F
+	};
 	private bool keyPressed(List<KeyCode> input) { return input.Any(key => Input.GetKey(key)); }
 
 	void Awake () {
@@ -68,9 +71,7 @@ public class Player : ControllerInteractable {
 			var results = new List<RaycastHit2D>(interactables)
 				.Where(entity => entity.collider != null)
 				.Where(entity => entity.collider.gameObject.name != "Player");
-			if (Input.GetKey ("f")) {
-				results.First().collider.gameObject.BroadcastMessage("PlayerInteract");
-			}
+			if (keyPressed(INTERACT)) { results.First().collider.gameObject.BroadcastMessage("PlayerInteract"); }
 		}
 
 	}

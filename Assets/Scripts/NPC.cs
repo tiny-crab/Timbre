@@ -16,7 +16,6 @@ public class NPC : MonoBehaviour {
 	}
 
 	void PlayerInteract() {
-		print(message);
 		dialog.textBlob.text = message;
 	}
 }
