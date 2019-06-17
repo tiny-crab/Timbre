@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4392584014855134}
   - component: {fileID: 212785545080959926}
   - component: {fileID: 61568598735893274}
+  - component: {fileID: 114745498394200100}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -66,6 +67,21 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.64, y: 0.64}
   m_EdgeRadius: 0
+--- !u!114 &114745498394200100
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1641320663204136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3facc6046abdc449a89ec7b011ae1c93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridX: 0
+  gridY: 0
+  occupiers: []
+  selected: 0
 --- !u!212 &212785545080959926
 SpriteRenderer:
   m_ObjectHideFlags: 1

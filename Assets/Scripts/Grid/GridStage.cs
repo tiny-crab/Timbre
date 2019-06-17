@@ -7,11 +7,14 @@ public class GridStage : MonoBehaviour {
 
 	public GameObject[,] grid = new GameObject[8,8];
 	public GameObject tile;
+	public GameObject gridNPC;
+	public GameObject gridPlayer;
 	public System.Random rnd = new System.Random();
-	public GameObject lastClickedTile = null;
+	public Tile playerTile;
+	public GridPlayer player;
+	public List<Tile> selectedTiles = new List<Tile>();
 	public int selectRadius = 1;
 
-	// Use this for initialization
 	void Start () {
 		Vector3 origin = new Vector3(0, 0, 0);
 		// assuming tiles are squares
@@ -33,9 +36,11 @@ public class GridStage : MonoBehaviour {
 			topLeft.x = origin.x - (gridSize.x / 4);
 			topLeft.y -= tileWidth / 2;
 		}
+
+		PutNPC(1,1);
+		PutPlayer(5,5);
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		if (Input.GetMouseButtonDown(0)) {
 			for (int i = 0; i < grid.GetLength(0); i++) {
@@ -46,15 +51,46 @@ public class GridStage : MonoBehaviour {
 			Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
 			Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
-			GenerateTileCircle(selectRadius, mouseTile).ForEach(t => t.selected = true);
+			if (mouseTile != null && mouseTile == playerTile) {
+				selectedTiles = GenerateTileCircle(selectRadius, mouseTile);
+				selectedTiles.ForEach(t => t.selected = true);
+			}
+			else if (selectedTiles.Contains(mouseTile)) {
+				MovePlayer(mouseTile.gridX, mouseTile.gridY);
+			}
 		}
+	}
+
+	void PutNPC (int x, int y) {
+		var target = grid[x,y].GetComponent<Tile>();
+		var npc = Instantiate(gridNPC, new Vector2(0,0), Quaternion.identity).GetComponent<GridNPC>();
+		npc.GetComponent<SpriteRenderer>().sortingOrder = 1;
+		target.TryOccupy(npc);
+	}
+
+	void PutPlayer (int x, int y) {
+		var target = grid[x,y].GetComponent<Tile>();
+		player = Instantiate(gridPlayer, new Vector2(0,0), Quaternion.identity).GetComponent<GridPlayer>();
+		player.GetComponent<SpriteRenderer>().sortingOrder = 1;
+		// ew
+		if (target.TryOccupy(player)) {
+			playerTile = target;
+		}
+	}
+
+	// create more general method for moving entities from tile to tile
+	void MovePlayer (int x, int y) {
+		var target = grid[x,y].GetComponent<Tile>();
+		if (target.TryOccupy(player)) {
+			playerTile.occupier = null;
+			playerTile = target;
+		}
+		selectedTiles.Clear();	
 	}
 
 	List<Tile> GenerateTileCircle(int radius, Tile sourceTile) {
 		List<Tile> tiles = new List<Tile>() { sourceTile };
 		for (int depth = 0; depth < radius; depth++) {
-			// TODO: I think these three lines could be simplified... 
-			// just don't want to modify the list as it is iterating through
 			var temp = new List<Tile>();
 			tiles.ForEach(tile => temp.AddRange(GetAdjacentTiles(tile)));
 			tiles.AddRange(temp);
@@ -71,6 +107,5 @@ public class GridStage : MonoBehaviour {
 		if (y > 0) { adjacentGameObjects.Add(grid[x, y-1]); };
 		if (y < grid.GetLength(1) - 1) { adjacentGameObjects.Add(grid[x, y+1]); };
 		return adjacentGameObjects.Select(o => o.GetComponent<Tile>()).ToList();
-		
 	}
  }

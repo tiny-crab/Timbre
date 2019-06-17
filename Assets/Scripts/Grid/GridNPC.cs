@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridPlayer : GridEntity {
+public class GridNPC : GridEntity {
 	void Start () {
-		selectedColor = Color.white;
+		selectedColor = Color.red;
 	}
 }
