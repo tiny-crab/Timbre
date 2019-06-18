@@ -11,12 +11,13 @@ public class Tile : MonoBehaviour {
 	public GridEntity occupier = null;
 	public bool selected = false;
 	public Color currentColor = Color.grey;
+	private Color unselectedColor = Color.grey;
+	private Color defaultSelectionColor = Color.blue;
 	
 	// Update is called once per frame
 	void Update () {
 		if (occupier != null) { UpdateOccupier(); }
-		if (selected) { DetermineSelectionColor(); }
-		else { currentColor = Color.grey; }
+		currentColor = DetermineColor();
 		this.GetComponent<SpriteRenderer>().color = currentColor;
 	}
 
@@ -35,9 +36,15 @@ public class Tile : MonoBehaviour {
 		occupier.transform.position = new Vector2(this.transform.position.x, this.transform.position.y);
 	}
 
-	// bleh, OOP methods, I should change this to return something
-	void DetermineSelectionColor () {
-		if (occupier != null) { currentColor = occupier.selectedColor; } 
-		else { currentColor = Color.blue; }
+	Color DetermineColor () {
+		Color tileColor = new Color();
+		
+		if (selected) {
+			if (occupier != null) { tileColor = occupier.selectedColor; } 
+			else { tileColor = defaultSelectionColor; }
+		}
+		else { tileColor = unselectedColor; }
+		
+		return tileColor;
 	}
 }
