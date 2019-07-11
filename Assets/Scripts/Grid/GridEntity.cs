@@ -14,7 +14,6 @@ public class GridEntity : MonoBehaviour {
 	private HealthBar healthBar;
 
 	void Start () {
-		selectedColor = Color.white;
 		healthBar = GenerateHealthBar();
 	}
 
