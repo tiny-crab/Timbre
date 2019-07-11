@@ -45,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_Name
-      value: GridEntityPlayer
+      value: GridPlayer
       objectReference: {fileID: 0}
     - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -95,6 +95,16 @@ PrefabInstance:
         type: 3}
       propertyPath: health
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: moveRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: attackRange
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}

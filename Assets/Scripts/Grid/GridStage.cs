@@ -13,7 +13,9 @@ public class GridStage : MonoBehaviour {
 	public System.Random rnd = new System.Random();
 	public Tile playerTile;
 	public GridEntity player;
-	public List<Tile> selectedTiles = new List<Tile>();
+	public GridEntity selectedEntity;
+	public List<Tile> moveRangeTiles = new List<Tile>();
+	public List<Tile> attackRangeTiles = new List<Tile>();
 	public int selectRadius = 1;
 
 	void Start () {
@@ -52,12 +54,13 @@ public class GridStage : MonoBehaviour {
 			Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
 			Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
-			if (mouseTile != null && mouseTile == playerTile) {
-				selectedTiles = GenerateTileCircle(selectRadius, mouseTile);
-				selectedTiles.ForEach(t => t.selected = true);
+			if (mouseTile != null && mouseTile.occupier != null) {
+				moveRangeTiles = GenerateTileCircle(mouseTile.occupier.moveRange, mouseTile);
+				moveRangeTiles.ForEach(t => t.selected = true);
+				selectedEntity = mouseTile.occupier;
 			}
-			else if (selectedTiles.Contains(mouseTile)) {
-				MovePlayer(mouseTile.gridX, mouseTile.gridY);
+			else if (moveRangeTiles.Contains(mouseTile)) {
+				MoveEntity(selectedEntity.tileX, selectedEntity.tileY, mouseTile.gridX, mouseTile.gridY);
 			}
 		}
 	}
@@ -79,14 +82,23 @@ public class GridStage : MonoBehaviour {
 		}
 	}
 
-	// create more general method for moving entities from tile to tile
+	void MoveEntity (int x0, int y0, int xDest, int yDest) {
+		var origin = grid[x0, y0].GetComponent<Tile>();
+		var dest = grid[xDest, yDest].GetComponent<Tile>();
+		if (dest.TryOccupy(origin.occupier)) {
+			dest.occupier = origin.occupier;
+			origin.occupier = null;
+		}
+		moveRangeTiles.Clear();
+	}
+
 	void MovePlayer (int x, int y) {
 		var target = grid[x,y].GetComponent<Tile>();
 		if (target.TryOccupy(player)) {
 			playerTile.occupier = null;
 			playerTile = target;
 		}
-		selectedTiles.Clear();	
+		moveRangeTiles.Clear();
 	}
 
 	List<Tile> GenerateTileCircle(int radius, Tile sourceTile) {

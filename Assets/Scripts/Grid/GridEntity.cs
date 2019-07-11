@@ -6,6 +6,11 @@ public class GridEntity : MonoBehaviour {
 
 	public Color selectedColor;
 	public int health;
+	public int moveRange;
+	public int attackRange;
+
+	public int tileX;
+	public int tileY;
 	
 	[SerializeField]
 	private GameObject healthBarPrefab;

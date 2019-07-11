@@ -34,6 +34,8 @@ public class Tile : MonoBehaviour {
 
 	void UpdateOccupier () {
 		occupier.transform.position = new Vector2(this.transform.position.x, this.transform.position.y);
+		occupier.tileX = gridX;
+		occupier.tileY = gridY;
 	}
 
 	Color DetermineColor () {
