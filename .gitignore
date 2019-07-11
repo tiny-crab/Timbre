@@ -8,6 +8,7 @@ Assets/AssetStoreTools*
 
 # Visual Studio cache directory
 .vs/
+.vscode/
 
 # Gradle cache directory
 .gradle/
@@ -42,4 +43,7 @@ sysinfo.txt
 
 # Crashlytics generated file
 Assets/StreamingAssets/crashlytics-build.properties
+
+# DSStore
+.DS_Store
 

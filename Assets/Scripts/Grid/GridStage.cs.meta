@@ -1,11 +1,18 @@
 fileFormatVersion: 2
 guid: 59c9f2588f36f41aa86daacf3c96f007
-timeCreated: 1548273676
-licenseType: Free
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - tile: {fileID: 1641320663204136, guid: 24123749a2e0c42868ff72eb62b5c861, type: 3}
+  - gridEntity: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7,
+      type: 3}
+  - gridNPC: {fileID: 6365471537866192612, guid: 8e8294a64fed648639d4d55901e5ecdd,
+      type: 3}
+  - gridPlayer: {fileID: 8454990926010455681, guid: e550932383e8f4a3686b2e597fc82a9a,
+      type: 3}
+  - playerTile: {instanceID: 0}
+  - player: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -7,11 +7,12 @@ public class GridStage : MonoBehaviour {
 
 	public GameObject[,] grid = new GameObject[8,8];
 	public GameObject tile;
+	public GameObject gridEntity;
 	public GameObject gridNPC;
 	public GameObject gridPlayer;
 	public System.Random rnd = new System.Random();
 	public Tile playerTile;
-	public GridPlayer player;
+	public GridEntity player;
 	public List<Tile> selectedTiles = new List<Tile>();
 	public int selectRadius = 1;
 
@@ -63,14 +64,14 @@ public class GridStage : MonoBehaviour {
 
 	void PutNPC (int x, int y) {
 		var target = grid[x,y].GetComponent<Tile>();
-		var npc = Instantiate(gridNPC, new Vector2(0,0), Quaternion.identity).GetComponent<GridNPC>();
+		var npc = Instantiate(gridNPC, new Vector2(0,0), Quaternion.identity).GetComponent<GridEntity>();
 		npc.GetComponent<SpriteRenderer>().sortingOrder = 1;
 		target.TryOccupy(npc);
 	}
 
 	void PutPlayer (int x, int y) {
 		var target = grid[x,y].GetComponent<Tile>();
-		player = Instantiate(gridPlayer, new Vector2(0,0), Quaternion.identity).GetComponent<GridPlayer>();
+		player = Instantiate(gridPlayer, new Vector2(0,0), Quaternion.identity).GetComponent<GridEntity>();
 		player.GetComponent<SpriteRenderer>().sortingOrder = 1;
 		// ew
 		if (target.TryOccupy(player)) {

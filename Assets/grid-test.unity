@@ -222,8 +222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tile: {fileID: 1641320663204136, guid: 24123749a2e0c42868ff72eb62b5c861, type: 2}
-  gridNPC: {fileID: 1518746779482158, guid: 45479b1b7196a45f9a95a38f6eb16a0c, type: 2}
-  gridPlayer: {fileID: 1276514538611478, guid: 16c110480b3dd4f9b9325e2dbc5c778e, type: 2}
+  gridEntity: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 2}
   playerTile: {fileID: 0}
   player: {fileID: 0}
   selectedTiles: []
