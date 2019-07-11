@@ -32,14 +32,4 @@ public class GridEntity : MonoBehaviour {
 
 		return new HealthBar(fullBar, health);
 	}
-
-	public GridEntity FromTemplate(GridEntityTemplate template) {
-		health = template.health;
-		selectedColor = template.selectedColor;
-		foreach (Component component in template.components) {
-			var tempComponent = this.gameObject.AddComponent(typeof(Component));
-			tempComponent = component;
-		}
-		return this;
-	}
 }
