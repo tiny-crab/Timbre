@@ -41,12 +41,9 @@ public class HealthBar {
         RecalculateHealth();
     }
 
-    public void IncrementHealth(int number = 1) {
-        
-    }
-
-    public void DecrementHealth(int number = 1) {
-
+    public void ChangeHealth(int number = 1) {
+        currentHealth += number;
+        RecalculateHealth();
     }
 
     private void RecalculateHealth() {

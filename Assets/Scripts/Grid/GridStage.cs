@@ -54,13 +54,21 @@ public class GridStage : MonoBehaviour {
 			Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
 			Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
-			if (mouseTile != null && mouseTile.occupier != null) {
+			if (mouseTile != null && mouseTile.occupier != null && attackRangeTiles.Count == 0) {
 				moveRangeTiles = GenerateTileCircle(mouseTile.occupier.moveRange, mouseTile);
 				moveRangeTiles.ForEach(t => t.selected = true);
+				attackRangeTiles = GenerateTileCircle(mouseTile.occupier.attackRange, mouseTile);
 				selectedEntity = mouseTile.occupier;
+			}
+			else if (attackRangeTiles.Contains(mouseTile) && mouseTile.occupier != null) {
+				AttackEntity(mouseTile.occupier, selectedEntity.attackDamage);
+				attackRangeTiles.Clear();
+				moveRangeTiles.Clear();
 			}
 			else if (moveRangeTiles.Contains(mouseTile)) {
 				MoveEntity(selectedEntity.tileX, selectedEntity.tileY, mouseTile.gridX, mouseTile.gridY);
+				attackRangeTiles.Clear();
+				moveRangeTiles.Clear();
 			}
 		}
 	}
@@ -89,16 +97,13 @@ public class GridStage : MonoBehaviour {
 			dest.occupier = origin.occupier;
 			origin.occupier = null;
 		}
-		moveRangeTiles.Clear();
 	}
 
-	void MovePlayer (int x, int y) {
-		var target = grid[x,y].GetComponent<Tile>();
-		if (target.TryOccupy(player)) {
-			playerTile.occupier = null;
-			playerTile = target;
+	void AttackEntity (GridEntity victim, int damage) {
+		victim.ChangeHealth(damage * -1);
+		if (victim.dead) {
+			grid[victim.tileX, victim.tileY].GetComponent<Tile>().occupier = null;
 		}
-		moveRangeTiles.Clear();
 	}
 
 	List<Tile> GenerateTileCircle(int radius, Tile sourceTile) {

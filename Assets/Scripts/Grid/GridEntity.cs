@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class GridEntity : MonoBehaviour {
 
-	public Color selectedColor;
 	public int health;
+	public bool dead = false;
 	public int moveRange;
 	public int attackRange;
+	public int attackDamage;
+
+	public Color moveRangeColor;
+	public Color attackRangeColor;
 
 	public int tileX;
 	public int tileY;
@@ -20,10 +24,10 @@ public class GridEntity : MonoBehaviour {
 
 	void Start () {
 		healthBar = GenerateHealthBar();
+		healthBar.Update();
 	}
 
 	void Update() {
-		healthBar.Update();
 		healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
 	}
 
@@ -35,5 +39,18 @@ public class GridEntity : MonoBehaviour {
 		);
 
 		return new HealthBar(fullBar, health);
+	}
+
+	public void ChangeHealth(int damage) {
+		healthBar.ChangeHealth(damage);
+		health += damage;
+		if (health <= 0) {
+			dead = true;
+			Die();
+		}
+	}
+
+	private void Die() {
+		Destroy(this);
 	}
 }

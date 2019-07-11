@@ -42,7 +42,7 @@ public class Tile : MonoBehaviour {
 		Color tileColor = new Color();
 		
 		if (selected) {
-			if (occupier != null) { tileColor = occupier.selectedColor; } 
+			if (occupier != null) { tileColor = occupier.moveRangeColor; }
 			else { tileColor = defaultSelectionColor; }
 		}
 		else { tileColor = unselectedColor; }
