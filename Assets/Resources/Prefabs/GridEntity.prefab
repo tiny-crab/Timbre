@@ -41,11 +41,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1926815201465144}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f24d8e5280984eb38e4268bc1bd056a, type: 3}
+  m_Script: {fileID: 11500000, guid: d0bbde245ffa84f5c8bde42ca8527a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedColor: {r: 1, g: 1, b: 1, a: 1}
   health: 0
+  remainingHealth: 0
+  dead: 0
+  moveRange: 0
+  remainingMoves: 0
+  attackRange: 0
+  attackDamage: 0
+  moveRangeColor: {r: 0, g: 0, b: 0, a: 0}
+  attackRangeColor: {r: 0, g: 0, b: 0, a: 0}
+  tileX: 0
+  tileY: 0
   healthBarPrefab: {fileID: 1420206249178562, guid: 34918ecbe1b364333b468cdd3bd6356a,
     type: 3}
 --- !u!212 &7697886401237497257

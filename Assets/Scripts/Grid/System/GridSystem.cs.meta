@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 59c9f2588f36f41aa86daacf3c96f007
+guid: f0b4fd96e47b74d80b3108bb3fcb51cf
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -13,6 +13,7 @@ MonoImporter:
       type: 3}
   - playerTile: {instanceID: 0}
   - player: {instanceID: 0}
+  - selectedEntity: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

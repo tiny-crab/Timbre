@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour {
 
-	public int gridX = 0;
-	public int gridY = 0;
+	public int x = 0;
+	public int y = 0;
 	public GridEntity occupier = null;
 	public bool selected = false;
 	public Color currentColor = Color.grey;
@@ -34,8 +34,8 @@ public class Tile : MonoBehaviour {
 
 	void UpdateOccupier () {
 		occupier.transform.position = new Vector2(this.transform.position.x, this.transform.position.y);
-		occupier.tileX = gridX;
-		occupier.tileY = gridY;
+		occupier.tileX = x;
+		occupier.tileY = y;
 	}
 
 	Color DetermineColor () {

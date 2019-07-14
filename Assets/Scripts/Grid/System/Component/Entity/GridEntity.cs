@@ -5,8 +5,12 @@ using UnityEngine;
 public class GridEntity : MonoBehaviour {
 
 	public int health;
+	public int remainingHealth;
 	public bool dead = false;
+
 	public int moveRange;
+	public int remainingMoves;
+
 	public int attackRange;
 	public int attackDamage;
 
@@ -29,6 +33,7 @@ public class GridEntity : MonoBehaviour {
 
 	void Update() {
 		healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
+		if (dead) { Destroy(this); }
 	}
 
 	public HealthBar GenerateHealthBar() {
@@ -51,6 +56,13 @@ public class GridEntity : MonoBehaviour {
 	}
 
 	private void Die() {
-		Destroy(this);
+		transform.position = new Vector2(int.MaxValue, int.MaxValue);
+	}
+
+	public void Move(int spaces) {
+		remainingMoves -= spaces;
+		if(remainingMoves < 0) {
+			
+		}
 	}
 }
