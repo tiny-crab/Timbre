@@ -23,38 +23,38 @@ public class GridSystem : MonoBehaviour {
 		CreateTilemapComponent();
 		var npc = PutNPC(1,1);
 		var player = PutPlayer(1,2);
-		combat.Start(this, new Faction("NPC", npc), new Faction("Player", player));
+		var enemyFaction = new Faction("Enemy", false, npc);
+		var playerFaction = new Faction("Player", true, player);
+		combat.Start(this, enemyFaction, playerFaction);
 	}
 	
 	void Update () {
-		if (Input.GetMouseButtonDown(0)) {
+		if (combat.currentFaction.isPlayerFaction) {
+			if (Input.GetMouseButtonDown(0)) {
 
-			// branch here:
-			// if mouse hit a game element, pass it to Combat System
-			// if mouse hit a UI element, pass it to a (unimplemented) UI System
+				// branch here:
+				// if mouse hit a game element, pass it to Combat System
+				// if mouse hit a UI element, pass it to a (unimplemented) UI System
 
-			Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
-			Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
+				Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
+				Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
 
-			if (mouseTile != null) {
-				combat.SelectTile(mouseTile);
-				tilemap.SelectTile(mouseTile);
-				if(combat.selectedEntity == null) {
-					tilemap.ResetTileSelection();
+				if (mouseTile != null) {
+					combat.SelectTile(mouseTile);
+					tilemap.SelectTile(mouseTile);
+					if(combat.selectedEntity == null) {
+						tilemap.ResetTileSelection();
+					}
 				}
 			}
-			
-			// else if (attackRangeTiles.Contains(mouseTile) && mouseTile.occupier != null) {
-			// 	AttackEntity(mouseTile.occupier, selectedEntity.attackDamage);
-			// 	attackRangeTiles.Clear();
-			// 	moveRangeTiles.Clear();
-			// }
-			// else if (moveRangeTiles.Contains(mouseTile)) {
-			// 	MoveEntity(selectedEntity.tileX, selectedEntity.tileY, mouseTile.x, mouseTile.y);
-			// 	attackRangeTiles.Clear();
-			// 	moveRangeTiles.Clear();
-			// }
+			if(Input.GetKey(KeyCode.G)) {
+				combat.EndTurn();
+			}
+		}
+		if (combat.currentFaction.isHostileFaction) {
+			combat.currentFaction.TriggerAITurn();
+			combat.EndTurn();
 		}
 	}
 

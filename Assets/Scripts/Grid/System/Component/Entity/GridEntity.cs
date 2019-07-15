@@ -17,6 +17,10 @@ public class GridEntity : MonoBehaviour {
 	public Color moveRangeColor;
 	public Color attackRangeColor;
 
+	public bool isHostile;
+	public bool isFriendly;
+	public bool isAllied;
+
 	public int tileX;
 	public int tileY;
 	
