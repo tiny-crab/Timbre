@@ -38,11 +38,13 @@ public class TilemapComponent {
 
     public void MoveEntity (int x0, int y0, int xDest, int yDest) {
 		var origin = grid[x0, y0].GetComponent<Tile>();
-		var dest = grid[xDest, yDest].GetComponent<Tile>();
-		if (dest.TryOccupy(origin.occupier)) {
-			dest.occupier = origin.occupier;
-			origin.occupier = null;
-		}
+        if(xDest < grid.GetLength(0) && yDest < grid.GetLength(1)) {
+            var dest = grid[xDest, yDest].GetComponent<Tile>();
+            if (dest.TryOccupy(origin.occupier)) {
+                dest.occupier = origin.occupier;
+                origin.occupier = null;
+            }
+        }
 	}
 
     List<Tile> GenerateTileCircle(int radius, Tile sourceTile) {

@@ -9,6 +9,11 @@ public class Faction {
     public List<GridEntity> entities = new List<GridEntity>();
     public bool isPlayerFaction;
     public bool isHostileFaction;
+    
+    public bool OutOfResources () {
+        // todo add computation
+        return isHostileFaction;
+    }
 
     public Faction(string name, bool isPlayerFaction, params GridEntity[] entities) {
         this.name = name;
@@ -18,9 +23,4 @@ public class Faction {
         if(isPlayerFaction) { this.entities.ForEach(entity => entity.isAllied = true ); }
         if(isHostileFaction) { this.entities.ForEach(entity => entity.isHostile = true); }
     }
-
-    public void TriggerAITurn() {
-        Debug.Log("AI Turn Complete");
-    }
-
 }

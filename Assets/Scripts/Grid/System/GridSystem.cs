@@ -16,46 +16,57 @@ public class GridSystem : MonoBehaviour {
 	public GridEntity selectedEntity;
 	public int selectRadius = 1;
 
+	// time between turns
+	public float turnGapTime = 0.5f;
+	public bool waitingForTurnGap = false;
+	// time between AI steps
+	public float aiStepTime = 0.25f;
+	public bool waitingForAIStep = false;
+
 	public CombatComponent combat = new CombatComponent();
 	public TilemapComponent tilemap = new TilemapComponent();
 
 	void Start () {
 		CreateTilemapComponent();
 		var npc = PutNPC(1,1);
-		var player = PutPlayer(1,2);
+		var player = PutPlayer(5,5);
 		var enemyFaction = new Faction("Enemy", false, npc);
 		var playerFaction = new Faction("Player", true, player);
 		combat.Start(this, enemyFaction, playerFaction);
 	}
 	
 	void Update () {
-		if (combat.currentFaction.isPlayerFaction) {
-			if (Input.GetMouseButtonDown(0)) {
+		if (!waitingForTurnGap) {
+			if (combat.currentFaction.isPlayerFaction) {
+				if (Input.GetMouseButtonDown(0)) {
 
-				// branch here:
-				// if mouse hit a game element, pass it to Combat System
-				// if mouse hit a UI element, pass it to a (unimplemented) UI System
+					// branch here:
+					// if mouse hit a game element, pass it to Combat System
+					// if mouse hit a UI element, pass it to a (unimplemented) UI System
 
-				Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-				RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
-				Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
+					Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+					RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
+					Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
 
-				if (mouseTile != null) {
-					combat.SelectTile(mouseTile);
-					tilemap.SelectTile(mouseTile);
-					if(combat.selectedEntity == null) {
-						tilemap.ResetTileSelection();
+					if (mouseTile != null) {
+						combat.SelectTile(mouseTile);
+						tilemap.SelectTile(mouseTile);
+						if(combat.selectedEntity == null) {
+							tilemap.ResetTileSelection();
+						}
 					}
 				}
+				if(Input.GetKey(KeyCode.G)) {
+					StartCoroutine("EndTurn");
+				}
 			}
-			if(Input.GetKey(KeyCode.G)) {
-				combat.EndTurn();
+			else if (combat.currentFaction.isHostileFaction) {
+				if (!waitingForAIStep) {
+					StartCoroutine("ExecuteAIStep");
+				}
+				StartCoroutine("EndTurn");
 			}
-		}
-		if (combat.currentFaction.isHostileFaction) {
-			combat.currentFaction.TriggerAITurn();
-			combat.EndTurn();
-		}
+		} 
 	}
 
 	void CreateTilemapComponent() {
@@ -100,5 +111,23 @@ public class GridSystem : MonoBehaviour {
 			playerTile = target;
 		}
 		return player;
+	}
+
+	IEnumerator EndTurn () {
+		combat.EndTurn();
+		waitingForTurnGap = true;
+		Debug.Log("Waiting for turn gap...");
+		yield return new WaitForSeconds(turnGapTime);
+		Debug.Log("Done waiting for turn gap.");
+		waitingForTurnGap = false;
+	}
+
+	IEnumerator ExecuteAIStep() {
+		combat.TriggerAITurn();
+		waitingForAIStep = true;
+		Debug.Log("Waiting for AI Step...");
+		yield return new WaitForSeconds(aiStepTime);
+		Debug.Log("Done waiting for AI Step.");
+		waitingForAIStep = false;
 	}
  }

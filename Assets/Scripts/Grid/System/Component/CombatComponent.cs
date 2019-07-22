@@ -69,4 +69,12 @@ public class CombatComponent {
 		}
 	}
 
+    public void TriggerAITurn() {
+        currentFaction.entities.ForEach(entity => {
+            parent.tilemap.MoveEntity(
+                entity.tileX, entity.tileY,
+                entity.tileX + 1, entity.tileY + 1
+            );
+        });
+    }
 }
