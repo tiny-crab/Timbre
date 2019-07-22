@@ -33,6 +33,7 @@ public class GridEntity : MonoBehaviour {
 	void Start () {
 		healthBar = GenerateHealthBar();
 		healthBar.Update();
+		remainingMoves = moveRange;
 	}
 
 	void Update() {
@@ -65,8 +66,9 @@ public class GridEntity : MonoBehaviour {
 
 	public void Move(int spaces) {
 		remainingMoves -= spaces;
-		if(remainingMoves < 0) {
-			
-		}
+	}
+
+	public void RefreshTurnResources() {
+		remainingMoves = moveRange;
 	}
 }

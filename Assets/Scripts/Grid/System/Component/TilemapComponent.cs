@@ -30,7 +30,7 @@ public class TilemapComponent {
 
     public void SelectTile(Tile tile) {
         if (tile != null && tile.occupier != null && attackRangeTiles.Count == 0) {
-			moveRangeTiles = GenerateTileCircle(tile.occupier.moveRange, tile);
+			moveRangeTiles = GenerateTileCircle(tile.occupier.remainingMoves, tile);
 			moveRangeTiles.ForEach(t => t.selected = true);
 			attackRangeTiles = GenerateTileCircle(tile.occupier.attackRange, tile);
 		}
@@ -38,11 +38,13 @@ public class TilemapComponent {
 
     public void MoveEntity (int x0, int y0, int xDest, int yDest) {
 		var origin = grid[x0, y0].GetComponent<Tile>();
+		var distance = Mathf.Abs(x0-xDest) + Mathf.Abs(y0-yDest);
         if(xDest < grid.GetLength(0) && yDest < grid.GetLength(1)) {
             var dest = grid[xDest, yDest].GetComponent<Tile>();
             if (dest.TryOccupy(origin.occupier)) {
                 dest.occupier = origin.occupier;
                 origin.occupier = null;
+				dest.occupier.Move(distance);
             }
         }
 	}

@@ -23,4 +23,8 @@ public class Faction {
         if(isPlayerFaction) { this.entities.ForEach(entity => entity.isAllied = true ); }
         if(isHostileFaction) { this.entities.ForEach(entity => entity.isHostile = true); }
     }
+
+    public void RefreshTurnResources() {
+        foreach (var entity in entities) { entity.RefreshTurnResources(); };
+    }
 }

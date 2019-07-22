@@ -89,7 +89,6 @@ public class GridSystem : MonoBehaviour {
 			topLeft.x = origin.x - (gridSize.x / 4);
 			topLeft.y -= tileWidth / 2;
 		}
-
 		tilemap.Start(this, initTileMap);
 	}
 

@@ -25,7 +25,7 @@ public class CombatComponent {
                     SelectEntity(targetTile.occupier);
                 }
             }
-            else {
+        else {
                 // what is the tile they are clicking on? do they want to move? do they want to attack?
                 if(targetTile.occupier != null) {
                     // clicking on another entity
@@ -60,6 +60,7 @@ public class CombatComponent {
         var previousFaction = factions.Dequeue();
         currentFaction = factions.Peek();
         factions.Enqueue(previousFaction);
+        previousFaction.RefreshTurnResources();
     }
 
 	void AttackEntity (GridEntity victim, int damage) {
