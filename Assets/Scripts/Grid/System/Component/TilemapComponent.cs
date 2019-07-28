@@ -30,9 +30,16 @@ public class TilemapComponent {
 
     public void SelectTile(Tile tile) {
         if (tile != null && tile.occupier != null && attackRangeTiles.Count == 0) {
+			attackRangeTiles = GenerateTileCircle(tile.occupier.currentMoves + tile.occupier.range, tile);
+			attackRangeTiles.ForEach(t => {
+				t.selected = true;
+				t.HighlightAs("attack");
+			});
 			moveRangeTiles = GenerateTileCircle(tile.occupier.currentMoves, tile);
-			moveRangeTiles.ForEach(t => t.selected = true);
-			attackRangeTiles = GenerateTileCircle(tile.occupier.range, tile);
+			moveRangeTiles.ForEach(t => {
+				t.selected = true;
+				t.HighlightAs("move");
+			});
 		}
     }
 
@@ -58,6 +65,15 @@ public class TilemapComponent {
 		}
         tiles.Remove(sourceTile);
 		return tiles.Distinct().ToList();
+	}
+
+	List<Tile> GenerateTileRing(int radius, Tile sourceTile) {
+		return GenerateTileCircle(radius, sourceTile)
+		.Where(tile =>
+			Mathf.Abs(Mathf.Abs(sourceTile.x) - Mathf.Abs(tile.x)) +
+			Mathf.Abs(Mathf.Abs(sourceTile.y) - Mathf.Abs(tile.y))
+			== radius)
+		.ToList();
 	}
 
 	List<Tile> GetAdjacentTiles (Tile sourceTile) {

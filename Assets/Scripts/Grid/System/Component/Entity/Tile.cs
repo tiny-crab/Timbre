@@ -10,6 +10,7 @@ public class Tile : MonoBehaviour {
 	public int y = 0;
 	public GridEntity occupier = null;
 	public bool selected = false;
+	private string highlightType;
 	public Color currentColor = Color.grey;
 	private Color unselectedColor = Color.grey;
 	private Color defaultSelectionColor = Color.blue;
@@ -38,12 +39,26 @@ public class Tile : MonoBehaviour {
 		occupier.tileY = y;
 	}
 
+	public void HighlightAs(string highlightType) {
+		switch (highlightType)
+		{
+			case "attack":
+				currentColor = Color.red;
+				break;
+			case "move":
+				currentColor = Color.blue;
+				break;
+			default:
+				currentColor = unselectedColor;
+				break;
+		}
+	}
+
 	Color DetermineColor () {
 		Color tileColor = new Color();
 		
 		if (selected) {
-			if (occupier != null) { tileColor = occupier.moveRangeColor; }
-			else { tileColor = defaultSelectionColor; }
+			tileColor = currentColor;
 		}
 		else { tileColor = unselectedColor; }
 		
