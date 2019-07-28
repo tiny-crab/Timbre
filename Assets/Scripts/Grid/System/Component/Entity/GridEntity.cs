@@ -4,15 +4,33 @@ using UnityEngine;
 
 public class GridEntity : MonoBehaviour {
 
-	public int health;
-	public int remainingHealth;
-	public bool dead = false;
+	// HP
+	public int maxHP;
+	public int currentHP;
+	public bool outOfHP = false;
 
-	public int moveRange;
-	public int remainingMoves;
+	// move
+	public int maxMoves;
+	public int currentMoves;
+	public bool outOfMoves = false;
 
-	public int attackRange;
-	public int attackDamage;
+	// attack
+	public int maxAttacks;
+	public int currentAttacks;
+	public bool outOfAttacks = false;
+
+	public int damage;
+	public int range;
+	public int damageMult;
+	public int damageModify;
+
+	// SP
+	public int maxSP;
+	public int currentSP;
+	public bool outOfSP = false;
+
+	// skills
+	// public List<Skill> skills = {};
 
 	public Color moveRangeColor;
 	public Color attackRangeColor;
@@ -31,14 +49,15 @@ public class GridEntity : MonoBehaviour {
 	private HealthBar healthBar;
 
 	void Start () {
+		currentMoves = maxMoves;
+		currentHP = maxHP;
 		healthBar = GenerateHealthBar();
 		healthBar.Update();
-		remainingMoves = moveRange;
 	}
 
 	void Update() {
 		healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
-		if (dead) { Destroy(this); }
+		if (outOfHP) { Destroy(this); }
 	}
 
 	public HealthBar GenerateHealthBar() {
@@ -48,14 +67,14 @@ public class GridEntity : MonoBehaviour {
 			Quaternion.identity
 		);
 
-		return new HealthBar(fullBar, health);
+		return new HealthBar(fullBar, maxHP);
 	}
 
 	public void ChangeHealth(int damage) {
 		healthBar.ChangeHealth(damage);
-		health += damage;
-		if (health <= 0) {
-			dead = true;
+		maxHP += damage;
+		if (maxHP <= 0) {
+			outOfHP = true;
 			Die();
 		}
 	}
@@ -65,10 +84,10 @@ public class GridEntity : MonoBehaviour {
 	}
 
 	public void Move(int spaces) {
-		remainingMoves -= spaces;
+		currentMoves -= spaces;
 	}
 
 	public void RefreshTurnResources() {
-		remainingMoves = moveRange;
+		currentMoves = maxMoves;
 	}
 }

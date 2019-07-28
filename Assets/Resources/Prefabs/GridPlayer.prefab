@@ -7,42 +7,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 389a1c9b35f81b546abf22c876a69e25,
-        type: 3}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.32
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 0.32
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_Name
       value: GridPlayer
@@ -110,6 +74,67 @@ PrefabInstance:
         type: 3}
       propertyPath: attackDamage
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: maxHP
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: maxMoves
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: maxAttacks
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: damage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: range
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 389a1c9b35f81b546abf22c876a69e25,
+        type: 3}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 0.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}

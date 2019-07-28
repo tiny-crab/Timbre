@@ -33,7 +33,7 @@ public class CombatComponent {
                     if (targetTile.occupier.isHostile && parent.tilemap.attackRangeTiles.Contains(targetTile)) {
                         // it might be nice to write this as mouseTile.occupier.Attack(damage), 
                         // but it's worthwhile to wait until later since this might not be a good idea
-                        AttackEntity(targetTile.occupier, selectedEntity.attackDamage);
+                        AttackEntity(targetTile.occupier, selectedEntity.damage);
                     }
                     // if entity is ally: interact (to be implemented later)
                 } 
@@ -65,7 +65,7 @@ public class CombatComponent {
 
 	void AttackEntity (GridEntity victim, int damage) {
 		victim.ChangeHealth(damage * -1);
-		if (victim.dead) {
+		if (victim.outOfHP) {
 			parent.tilemap.grid[victim.tileX, victim.tileY].GetComponent<Tile>().occupier = null;
 		}
 	}
