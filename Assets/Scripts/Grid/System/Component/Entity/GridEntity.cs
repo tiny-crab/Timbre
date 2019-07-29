@@ -29,6 +29,9 @@ public class GridEntity : MonoBehaviour {
 	public int currentSP;
 	public bool outOfSP = false;
 
+	public int maxSkillUses;
+	public int currentSkillUses;
+
 	// skills
 	// public List<Skill> skills = {};
 
@@ -50,7 +53,9 @@ public class GridEntity : MonoBehaviour {
 
 	void Start () {
 		currentMoves = maxMoves;
+		currentAttacks = maxAttacks;
 		currentHP = maxHP;
+		currentSkillUses = maxSkillUses;
 		healthBar = GenerateHealthBar();
 		healthBar.Update();
 	}
@@ -70,16 +75,15 @@ public class GridEntity : MonoBehaviour {
 		return new HealthBar(fullBar, maxHP);
 	}
 
-	public void ChangeHealth(int damage) {
-		healthBar.ChangeHealth(damage);
-		maxHP += damage;
-		if (maxHP <= 0) {
-			outOfHP = true;
-			Die();
-		}
+	public void TakeDamage(int damage) {
+		// damage should be a positive value
+		healthBar.TakeDamage(damage);
+		currentHP -= damage;
+		if (currentHP <= 0) { Die(); }
 	}
 
 	private void Die() {
+		outOfHP = true;
 		transform.position = new Vector2(int.MaxValue, int.MaxValue);
 	}
 
@@ -87,7 +91,13 @@ public class GridEntity : MonoBehaviour {
 		currentMoves -= spaces;
 	}
 
+	public void MakeAttack(GridEntity target) {
+		currentAttacks -= 1;
+		target.TakeDamage((damage + damageModify) * damageMult);
+	}
+
 	public void RefreshTurnResources() {
 		currentMoves = maxMoves;
+		currentAttacks = maxAttacks;
 	}
 }

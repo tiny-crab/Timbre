@@ -44,15 +44,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0bbde245ffa84f5c8bde42ca8527a95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
-  remainingHealth: 0
-  dead: 0
-  moveRange: 0
-  remainingMoves: 0
-  attackRange: 0
-  attackDamage: 0
+  maxHP: 0
+  currentHP: 0
+  outOfHP: 0
+  maxMoves: 0
+  currentMoves: 0
+  outOfMoves: 0
+  maxAttacks: 0
+  currentAttacks: 0
+  outOfAttacks: 0
+  damage: 0
+  range: 0
+  damageMult: 1
+  damageModify: 0
+  maxSP: 0
+  currentSP: 0
+  outOfSP: 0
+  maxSkillUses: 0
+  currentSkillUses: 0
   moveRangeColor: {r: 0, g: 0, b: 0, a: 0}
   attackRangeColor: {r: 0, g: 0, b: 0, a: 0}
+  isHostile: 0
+  isFriendly: 0
+  isAllied: 0
   tileX: 0
   tileY: 0
   healthBarPrefab: {fileID: 1420206249178562, guid: 34918ecbe1b364333b468cdd3bd6356a,

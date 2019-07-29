@@ -41,8 +41,8 @@ public class HealthBar {
         RecalculateHealth();
     }
 
-    public void ChangeHealth(int number = 1) {
-        currentHealth += number;
+    public void TakeDamage(int number = 1) {
+        currentHealth -= number;
         RecalculateHealth();
     }
 

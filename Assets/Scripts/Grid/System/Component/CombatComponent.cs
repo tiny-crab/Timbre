@@ -31,9 +31,8 @@ public class CombatComponent {
                     // clicking on another entity
                     // if entity is enemy: Attack
                     if (targetTile.occupier.isHostile && parent.tilemap.attackRangeTiles.Contains(targetTile)) {
-                        // it might be nice to write this as mouseTile.occupier.Attack(damage), 
-                        // but it's worthwhile to wait until later since this might not be a good idea
-                        AttackEntity(targetTile.occupier, selectedEntity.damage);
+                        selectedEntity.MakeAttack(targetTile.occupier);
+                        if (targetTile.occupier.outOfHP) { targetTile.occupier = null; }
                     }
                     // if entity is ally: interact (to be implemented later)
                 } 
@@ -62,13 +61,6 @@ public class CombatComponent {
         factions.Enqueue(previousFaction);
         previousFaction.RefreshTurnResources();
     }
-
-	void AttackEntity (GridEntity victim, int damage) {
-		victim.ChangeHealth(damage * -1);
-		if (victim.outOfHP) {
-			parent.tilemap.grid[victim.tileX, victim.tileY].GetComponent<Tile>().occupier = null;
-		}
-	}
 
     public void TriggerAITurn() {
         currentFaction.entities.ForEach(entity => {

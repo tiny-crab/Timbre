@@ -30,11 +30,13 @@ public class TilemapComponent {
 
     public void SelectTile(Tile tile) {
         if (tile != null && tile.occupier != null && attackRangeTiles.Count == 0) {
-			attackRangeTiles = GenerateTileCircle(tile.occupier.currentMoves + tile.occupier.range, tile);
-			attackRangeTiles.ForEach(t => {
-				t.selected = true;
-				t.HighlightAs("attack");
-			});
+			if (tile.occupier.currentAttacks > 0) {
+				attackRangeTiles = GenerateTileCircle(tile.occupier.currentMoves + tile.occupier.range, tile);
+				attackRangeTiles.ForEach(t => {
+					t.selected = true;
+					t.HighlightAs("attack");
+				});
+			}
 			moveRangeTiles = GenerateTileCircle(tile.occupier.currentMoves, tile);
 			moveRangeTiles.ForEach(t => {
 				t.selected = true;
