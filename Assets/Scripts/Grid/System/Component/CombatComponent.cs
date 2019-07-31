@@ -24,21 +24,20 @@ public class CombatComponent {
                 if(targetTile.occupier != null) {
                     SelectEntity(targetTile.occupier);
                 }
-            }
-        else {
+            } else {
                 // what is the tile they are clicking on? do they want to move? do they want to attack?
                 if(targetTile.occupier != null) {
                     // clicking on another entity
                     // if entity is enemy: Attack
-                    if (targetTile.occupier.isHostile && parent.tilemap.attackRangeTiles.Contains(targetTile)) {
+                    if (targetTile.occupier.isHostile && parent.tilemap.attackRange.Contains(targetTile)) {
                         selectedEntity.MakeAttack(targetTile.occupier);
                         if (targetTile.occupier.outOfHP) { targetTile.occupier = null; }
                     }
                     // if entity is ally: interact (to be implemented later)
                 } 
-                else if (parent.tilemap.moveRangeTiles.Contains(targetTile)) {
+                else if (parent.tilemap.moveRange.Contains(targetTile)) {
                     // if space is empty: move there (if possible)
-                    parent.tilemap.MoveEntity(selectedEntity.tileX, selectedEntity.tileY, targetTile.x, targetTile.y);
+                    parent.tilemap.MoveEntity(selectedEntity.tile.x, selectedEntity.tile.y, targetTile.x, targetTile.y);
                 }
                 selectedEntity = null; 
             }
@@ -65,8 +64,8 @@ public class CombatComponent {
     public void TriggerAITurn() {
         currentFaction.entities.ForEach(entity => {
             parent.tilemap.MoveEntity(
-                entity.tileX, entity.tileY,
-                entity.tileX + 1, entity.tileY + 1
+                entity.tile.x, entity.tile.y,
+                entity.tile.x + 1, entity.tile.y + 1
             );
         });
     }

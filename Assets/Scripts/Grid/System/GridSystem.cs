@@ -13,15 +13,15 @@ public class GridSystem : MonoBehaviour {
 	public System.Random rnd = new System.Random();
 	public Tile playerTile;
 	public GridEntity player;
-	public GridEntity selectedEntity;
 	public int selectRadius = 1;
 
+	public bool waiting = false;
 	// time between turns
 	public float turnGapTime = 0.5f;
-	public bool waitingForTurnGap = false;
 	// time between AI steps
 	public float aiStepTime = 0.25f;
-	public bool waitingForAIStep = false;
+	// just wait whenever you feel like it
+	public float waitTime = 0.1f;
 
 	public CombatComponent combat = new CombatComponent();
 	public TilemapComponent tilemap = new TilemapComponent();
@@ -34,9 +34,9 @@ public class GridSystem : MonoBehaviour {
 		var playerFaction = new Faction("Player", true, player);
 		combat.Start(this, enemyFaction, playerFaction);
 	}
-	
+
 	void Update () {
-		if (!waitingForTurnGap) {
+		if (!waiting) {
 			if (combat.currentFaction.isPlayerFaction) {
 				if (Input.GetMouseButtonDown(0)) {
 
@@ -52,21 +52,34 @@ public class GridSystem : MonoBehaviour {
 						combat.SelectTile(mouseTile);
 						tilemap.SelectTile(mouseTile);
 						if(combat.selectedEntity == null) {
-							tilemap.ResetTileSelection();
+							tilemap.ResetTileSelection(tilemap.moveRange, tilemap.attackRange);
 						}
 					}
 				}
 				if(Input.GetKey(KeyCode.G)) {
-					StartCoroutine("EndTurn");
+					StartCoroutine(Coroutines.EndTurn);
+				}
+				if(Input.GetKey(KeyCode.E)) {
+					if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
+						Debug.Log("skill activated");
+						tilemap.ActivateSkill(combat.selectedEntity);
+						StartCoroutine(Coroutines.WaitAMoment);
+					} else {
+						Debug.Log("skill deactivated");
+						tilemap.DeactivateSkill(combat.selectedEntity);
+						StartCoroutine(Coroutines.WaitAMoment);
+					}
+
+					//combat.ActivateSkill(selectedEntity)
 				}
 			}
 			else if (combat.currentFaction.isHostileFaction) {
-				if (!waitingForAIStep) {
-					StartCoroutine("ExecuteAIStep");
+				if (!waiting) {
+					StartCoroutine(Coroutines.ExecuteAIStep);
 				}
-				StartCoroutine("EndTurn");
+				StartCoroutine(Coroutines.EndTurn);
 			}
-		} 
+		}
 	}
 
 	void CreateTilemapComponent() {
@@ -112,21 +125,35 @@ public class GridSystem : MonoBehaviour {
 		return player;
 	}
 
+	private static class Coroutines {
+		public static string EndTurn = "EndTurn";
+		public static string ExecuteAIStep = "ExecuteAIStep";
+		public static string WaitAMoment = "WaitAMoment";
+	}
+
 	IEnumerator EndTurn () {
 		combat.EndTurn();
-		waitingForTurnGap = true;
+		waiting = true;
 		Debug.Log("Waiting for turn gap...");
 		yield return new WaitForSeconds(turnGapTime);
 		Debug.Log("Done waiting for turn gap.");
-		waitingForTurnGap = false;
+		waiting = false;
 	}
 
 	IEnumerator ExecuteAIStep() {
 		combat.TriggerAITurn();
-		waitingForAIStep = true;
+		waiting = true;
 		Debug.Log("Waiting for AI Step...");
 		yield return new WaitForSeconds(aiStepTime);
 		Debug.Log("Done waiting for AI Step.");
-		waitingForAIStep = false;
+		waiting = false;
+	}
+
+	IEnumerator WaitAMoment() {
+		waiting = true;
+		Debug.Log("Waiting for a moment...");
+		yield return new WaitForSeconds(waitTime);
+		Debug.Log("Waiting for a moment...");
+		waiting = false;
 	}
  }

@@ -10,40 +10,78 @@ public class TilemapComponent {
     public GameObject[,] grid;
     public GameObject tile;
 
-    public List<Tile> moveRangeTiles = new List<Tile>();
-	public List<Tile> attackRangeTiles = new List<Tile>();
-    
+	public class SelectedTiles {
+		public List<Tile> tiles;
+		public string name;
+
+		public SelectedTiles(string name) {
+			tiles = new List<Tile>();
+			this.name = name;
+		}
+
+		public void Highlight() {
+			tiles.ForEach(t => t.HighlightAs(name));
+		}
+
+		// this is... a little weird but it fixes a lingering highlight bug with tiles
+		public void Clear(GameObject[,] grid) {
+			for (var i = 0; i < grid.GetLength(0); i++) {
+				for (var j = 0; j < grid.GetLength(1); j++) {
+					grid[i,j].GetComponent<Tile>().RemoveHighlight(name);
+				}
+			}
+			tiles.Clear();
+		}
+
+		public bool Contains(Tile element) { return tiles.Contains(element); }
+	}
+
+    public SelectedTiles moveRange = new SelectedTiles("move");
+    public SelectedTiles attackRange = new SelectedTiles("attack");
+    public SelectedTiles skillRange = new SelectedTiles("skill");
+
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
         parent = gridSystem;
         grid = initTileMap;
     }
 
-    public void ResetTileSelection () {
-        for (int i = 0; i < grid.GetLength(0); i++) {
-			for (int j = 0; j < grid.GetLength(1); j++) {
-				grid[i,j].GetComponent<Tile>().selected = false;
-			}
-		}
-        this.attackRangeTiles.Clear();
-        this.moveRangeTiles.Clear();
+    public void ResetTileSelection (params SelectedTiles[] targets) {
+        targets.ToList().ForEach( selectedTiles => {
+            selectedTiles.tiles.ForEach(t => t.RemoveHighlight(selectedTiles.name));
+            selectedTiles.Clear(grid);
+        });
     }
 
     public void SelectTile(Tile tile) {
-        if (tile != null && tile.occupier != null && attackRangeTiles.Count == 0) {
-			if (tile.occupier.currentAttacks > 0) {
-				attackRangeTiles = GenerateTileCircle(tile.occupier.currentMoves + tile.occupier.range, tile);
-				attackRangeTiles.ForEach(t => {
-					t.selected = true;
-					t.HighlightAs("attack");
-				});
-			}
-			moveRangeTiles = GenerateTileCircle(tile.occupier.currentMoves, tile);
-			moveRangeTiles.ForEach(t => {
-				t.selected = true;
-				t.HighlightAs("move");
-			});
+        if (tile != null && tile.occupier != null) {
+			GenerateAttackRange(tile.occupier);
+			GenerateMoveRange(tile.occupier);
 		}
     }
+
+	public void GenerateAttackRange(GridEntity entity) {
+		if (entity.currentAttacks > 0) {
+				attackRange.tiles = GenerateTileCircle(entity.currentMoves + entity.range, entity.tile);
+				attackRange.Highlight();
+		}
+	}
+
+	public void GenerateMoveRange(GridEntity entity) {
+		moveRange.tiles = GenerateTileCircle(entity.currentMoves, entity.tile);
+		moveRange.Highlight();
+	}
+
+	public void ActivateSkill(GridEntity activeEntity) {
+		skillRange.tiles = GenerateTileCircle(3, activeEntity.tile);
+		ResetTileSelection(moveRange, attackRange);
+		skillRange.Highlight();
+	}
+
+	public void DeactivateSkill(GridEntity activeEntity) {
+		skillRange.Clear(grid);
+		GenerateAttackRange(activeEntity);
+		GenerateMoveRange(activeEntity);
+	}
 
     public void MoveEntity (int x0, int y0, int xDest, int yDest) {
 		var origin = grid[x0, y0].GetComponent<Tile>();

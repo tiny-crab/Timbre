@@ -9,8 +9,9 @@ public class Tile : MonoBehaviour {
 	public int x = 0;
 	public int y = 0;
 	public GridEntity occupier = null;
-	public bool selected = false;
+	private bool selected = false;
 	private string highlightType;
+	private List<string> currentHighlights = new List<string>();
 	public Color currentColor = Color.grey;
 	private Color unselectedColor = Color.grey;
 	private Color defaultSelectionColor = Color.blue;
@@ -26,6 +27,7 @@ public class Tile : MonoBehaviour {
 	public bool TryOccupy (GridEntity entity) {
 		if (occupier == null) {
 			occupier = entity;
+			entity.tile = this;
 			return true;
 		}
 		else {
@@ -35,22 +37,37 @@ public class Tile : MonoBehaviour {
 
 	void UpdateOccupier () {
 		occupier.transform.position = new Vector2(this.transform.position.x, this.transform.position.y);
-		occupier.tileX = x;
-		occupier.tileY = y;
+		occupier.tile = this;
 	}
 
 	public void HighlightAs(string highlightType) {
+		// this switch case also denotes "tiers" of highlights.
+		// cases on top will be "colored over" by cases on the bottom.
 		switch (highlightType)
 		{
 			case "attack":
 				currentColor = Color.red;
+				currentHighlights.Add(highlightType);
 				break;
 			case "move":
 				currentColor = Color.blue;
+				currentHighlights.Add(highlightType);
+				break;
+			case "skill":
+				currentColor = Color.green;
+				currentHighlights.Add(highlightType);
 				break;
 			default:
 				currentColor = unselectedColor;
 				break;
+		}
+		selected = true;
+	}
+
+	public void RemoveHighlight(string highlightType) {
+		currentHighlights.Remove(highlightType);
+		if (currentHighlights.Count == 0) {
+			selected = false;
 		}
 	}
 

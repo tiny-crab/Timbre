@@ -42,8 +42,7 @@ public class GridEntity : MonoBehaviour {
 	public bool isFriendly;
 	public bool isAllied;
 
-	public int tileX;
-	public int tileY;
+	public Tile tile;
 	
 	[SerializeField]
 	private GameObject healthBarPrefab;
@@ -89,15 +88,19 @@ public class GridEntity : MonoBehaviour {
 
 	public void Move(int spaces) {
 		currentMoves -= spaces;
+		if (currentMoves <= 0) { outOfMoves = true; }
 	}
 
 	public void MakeAttack(GridEntity target) {
 		currentAttacks -= 1;
 		target.TakeDamage((damage + damageModify) * damageMult);
+		if (currentAttacks <= 0) { outOfAttacks = true; }
 	}
 
 	public void RefreshTurnResources() {
 		currentMoves = maxMoves;
+		outOfMoves = false;
 		currentAttacks = maxAttacks;
+		outOfAttacks = false;
 	}
 }
