@@ -74,6 +74,7 @@ public class TilemapComponent {
                 skillSelected.tiles.ForEach(t =>
                     t.hazards.Add(new Caltrops())
                 );
+                skillSelected.Clear(grid);
                 DeactivateSkill(parent.combat.selectedEntity);
             }
         }
