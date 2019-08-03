@@ -6,16 +6,26 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour {
 
+    public static class HighlightTypes {
+        // range
+        public const string Attack = "attack";
+        public const string Move = "move";
+        public const string Skill = "skill";
+
+        // select
+        public const string SkillSelect = "skill_select";
+    }
+
 	public int x = 0;
 	public int y = 0;
 	public GridEntity occupier = null;
+    public List<Hazard> hazards = new List<Hazard>();
 	private bool selected = false;
 	private string highlightType;
-	private List<string> currentHighlights = new List<string>();
+	public List<string> currentHighlights = new List<string>();
 	public Color currentColor = Color.grey;
 	private Color unselectedColor = Color.grey;
-	private Color defaultSelectionColor = Color.blue;
-	
+
 	// Update is called once per frame
 	void Update () {
 		if (occupier != null) { UpdateOccupier(); }
@@ -28,6 +38,7 @@ public class Tile : MonoBehaviour {
 		if (occupier == null) {
 			occupier = entity;
 			entity.tile = this;
+            hazards.ForEach(hazard => hazard.OnEntityContact(entity));
 			return true;
 		}
 		else {
@@ -41,26 +52,7 @@ public class Tile : MonoBehaviour {
 	}
 
 	public void HighlightAs(string highlightType) {
-		// this switch case also denotes "tiers" of highlights.
-		// cases on top will be "colored over" by cases on the bottom.
-		switch (highlightType)
-		{
-			case "attack":
-				currentColor = Color.red;
-				currentHighlights.Add(highlightType);
-				break;
-			case "move":
-				currentColor = Color.blue;
-				currentHighlights.Add(highlightType);
-				break;
-			case "skill":
-				currentColor = Color.green;
-				currentHighlights.Add(highlightType);
-				break;
-			default:
-				currentColor = unselectedColor;
-				break;
-		}
+        currentHighlights.Add(highlightType);
 		selected = true;
 	}
 
@@ -73,12 +65,28 @@ public class Tile : MonoBehaviour {
 
 	Color DetermineColor () {
 		Color tileColor = new Color();
-		
+
 		if (selected) {
-			tileColor = currentColor;
+            // these cases also denote "tiers" of highlights.
+            // cases on top will be "colored over" by cases on the bottom.
+            if (currentHighlights.Contains(HighlightTypes.Attack)) {
+                tileColor = Color.red;
+            }
+            if (currentHighlights.Contains(HighlightTypes.Move)) {
+                tileColor = Color.blue;
+            }
+            if (currentHighlights.Contains(HighlightTypes.Skill)) {
+                tileColor = Color.green;
+            }
+            if (currentHighlights.Contains(HighlightTypes.SkillSelect)) {
+                tileColor = Color.magenta;
+            }
+            if (currentHighlights.Count == 0) {
+                tileColor = unselectedColor;
+            }
 		}
 		else { tileColor = unselectedColor; }
-		
+
 		return tileColor;
 	}
 }

@@ -36,9 +36,13 @@ public class TilemapComponent {
 		public bool Contains(Tile element) { return tiles.Contains(element); }
 	}
 
-    public SelectedTiles moveRange = new SelectedTiles("move");
-    public SelectedTiles attackRange = new SelectedTiles("attack");
-    public SelectedTiles skillRange = new SelectedTiles("skill");
+    // not a fan of using Tile.HighlightTypes here... seems a little tangential
+    // but it does confirm the dependency between SelectedTiles and Tiles
+    public SelectedTiles moveRange = new SelectedTiles(Tile.HighlightTypes.Move);
+    public SelectedTiles attackRange = new SelectedTiles(Tile.HighlightTypes.Attack);
+    public SelectedTiles skillRange = new SelectedTiles(Tile.HighlightTypes.Skill);
+
+    public SelectedTiles skillSelected = new SelectedTiles(Tile.HighlightTypes.SkillSelect);
 
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
         parent = gridSystem;
@@ -53,10 +57,26 @@ public class TilemapComponent {
     }
 
     public void SelectTile(Tile tile) {
-        if (tile != null && tile.occupier != null) {
+        if (tile.occupier != null) {
 			GenerateAttackRange(tile.occupier);
 			GenerateMoveRange(tile.occupier);
 		}
+        if (skillRange.Contains(tile) && skillSelected.tiles.Count < 2) {
+            if (tile.currentHighlights.Contains(Tile.HighlightTypes.SkillSelect)) {
+                tile.RemoveHighlight(Tile.HighlightTypes.SkillSelect);
+                skillSelected.tiles.Remove(tile);
+            } else {
+                tile.HighlightAs(Tile.HighlightTypes.SkillSelect);
+                skillSelected.tiles.Add(tile);
+            }
+
+            if (skillSelected.tiles.Count == 2) {
+                skillSelected.tiles.ForEach(t =>
+                    t.hazards.Add(new Caltrops())
+                );
+                DeactivateSkill(parent.combat.selectedEntity);
+            }
+        }
     }
 
 	public void GenerateAttackRange(GridEntity entity) {
