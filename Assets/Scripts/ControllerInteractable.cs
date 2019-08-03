@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class ControllerInteractable : MonoBehaviour {
 
-	private bool isFocused = false;
+    private bool isFocused = false;
 }

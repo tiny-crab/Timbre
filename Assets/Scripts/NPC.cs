@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class NPC : MonoBehaviour {
 
-	public string message;
-	public Dialog dialog;
+    public string message;
+    public Dialog dialog;
 
-	void Awake () {
-		dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
-	}
+    void Awake () {
+        dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
+    }
 
-	void Update () {
-		
-	}
+    void Update () {
 
-	void PlayerInteract() {
-		dialog.textBlob.text = message;
-	}
+    }
+
+    void PlayerInteract() {
+        dialog.textBlob.text = message;
+    }
 }

@@ -4,103 +4,103 @@ using UnityEngine;
 
 public class GridEntity : MonoBehaviour {
 
-	// HP
-	public int maxHP;
-	public int currentHP;
-	public bool outOfHP = false;
+    // HP
+    public int maxHP;
+    public int currentHP;
+    public bool outOfHP = false;
 
-	// move
-	public int maxMoves;
-	public int currentMoves;
-	public bool outOfMoves = false;
+    // move
+    public int maxMoves;
+    public int currentMoves;
+    public bool outOfMoves = false;
 
-	// attack
-	public int maxAttacks;
-	public int currentAttacks;
-	public bool outOfAttacks = false;
+    // attack
+    public int maxAttacks;
+    public int currentAttacks;
+    public bool outOfAttacks = false;
 
-	public int damage;
-	public int range;
-	public int damageMult;
-	public int damageModify;
+    public int damage;
+    public int range;
+    public int damageMult;
+    public int damageModify;
 
-	// SP
-	public int maxSP;
-	public int currentSP;
-	public bool outOfSP = false;
+    // SP
+    public int maxSP;
+    public int currentSP;
+    public bool outOfSP = false;
 
-	public int maxSkillUses;
-	public int currentSkillUses;
+    public int maxSkillUses;
+    public int currentSkillUses;
 
-	// skills
-	// public List<Skill> skills = {};
+    // skills
+    // public List<Skill> skills = {};
 
-	public Color moveRangeColor;
-	public Color attackRangeColor;
+    public Color moveRangeColor;
+    public Color attackRangeColor;
 
-	public bool isHostile;
-	public bool isFriendly;
-	public bool isAllied;
+    public bool isHostile;
+    public bool isFriendly;
+    public bool isAllied;
 
-	public Tile tile;
-	
-	[SerializeField]
-	private GameObject healthBarPrefab;
-	private float healthBarXDelta = -0.25f;
-	private float healthBarYDelta = 0.5f;
-	private HealthBar healthBar;
+    public Tile tile;
 
-	void Start () {
-		currentMoves = maxMoves;
-		currentAttacks = maxAttacks;
-		currentHP = maxHP;
-		currentSkillUses = maxSkillUses;
-		healthBar = GenerateHealthBar();
-		healthBar.Update();
-	}
+    [SerializeField]
+    private GameObject healthBarPrefab;
+    private float healthBarXDelta = -0.25f;
+    private float healthBarYDelta = 0.5f;
+    private HealthBar healthBar;
 
-	void Update() {
-		healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
-		if (outOfHP) { Destroy(this); }
-	}
+    void Start () {
+        currentMoves = maxMoves;
+        currentAttacks = maxAttacks;
+        currentHP = maxHP;
+        currentSkillUses = maxSkillUses;
+        healthBar = GenerateHealthBar();
+        healthBar.Update();
+    }
 
-	public HealthBar GenerateHealthBar() {
-		var fullBar = Instantiate(
-			healthBarPrefab, 
-			new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta), 
-			Quaternion.identity
-		);
+    void Update() {
+        healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
+        if (outOfHP) { Destroy(this); }
+    }
 
-		return new HealthBar(fullBar, maxHP);
-	}
+    public HealthBar GenerateHealthBar() {
+        var fullBar = Instantiate(
+            healthBarPrefab,
+            new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta),
+            Quaternion.identity
+        );
 
-	public void TakeDamage(int damage) {
-		// damage should be a positive value
-		healthBar.TakeDamage(damage);
-		currentHP -= damage;
-		if (currentHP <= 0) { Die(); }
-	}
+        return new HealthBar(fullBar, maxHP);
+    }
 
-	private void Die() {
-		outOfHP = true;
-		transform.position = new Vector2(int.MaxValue, int.MaxValue);
-	}
+    public void TakeDamage(int damage) {
+        // damage should be a positive value
+        healthBar.TakeDamage(damage);
+        currentHP -= damage;
+        if (currentHP <= 0) { Die(); }
+    }
 
-	public void Move(int spaces) {
-		currentMoves -= spaces;
-		if (currentMoves <= 0) { outOfMoves = true; }
-	}
+    private void Die() {
+        outOfHP = true;
+        transform.position = new Vector2(int.MaxValue, int.MaxValue);
+    }
 
-	public void MakeAttack(GridEntity target) {
-		currentAttacks -= 1;
-		target.TakeDamage((damage + damageModify) * damageMult);
-		if (currentAttacks <= 0) { outOfAttacks = true; }
-	}
+    public void Move(int spaces) {
+        currentMoves -= spaces;
+        if (currentMoves <= 0) { outOfMoves = true; }
+    }
 
-	public void RefreshTurnResources() {
-		currentMoves = maxMoves;
-		outOfMoves = false;
-		currentAttacks = maxAttacks;
-		outOfAttacks = false;
-	}
+    public void MakeAttack(GridEntity target) {
+        currentAttacks -= 1;
+        target.TakeDamage((damage + damageModify) * damageMult);
+        if (currentAttacks <= 0) { outOfAttacks = true; }
+    }
+
+    public void RefreshTurnResources() {
+        currentMoves = maxMoves;
+        outOfMoves = false;
+        currentAttacks = maxAttacks;
+        outOfAttacks = false;
+    }
 }

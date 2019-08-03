@@ -34,12 +34,12 @@ public class CombatComponent {
                         if (targetTile.occupier.outOfHP) { targetTile.occupier = null; }
                     }
                     // if entity is ally: interact (to be implemented later)
-                } 
+                }
                 else if (parent.tilemap.moveRange.Contains(targetTile)) {
                     // if space is empty: move there (if possible)
                     parent.tilemap.MoveEntity(selectedEntity.tile.x, selectedEntity.tile.y, targetTile.x, targetTile.y);
                 }
-                selectedEntity = null; 
+                selectedEntity = null;
             }
         }
     }

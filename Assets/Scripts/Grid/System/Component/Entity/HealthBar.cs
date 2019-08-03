@@ -53,7 +53,7 @@ public class HealthBar {
             healthTier = healthTierList.Count - 1;
             fill = 0;
         }
-        
+
         healthMarkers.ForEach(marker => marker.GetComponent<SpriteRenderer>().color = healthTierList[healthTier]);
         for (int i = 0; i < fill; i++) {
             var marker = healthMarkers[i];

@@ -9,7 +9,7 @@ public class Faction {
     public List<GridEntity> entities = new List<GridEntity>();
     public bool isPlayerFaction;
     public bool isHostileFaction;
-    
+
     public bool OutOfResources () {
         // todo add computation
         return isHostileFaction;
