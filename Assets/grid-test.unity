@@ -248,8 +248,11 @@ MonoBehaviour:
     type: 3}
   playerTile: {fileID: 0}
   player: {fileID: 0}
-  selectedEntity: {fileID: 0}
   selectRadius: 3
+  waiting: 0
+  turnGapTime: 0.5
+  aiStepTime: 0.25
+  waitTime: 0.1
 --- !u!4 &1216291760
 Transform:
   m_ObjectHideFlags: 0
