@@ -47,3 +47,5 @@ Assets/StreamingAssets/crashlytics-build.properties
 # DSStore
 .DS_Store
 
+# ignore dir
+ignore/
