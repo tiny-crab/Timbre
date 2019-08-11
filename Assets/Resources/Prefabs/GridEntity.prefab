@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4954248529282782}
   - component: {fileID: 114529097765300482}
   - component: {fileID: 7697886401237497257}
+  - component: {fileID: -8292581000985229284}
   m_Layer: 0
   m_Name: GridEntity
   m_TagString: Untagged
@@ -67,8 +68,7 @@ MonoBehaviour:
   isHostile: 0
   isFriendly: 0
   isAllied: 0
-  tileX: 0
-  tileY: 0
+  tile: {fileID: 0}
   healthBarPrefab: {fileID: 1420206249178562, guid: 34918ecbe1b364333b468cdd3bd6356a,
     type: 3}
 --- !u!212 &7697886401237497257
@@ -119,3 +119,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &-8292581000985229284
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926815201465144}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

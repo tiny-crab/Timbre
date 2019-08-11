@@ -10,9 +10,9 @@ public class GridSystem : MonoBehaviour {
     public GameObject gridEntity;
     public GameObject gridNPC;
     public GameObject gridPlayer;
+    public GameObject knightPrefab;
     public System.Random rnd = new System.Random();
 
-    public Tile playerTile;
     public GridEntity player;
     public int selectRadius = 1;
 
@@ -33,10 +33,14 @@ public class GridSystem : MonoBehaviour {
 
     void Start () {
         CreateTilemapComponent();
-        var npc = PutNPC(1,1);
-        var player = PutPlayer(5,5);
+
+        knightPrefab = Resources.Load<GameObject>("Prefabs/AllyClasses/Knight");
+
+        var npc = PutEntity(1, 1, gridNPC);
+        var player = PutEntity(5, 5, gridPlayer);
+        var knight = PutEntity(5, 3, knightPrefab);
         var enemyFaction = new Faction("Enemy", false, npc);
-        var playerFaction = new Faction("Player", true, player);
+        var playerFaction = new Faction("Player", true, player, knight);
 
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
 
@@ -114,24 +118,12 @@ public class GridSystem : MonoBehaviour {
         tilemap.Start(this, initTileMap);
     }
 
-    GridEntity PutNPC (int x, int y) {
+    GridEntity PutEntity (int x, int y, GameObject prefab) {
         var target = tilemap.grid[x,y].GetComponent<Tile>();
-        var npc = Instantiate(gridNPC, new Vector2(0,0), Quaternion.identity).GetComponent<GridEntity>();
-        npc.GetComponent<SpriteRenderer>().sortingOrder = 1;
-        target.TryOccupy(npc);
-        return npc;
-    }
-
-    // this should also be generalized
-    GridEntity PutPlayer (int x, int y) {
-        var target = tilemap.grid[x,y].GetComponent<Tile>();
-        player = Instantiate(gridPlayer, new Vector2(0,0), Quaternion.identity).GetComponent<GridEntity>();
-        player.GetComponent<SpriteRenderer>().sortingOrder = 1;
-        // ew
-        if (target.TryOccupy(player)) {
-            playerTile = target;
-        }
-        return player;
+        var entity = Instantiate(prefab, new Vector2(0,0), Quaternion.identity).GetComponent<GridEntity>();
+        entity.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        target.TryOccupy(entity);
+        return entity;
     }
 
     private static class Coroutines {
