@@ -19,22 +19,21 @@ public class Dialog : ControllerInteractable {
 
     }
 
-    public void PostToDialog (string message, AudioClip dialogNoise) {
+    public void PostToDialog (string message, AudioClip dialogNoise=null, bool pitched=true) {
         StopAllCoroutines();
-        StartCoroutine(TypeOut(message, dialogNoise));
-        //this.textBlob.text = message;
+        StartCoroutine(TypeOut(message, dialogNoise, pitched));
     }
 
-    IEnumerator TypeOut (string message, AudioClip dialogNoise) {
+    IEnumerator TypeOut (string message, AudioClip dialogNoise, bool pitched) {
         this.textBlob.text = "";
         var punctuationWait = 0.1f;
         var otherWait = .025f;
 
+        if (dialogNoise != null) { dialogSound.clip = dialogNoise; }
+
         foreach (char letter in message.ToCharArray()) {
             this.textBlob.text += letter;
-            dialogSound.clip = dialogNoise;
-            dialogSound.pitch = (float) Mathf.Sqrt(((int) letter * .03f));
-            Debug.Log(dialogSound.pitch);
+            if (pitched) { dialogSound.pitch = (float) Mathf.Sqrt(((int) letter * .03f)); }
             dialogSound.PlayOneShot(dialogSound.clip);
             if (new List<char>() {',', '.', '!', '?'}.Contains(letter)) {
                 yield return new WaitForSeconds(punctuationWait);

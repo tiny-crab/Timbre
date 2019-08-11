@@ -11,6 +11,7 @@ public class GridSystem : MonoBehaviour {
     public GameObject gridNPC;
     public GameObject gridPlayer;
     public System.Random rnd = new System.Random();
+
     public Tile playerTile;
     public GridEntity player;
     public int selectRadius = 1;
@@ -26,12 +27,19 @@ public class GridSystem : MonoBehaviour {
     public CombatComponent combat = new CombatComponent();
     public TilemapComponent tilemap = new TilemapComponent();
 
+    public Dialog dialog;
+    public AudioClip dialogNoise;
+
+
     void Start () {
         CreateTilemapComponent();
         var npc = PutNPC(1,1);
         var player = PutPlayer(5,5);
         var enemyFaction = new Faction("Enemy", false, npc);
         var playerFaction = new Faction("Player", true, player);
+
+        dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
+
         combat.Start(this, enemyFaction, playerFaction);
     }
 
@@ -46,6 +54,7 @@ public class GridSystem : MonoBehaviour {
 
                     Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
+                    Debug.Log(hitInfo.collider.gameObject.name);
                     Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
 
                     if (mouseTile != null) {
@@ -61,11 +70,11 @@ public class GridSystem : MonoBehaviour {
                 }
                 if(Input.GetKey(KeyCode.E)) {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
-                        Debug.Log("skill activated");
+                        dialog.PostToDialog("skill activated", dialogNoise, false);
                         tilemap.ActivateSkill(combat.selectedEntity);
                         StartCoroutine(Coroutines.WaitAMoment);
                     } else {
-                        Debug.Log("skill deactivated");
+                        dialog.PostToDialog("skill deactivated", dialogNoise, false);
                         tilemap.DeactivateSkill(combat.selectedEntity);
                         StartCoroutine(Coroutines.WaitAMoment);
                     }
