@@ -6,6 +6,7 @@ public class NPC : MonoBehaviour {
 
     public string message;
     public Dialog dialog;
+    public AudioClip dialogNoise;
 
     void Awake () {
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
@@ -16,6 +17,6 @@ public class NPC : MonoBehaviour {
     }
 
     void PlayerInteract() {
-        dialog.textBlob.text = message;
+        dialog.PostToDialog(message, dialogNoise);
     }
 }
