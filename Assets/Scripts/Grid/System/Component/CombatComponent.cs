@@ -45,9 +45,9 @@ public class CombatComponent {
     }
 
     public void SelectEntity(GridEntity entity) {
-        // need to check if the entity is in the current / friendly faction or not
         if (currentFaction.entities.Contains(entity)) {
             selectedEntity = entity;
+            parent.dialog.PostToDialog("Selected " + selectedEntity.name, null, false);
         }
         else {
             // show some information about the enemy (?)

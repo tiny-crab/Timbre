@@ -35,10 +35,12 @@ public class GridEntity : MonoBehaviour {
     // skills
     // public List<Skill> skills = {};
 
+    // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
     public Color attackRangeColor;
 
     public bool isHostile;
+    // if an entity is friendly, it will not attack the party but it is still controlled by AI
     public bool isFriendly;
     public bool isAllied;
 

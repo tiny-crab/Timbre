@@ -7,15 +7,19 @@ public class GridSystem : MonoBehaviour {
 
     public GameObject[,] initTileMap = new GameObject[8,8];
     public GameObject tile;
+
+    // TODO UP: would be passed from a context in the overworld
     public GameObject gridEntity;
     public GameObject gridNPC;
     public GameObject gridPlayer;
     public GameObject knightPrefab;
+
     public System.Random rnd = new System.Random();
 
+    // this is less important once more allies are on the field
     public GridEntity player;
-    public int selectRadius = 1;
 
+    // TODO SIDE: these feel like utility functions and should be moved
     public bool waiting = false;
     // time between turns
     public float turnGapTime = 0.5f;
@@ -27,6 +31,7 @@ public class GridSystem : MonoBehaviour {
     public CombatComponent combat = new CombatComponent();
     public TilemapComponent tilemap = new TilemapComponent();
 
+    // TODO SIDE: Audio + UI should be in a different class
     public Dialog dialog;
     public AudioClip dialogNoise;
 
@@ -36,6 +41,8 @@ public class GridSystem : MonoBehaviour {
 
         knightPrefab = Resources.Load<GameObject>("Prefabs/AllyClasses/Knight");
 
+        // TODO UP: Should just get all entities from a parent system
+        // this Start() function should handle clamping their position to the nearest tile
         var npc = PutEntity(1, 1, gridNPC);
         var player = PutEntity(5, 5, gridPlayer);
         var knight = PutEntity(5, 3, knightPrefab);
@@ -47,7 +54,66 @@ public class GridSystem : MonoBehaviour {
         combat.Start(this, enemyFaction, playerFaction);
     }
 
+    // TODO: restructure this to be a bit clearer - but this is the main FSM of the grid system
+    // nothing else actually contain input and user behavior checks, so this is actually not bad...
     void Update () {
+
+        // states:
+        // WAITING
+            // don't do anything
+            // exit predicate:
+                // wait time is complete -> go back to previous state
+        // NO_SELECTION
+            // Grid was just instantiated
+            // exit predicates:
+                // click on allied character -> ALLY_SELECTED(tile)
+                // click on enemy character -> ENEMY_SELECTED(tile)
+                // press end turn button || allies out of resources -> END_TURN
+        // ALLY_SELECTED
+            // clicked on an ally
+            // exit predicates:
+                // click empty tile within move range -> ALLY_MOVE(tile)
+                // click on tile with enemy within attack range -> ALLY_ATTACK(tile)
+                // press key to select a skill -> SKILL_ACTIVATE(skill)
+        // ENEMY_SELECTED
+            // clicked on an enemy
+            // exit predicates:
+                // selection command completes -> NO_SELECTION
+        // ALLY_MOVE
+            // moved an ally
+            // exit predicates:
+                // resolve movement (hazards, etc.) -> NO_SELECTION || ALLY_SELECTED (decide based on flow)
+        // ALLY_ATTACK
+            // attacked with an ally
+            // exit predicates:
+                // resolve attack (damage receivers, etc.) -> NO_SELECTION || ALLY_SELECTED (decide based on flow)
+        // SKILL_ACTIVATE
+            // clicked a button to activate a skill
+            // some skills' effects happen immediately, others require different types of targets
+            // exit predicates:
+                // if no selection, resolve skill effect -> NO_SELECTION || ALLY_SELECTED (decide based on flow)
+                // if selection -> SKILL_SELECT
+        // SKILL_SELECT
+            // activated a skill that requires a target
+            // exit predicates:
+                // press button to cancel skill -> ALLY_SELECTED
+                // click target, but more targets to select -> stay in SKILL_SELECT
+                // clicked all targets -> SKILL_SELECTION_RESOLVED(targets)
+        // SKILL_SELECTION_RESOLVED
+            // finished clicking targets for skill
+            // exit predicates:
+                // resolve effects -> NO_SELECTION
+        // END_TURN
+            // faction's turn has ended, cycle to next faction
+            // exit predicates:
+                // if not a player faction -> AI_TURN(faction)
+                // if player faction -> NO_SELECTION
+        // AI_TURN
+            // run AI turn calculation and resolution
+            // exit predicates:
+                // AI has resolved turn -> END_TURN
+
+
         if (!waiting) {
             if (combat.currentFaction.isPlayerFaction) {
                 if (Input.GetMouseButtonDown(0)) {
@@ -72,6 +138,7 @@ public class GridSystem : MonoBehaviour {
                 if(Input.GetKey(KeyCode.G)) {
                     StartCoroutine(Coroutines.EndTurn);
                 }
+                // TODO SIDE: states should be defined in another class
                 if(Input.GetKey(KeyCode.E)) {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
                         dialog.PostToDialog("skill activated", dialogNoise, false);
@@ -126,12 +193,15 @@ public class GridSystem : MonoBehaviour {
         return entity;
     }
 
+    // TODO SIDE: "wait utility"
     private static class Coroutines {
         public static string EndTurn = "EndTurn";
         public static string ExecuteAIStep = "ExecuteAIStep";
         public static string WaitAMoment = "WaitAMoment";
     }
 
+    // TODO SIDE: should be extracted as a single general utility function
+    // IEnumerator WaitAMoment(float waitTime, string name) {...}
     IEnumerator EndTurn () {
         combat.EndTurn();
         waiting = true;
