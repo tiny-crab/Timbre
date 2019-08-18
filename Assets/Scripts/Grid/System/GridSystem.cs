@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -31,10 +32,22 @@ public class GridSystem : MonoBehaviour {
     public CombatComponent combat = new CombatComponent();
     public TilemapComponent tilemap = new TilemapComponent();
 
+    public State currentState;
+    // public State previousState = State.NO_SELECTION;
+
     // TODO SIDE: Audio + UI should be in a different class
     public Dialog dialog;
     public AudioClip dialogNoise;
 
+    public enum State {
+        NO_SELECTION,
+        ALLY_SELECTED,
+        ENEMY_SELECTED,
+        SKILL_ACTIVATE,
+        SKILL_SELECT,
+        END_TURN,
+        AI_TURN
+    }
 
     void Start () {
         CreateTilemapComponent();
@@ -51,114 +64,114 @@ public class GridSystem : MonoBehaviour {
 
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
 
-        combat.Start(this, enemyFaction, playerFaction);
+        combat.Start(this, playerFaction, enemyFaction);
+        currentState = State.NO_SELECTION;
     }
 
     // TODO: restructure this to be a bit clearer - but this is the main FSM of the grid system
     // nothing else actually contain input and user behavior checks, so this is actually not bad...
     void Update () {
 
-        // states:
-        // WAITING
-            // don't do anything
-            // exit predicate:
-                // wait time is complete -> go back to previous state
-        // NO_SELECTION
-            // Grid was just instantiated
-            // exit predicates:
-                // click on allied character -> ALLY_SELECTED(tile)
-                // click on enemy character -> ENEMY_SELECTED(tile)
-                // press end turn button || allies out of resources -> END_TURN
-        // ALLY_SELECTED
-            // clicked on an ally
-            // exit predicates:
-                // click empty tile within move range -> ALLY_MOVE(tile)
-                // click on tile with enemy within attack range -> ALLY_ATTACK(tile)
-                // press key to select a skill -> SKILL_ACTIVATE(skill)
-        // ENEMY_SELECTED
-            // clicked on an enemy
-            // exit predicates:
-                // selection command completes -> NO_SELECTION
-        // ALLY_MOVE
-            // moved an ally
-            // exit predicates:
-                // resolve movement (hazards, etc.) -> NO_SELECTION || ALLY_SELECTED (decide based on flow)
-        // ALLY_ATTACK
-            // attacked with an ally
-            // exit predicates:
-                // resolve attack (damage receivers, etc.) -> NO_SELECTION || ALLY_SELECTED (decide based on flow)
-        // SKILL_ACTIVATE
-            // clicked a button to activate a skill
-            // some skills' effects happen immediately, others require different types of targets
-            // exit predicates:
-                // if no selection, resolve skill effect -> NO_SELECTION || ALLY_SELECTED (decide based on flow)
-                // if selection -> SKILL_SELECT
-        // SKILL_SELECT
-            // activated a skill that requires a target
-            // exit predicates:
-                // press button to cancel skill -> ALLY_SELECTED
-                // click target, but more targets to select -> stay in SKILL_SELECT
-                // clicked all targets -> SKILL_SELECTION_RESOLVED(targets)
-        // SKILL_SELECTION_RESOLVED
-            // finished clicking targets for skill
-            // exit predicates:
-                // resolve effects -> NO_SELECTION
-        // END_TURN
-            // faction's turn has ended, cycle to next faction
-            // exit predicates:
-                // if not a player faction -> AI_TURN(faction)
-                // if player faction -> NO_SELECTION
-        // AI_TURN
-            // run AI turn calculation and resolution
-            // exit predicates:
-                // AI has resolved turn -> END_TURN
+        var mouseTile = GetTileUnderMouse();
+        Debug.Log(currentState);
 
+        if (waiting) { return; }
+        switch (currentState) {
 
-        if (!waiting) {
-            if (combat.currentFaction.isPlayerFaction) {
-                if (Input.GetMouseButtonDown(0)) {
+            case State.NO_SELECTION:
 
-                    // branch here:
-                    // if mouse hit a game element, pass it to Combat System
-                    // if mouse hit a UI element, pass it to a (unimplemented) UI System
-
-                    Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
-                    Debug.Log(hitInfo.collider.gameObject.name);
-                    Tile mouseTile = hitInfo.collider.gameObject.GetComponent<Tile>();
-
-                    if (mouseTile != null) {
-                        combat.SelectTile(mouseTile);
-                        tilemap.SelectTile(mouseTile);
-                        if(combat.selectedEntity == null) {
-                            tilemap.ResetTileSelection(tilemap.moveRange, tilemap.attackRange);
-                        }
+                if (mouseTile == null) { break; }
+                else if (Input.GetMouseButtonDown(0) && mouseTile.occupier.isAllied) {
+                    combat.SelectTile(mouseTile);
+                    tilemap.SelectTile(mouseTile);
+                    if(combat.selectedEntity == null) {
+                        tilemap.ResetTileSelection(tilemap.moveRange, tilemap.attackRange);
                     }
+                    currentState = State.ALLY_SELECTED;
                 }
-                if(Input.GetKey(KeyCode.G)) {
-                    StartCoroutine(Coroutines.EndTurn);
+                else if (Input.GetMouseButtonDown(0) && mouseTile.occupier.isHostile) {
+                    currentState = State.ENEMY_SELECTED;
                 }
-                // TODO SIDE: states should be defined in another class
-                if(Input.GetKey(KeyCode.E)) {
+                else if (Input.GetKeyDown(KeyCode.G)) {
+                    combat.EndTurn();
+                    StartCoroutine(WaitAMoment(turnGapTime, "Ending Player Turn"));
+                    currentState = State.END_TURN;
+                }
+                break;
+
+
+            case State.ALLY_SELECTED:
+
+                if (mouseTile == null) { break; }
+                else if (Input.GetMouseButtonDown(0)) {
+                    combat.SelectTile(mouseTile);
+                    tilemap.SelectTile(mouseTile);
+                    if(combat.selectedEntity == null) {
+                        tilemap.ResetTileSelection(tilemap.moveRange, tilemap.attackRange);
+                    }
+                    currentState = State.NO_SELECTION;
+                }
+                else if (Input.GetKey(KeyCode.E)) {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
                         dialog.PostToDialog("skill activated", dialogNoise, false);
                         tilemap.ActivateSkill(combat.selectedEntity);
-                        StartCoroutine(Coroutines.WaitAMoment);
-                    } else {
-                        dialog.PostToDialog("skill deactivated", dialogNoise, false);
-                        tilemap.DeactivateSkill(combat.selectedEntity);
-                        StartCoroutine(Coroutines.WaitAMoment);
+                        StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
+                        currentState = State.SKILL_ACTIVATE;
                     }
+                }
+                break;
 
-                    //combat.ActivateSkill(selectedEntity)
+
+            case State.ENEMY_SELECTED:
+
+                if (mouseTile == null) { break; }
+                else if (Input.GetMouseButtonDown(0) && mouseTile.occupier == null) {
+                    currentState = State.NO_SELECTION;
                 }
-            }
-            else if (combat.currentFaction.isHostileFaction) {
-                if (!waiting) {
-                    StartCoroutine(Coroutines.ExecuteAIStep);
+                break;
+
+
+            case State.SKILL_ACTIVATE:
+
+                if (Input.GetMouseButtonDown(0) && mouseTile.occupier == null) {
+                    tilemap.SelectTile(mouseTile);
                 }
-                StartCoroutine(Coroutines.EndTurn);
-            }
+                else if (Input.GetKey(KeyCode.E)) {
+                    dialog.PostToDialog("skill deactivated", dialogNoise, false);
+                    tilemap.DeactivateSkill(combat.selectedEntity);
+                    StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
+                    currentState = State.ALLY_SELECTED;
+                }
+                else if (tilemap.skillRange.tiles.Count() == 0) {
+                    StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
+                    currentState = State.ALLY_SELECTED;
+                }
+                break;
+
+
+            case State.END_TURN:
+
+                if (combat.currentFaction.isHostileFaction) {
+                    combat.TriggerAITurn();
+                    currentState = State.AI_TURN;
+                }
+                else if (combat.currentFaction.isPlayerFaction) {
+                    currentState = State.NO_SELECTION;
+                }
+                break;
+
+
+            case State.AI_TURN:
+
+                combat.EndTurn();
+                StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
+                currentState = State.END_TURN;
+                break;
+
+
+            default:
+                currentState = State.NO_SELECTION;
+                break;
         }
     }
 
@@ -185,6 +198,18 @@ public class GridSystem : MonoBehaviour {
         tilemap.Start(this, initTileMap);
     }
 
+    public static Tile GetTileUnderMouse() {
+        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
+        // Debug.Log(hitInfo.collider.gameObject.name);
+        var collider = hitInfo.collider;
+        if (collider != null) {
+            return hitInfo.collider.gameObject.GetComponent<Tile>();
+        } else {
+            return null;
+        }
+    }
+
     GridEntity PutEntity (int x, int y, GameObject prefab) {
         var target = tilemap.grid[x,y].GetComponent<Tile>();
         var entity = Instantiate(prefab, new Vector2(0,0), Quaternion.identity).GetComponent<GridEntity>();
@@ -193,38 +218,11 @@ public class GridSystem : MonoBehaviour {
         return entity;
     }
 
-    // TODO SIDE: "wait utility"
-    private static class Coroutines {
-        public static string EndTurn = "EndTurn";
-        public static string ExecuteAIStep = "ExecuteAIStep";
-        public static string WaitAMoment = "WaitAMoment";
-    }
-
-    // TODO SIDE: should be extracted as a single general utility function
-    // IEnumerator WaitAMoment(float waitTime, string name) {...}
-    IEnumerator EndTurn () {
-        combat.EndTurn();
+    IEnumerator WaitAMoment(float waitTime, string name) {
         waiting = true;
-        Debug.Log("Waiting for turn gap...");
-        yield return new WaitForSeconds(turnGapTime);
-        Debug.Log("Done waiting for turn gap.");
-        waiting = false;
-    }
-
-    IEnumerator ExecuteAIStep() {
-        combat.TriggerAITurn();
-        waiting = true;
-        Debug.Log("Waiting for AI Step...");
-        yield return new WaitForSeconds(aiStepTime);
-        Debug.Log("Done waiting for AI Step.");
-        waiting = false;
-    }
-
-    IEnumerator WaitAMoment() {
-        waiting = true;
-        Debug.Log("Waiting for a moment...");
+        Debug.Log("Waiting for... " + name);
         yield return new WaitForSeconds(waitTime);
-        Debug.Log("Waiting for a moment...");
+        Debug.Log("Waiting for... " + name);
         waiting = false;
     }
  }
