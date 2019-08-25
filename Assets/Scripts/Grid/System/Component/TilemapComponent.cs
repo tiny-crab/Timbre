@@ -82,13 +82,17 @@ public class TilemapComponent {
 
     public void GenerateAttackRange(GridEntity entity) {
         if (entity.currentAttacks > 0) {
-                attackRange.tiles = GenerateTileCircle(entity.currentMoves + entity.range, entity.tile);
+                attackRange.tiles = GenerateTileCircle(entity.range, entity.tile)
+                                        .Where(tile => tile.occupier != null && tile.occupier.isHostile)
+                                        .ToList();
                 attackRange.Highlight();
         }
     }
 
     public void GenerateMoveRange(GridEntity entity) {
-        moveRange.tiles = GenerateTileCircle(entity.currentMoves, entity.tile);
+        moveRange.tiles = GenerateTileCircle(entity.currentMoves, entity.tile)
+                            .Where(tile => tile.occupier == null)
+                            .ToList();
         moveRange.Highlight();
     }
 
@@ -124,8 +128,9 @@ public class TilemapComponent {
             tiles.ForEach(tile => temp.AddRange(GetAdjacentTiles(tile)));
             tiles.AddRange(temp);
         }
+        tiles = tiles.Distinct().ToList();
         tiles.Remove(sourceTile);
-        return tiles.Distinct().ToList();
+        return tiles;
     }
 
     List<Tile> GenerateTileRing(int radius, Tile sourceTile) {

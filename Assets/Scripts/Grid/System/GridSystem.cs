@@ -73,7 +73,6 @@ public class GridSystem : MonoBehaviour {
     void Update () {
 
         var mouseTile = GetTileUnderMouse();
-        Debug.Log(currentState);
 
         if (waiting) { return; }
         switch (currentState) {
