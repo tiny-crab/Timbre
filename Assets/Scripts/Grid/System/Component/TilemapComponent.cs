@@ -121,7 +121,7 @@ public class TilemapComponent {
         }
     }
 
-    List<Tile> GenerateTileCircle(int radius, Tile sourceTile) {
+    public List<Tile> GenerateTileCircle(int radius, Tile sourceTile) {
         List<Tile> tiles = new List<Tile>() { sourceTile };
         for (int depth = 0; depth < radius; depth++) {
             var temp = new List<Tile>();
@@ -133,7 +133,7 @@ public class TilemapComponent {
         return tiles;
     }
 
-    List<Tile> GenerateTileRing(int radius, Tile sourceTile) {
+    public List<Tile> GenerateTileRing(int radius, Tile sourceTile) {
         return GenerateTileCircle(radius, sourceTile)
         .Where(tile =>
             Mathf.Abs(Mathf.Abs(sourceTile.x) - Mathf.Abs(tile.x)) +

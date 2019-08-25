@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,10 +64,34 @@ public class CombatComponent {
 
     public void TriggerAITurn() {
         currentFaction.entities.ForEach(entity => {
+            // the vocabulary currently is "relative" to the characters,
+            // even though the enemies are the only ones intended with AI right now
+            var playerFaction = factions.ToList().Find(faction => faction.isPlayerFaction);
+            var targets = playerFaction.entities;
+
+            var targetRanges = targets.SelectMany(target => parent.tilemap.GenerateTileCircle(entity.range, target.tile)).ToList();
+            var nextTurnRange = parent.tilemap.GenerateTileCircle(entity.maxMoves, entity.tile);
+
+            // check for overlap between the tile ranges, and then measure distance.
+            var nextMoveMap = new Dictionary<Tile, int>();
+            nextTurnRange.ForEach(tile => {
+                var score = targetRanges.Select(attackTile =>
+                    Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)
+                ).Sum();
+                nextMoveMap[tile] = score;
+            });
+
+            var nextTile = nextMoveMap.OrderBy(element => element.Value).First().Key;
+
             parent.tilemap.MoveEntity(
                 entity.tile.x, entity.tile.y,
-                entity.tile.x + 1, entity.tile.y + 1
+                nextTile.x, nextTile.y
             );
+
+            var tileWithTarget = parent.tilemap.GenerateTileCircle(entity.range, entity.tile)
+                                .ToList()
+                                .FirstOrDefault(tile => tile.occupier != null && (tile.occupier.isAllied || tile.occupier.isFriendly));
+            if (tileWithTarget != null) { entity.MakeAttack(tileWithTarget.occupier); }
         });
     }
 }

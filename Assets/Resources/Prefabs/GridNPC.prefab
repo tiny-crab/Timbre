@@ -120,12 +120,27 @@ PrefabInstance:
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: maxHP
-      value: 12
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: currentHP
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: maxMoves
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: damage
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: range
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
