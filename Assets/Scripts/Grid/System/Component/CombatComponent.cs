@@ -72,7 +72,6 @@ public class CombatComponent {
             var targetRanges = targets.SelectMany(target => parent.tilemap.GenerateTileCircle(entity.range, target.tile)).ToList();
             var nextTurnRange = parent.tilemap.GenerateTileCircle(entity.maxMoves, entity.tile);
 
-            // check for overlap between the tile ranges, and then measure distance.
             var nextMoveMap = new Dictionary<Tile, int>();
             nextTurnRange.ForEach(tile => {
                 var score = targetRanges.Select(attackTile =>

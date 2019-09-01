@@ -7,11 +7,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -8292581000985229284, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: e1eb24eed6b21428092b9ee3f563cefe, type: 2}
     - target: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_Name
       value: Knight
@@ -70,6 +65,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
+      propertyPath: skills.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
       propertyPath: maxHP
       value: 5
       objectReference: {fileID: 0}
@@ -93,6 +93,21 @@ PrefabInstance:
       propertyPath: range
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: skills.Array.data[0]
+      value: Defend Self
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: skills.Array.data[1]
+      value: Protect Ally
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: skills.Array.data[2]
+      value: Retaliate
+      objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Sprite
@@ -114,5 +129,10 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -8292581000985229284, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: e1eb24eed6b21428092b9ee3f563cefe, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}

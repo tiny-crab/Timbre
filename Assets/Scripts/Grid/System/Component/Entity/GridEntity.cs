@@ -34,6 +34,8 @@ public class GridEntity : MonoBehaviour {
 
     // skills
     // public List<Skill> skills = {};
+    // to test multi-skill selection feature, will currently just be strings
+    public List<string> skills;
 
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;

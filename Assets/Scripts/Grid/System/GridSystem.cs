@@ -32,6 +32,14 @@ public class GridSystem : MonoBehaviour {
     public CombatComponent combat = new CombatComponent();
     public TilemapComponent tilemap = new TilemapComponent();
 
+    public List<KeyCode> skillKeys = new List<KeyCode>() { KeyCode.A, KeyCode.S, KeyCode.D };
+    public Dictionary<KeyCode, int> keyToSkillIndex = new Dictionary<KeyCode, int>() {
+        {KeyCode.A, 0},
+        {KeyCode.S, 1},
+        {KeyCode.D, 2}
+    };
+    private KeyCode lastPressedKey;
+
     public State currentState;
     // public State previousState = State.NO_SELECTION;
 
@@ -110,9 +118,14 @@ public class GridSystem : MonoBehaviour {
                     }
                     currentState = State.NO_SELECTION;
                 }
-                else if (Input.GetKey(KeyCode.E)) {
+                else if ( skillKeys.Any(key => Input.GetKey(key))) {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
-                        dialog.PostToDialog("skill activated", dialogNoise, false);
+                        skillKeys.ForEach(keyPressed => {
+                            if (Input.GetKeyDown(keyPressed)) {
+                                dialog.PostToDialog(combat.selectedEntity.skills[keyToSkillIndex[keyPressed]], dialogNoise, false);
+                                lastPressedKey = keyPressed;
+                            }
+                        });
                         tilemap.ActivateSkill(combat.selectedEntity);
                         StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
                         currentState = State.SKILL_ACTIVATE;
@@ -135,16 +148,28 @@ public class GridSystem : MonoBehaviour {
                 if (Input.GetMouseButtonDown(0) && mouseTile.occupier == null) {
                     tilemap.SelectTile(mouseTile);
                 }
-                else if (Input.GetKey(KeyCode.E)) {
+                else if (Input.GetKeyDown(lastPressedKey)) {
                     dialog.PostToDialog("skill deactivated", dialogNoise, false);
                     tilemap.DeactivateSkill(combat.selectedEntity);
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
+                    lastPressedKey = KeyCode.E;
                     currentState = State.ALLY_SELECTED;
                 }
                 else if (tilemap.skillRange.tiles.Count() == 0) {
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
                     currentState = State.ALLY_SELECTED;
+                    lastPressedKey = KeyCode.E;
                 }
+                // this is duplicated from the "ally selected" state in order to allow this state to loop back to itself
+                else {
+                    skillKeys.ForEach(keyPressed => {
+                        if (Input.GetKeyDown(keyPressed)) {
+                            dialog.PostToDialog(combat.selectedEntity.skills[keyToSkillIndex[keyPressed]], dialogNoise, false);
+                            lastPressedKey = keyPressed;
+                        }
+                    });
+                }
+
                 break;
 
 
