@@ -32,7 +32,6 @@ public class CombatComponent {
                     // if entity is enemy: Attack
                     if (targetTile.occupier.isHostile && parent.tilemap.attackRange.Contains(targetTile)) {
                         selectedEntity.MakeAttack(targetTile.occupier);
-                        if (targetTile.occupier.outOfHP) { targetTile.occupier = null; }
                     }
                     // if entity is ally: interact (to be implemented later)
                 }
@@ -63,14 +62,14 @@ public class CombatComponent {
     }
 
     public void TriggerAITurn() {
-        currentFaction.entities.ForEach(entity => {
+        currentFaction.entities.Where(entity => !entity.outOfHP).ToList().ForEach(entity => {
             // the vocabulary currently is "relative" to the characters,
             // even though the enemies are the only ones intended with AI right now
             var playerFaction = factions.ToList().Find(faction => faction.isPlayerFaction);
             var targets = playerFaction.entities;
 
-            var targetRanges = targets.SelectMany(target => parent.tilemap.GenerateTileCircle(entity.range, target.tile)).ToList();
-            var nextTurnRange = parent.tilemap.GenerateTileCircle(entity.maxMoves, entity.tile);
+            var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileCircle(parent.tilemap.grid, entity.range, target.tile)).ToList();
+            var nextTurnRange = GridUtils.GenerateTileCircle(parent.tilemap.grid, entity.maxMoves, entity.tile);
 
             var nextMoveMap = new Dictionary<Tile, int>();
             nextTurnRange.ForEach(tile => {
@@ -87,7 +86,7 @@ public class CombatComponent {
                 nextTile.x, nextTile.y
             );
 
-            var tileWithTarget = parent.tilemap.GenerateTileCircle(entity.range, entity.tile)
+            var tileWithTarget = GridUtils.GenerateTileCircle(parent.tilemap.grid, entity.range, entity.tile)
                                 .ToList()
                                 .FirstOrDefault(tile => tile.occupier != null && (tile.occupier.isAllied || tile.occupier.isFriendly));
             if (tileWithTarget != null) { entity.MakeAttack(tileWithTarget.occupier); }

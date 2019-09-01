@@ -34,8 +34,8 @@ public class GridEntity : MonoBehaviour {
 
     // skills
     // public List<Skill> skills = {};
-    // to test multi-skill selection feature, will currently just be strings
-    public List<string> skills;
+    public List<string> skillNames;
+    public List<SelectTilesSkill> skills;
 
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
@@ -59,13 +59,15 @@ public class GridEntity : MonoBehaviour {
         currentAttacks = maxAttacks;
         currentHP = maxHP;
         currentSkillUses = maxSkillUses;
+        skills = skillNames.ToSkills();
         healthBar = GenerateHealthBar();
-        healthBar.Update();
+        healthBar.Update(currentHP);
     }
 
     void Update() {
         healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
-        if (outOfHP) { Destroy(this); }
+        healthBar.Update(currentHP);
+        if (currentHP <= 0) { Die(); }
     }
 
     public HealthBar GenerateHealthBar() {
@@ -82,12 +84,13 @@ public class GridEntity : MonoBehaviour {
         // damage should be a positive value
         healthBar.TakeDamage(damage);
         currentHP -= damage;
-        if (currentHP <= 0) { Die(); }
     }
 
     private void Die() {
         outOfHP = true;
-        transform.position = new Vector2(int.MaxValue, int.MaxValue);
+        currentHP = 0;
+        currentMoves = 0;
+        currentSP = 0;
     }
 
     public void Move(int spaces) {

@@ -65,9 +65,10 @@ public class GridSystem : MonoBehaviour {
         // TODO UP: Should just get all entities from a parent system
         // this Start() function should handle clamping their position to the nearest tile
         var npc = PutEntity(1, 1, gridNPC);
+        var npc2 = PutEntity(3, 0, gridNPC);
         var player = PutEntity(5, 5, gridPlayer);
-        var knight = PutEntity(5, 3, knightPrefab);
-        var enemyFaction = new Faction("Enemy", false, npc);
+        var knight = PutEntity(4, 3, knightPrefab);
+        var enemyFaction = new Faction("Enemy", false, npc, npc2);
         var playerFaction = new Faction("Player", true, player, knight);
 
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
@@ -118,15 +119,15 @@ public class GridSystem : MonoBehaviour {
                     }
                     currentState = State.NO_SELECTION;
                 }
-                else if ( skillKeys.Any(key => Input.GetKey(key))) {
+                else if ( skillKeys.Any(key => Input.GetKeyDown(key))) {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
                         skillKeys.ForEach(keyPressed => {
                             if (Input.GetKeyDown(keyPressed)) {
-                                dialog.PostToDialog(combat.selectedEntity.skills[keyToSkillIndex[keyPressed]], dialogNoise, false);
+                                dialog.PostToDialog(combat.selectedEntity.skillNames[keyToSkillIndex[keyPressed]], dialogNoise, false);
+                                tilemap.ActivateSkill(combat.selectedEntity, combat.selectedEntity.skills[keyToSkillIndex[keyPressed]]);
                                 lastPressedKey = keyPressed;
                             }
                         });
-                        tilemap.ActivateSkill(combat.selectedEntity);
                         StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
                         currentState = State.SKILL_ACTIVATE;
                     }
@@ -145,7 +146,7 @@ public class GridSystem : MonoBehaviour {
 
             case State.SKILL_ACTIVATE:
 
-                if (Input.GetMouseButtonDown(0) && mouseTile.occupier == null) {
+                if (Input.GetMouseButtonDown(0)) {
                     tilemap.SelectTile(mouseTile);
                 }
                 else if (Input.GetKeyDown(lastPressedKey)) {
@@ -164,7 +165,8 @@ public class GridSystem : MonoBehaviour {
                 else {
                     skillKeys.ForEach(keyPressed => {
                         if (Input.GetKeyDown(keyPressed)) {
-                            dialog.PostToDialog(combat.selectedEntity.skills[keyToSkillIndex[keyPressed]], dialogNoise, false);
+                            dialog.PostToDialog(combat.selectedEntity.skillNames[keyToSkillIndex[keyPressed]], dialogNoise, false);
+                            tilemap.ActivateSkill(combat.selectedEntity, combat.selectedEntity.skills[keyToSkillIndex[keyPressed]]);
                             lastPressedKey = keyPressed;
                         }
                     });

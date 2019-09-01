@@ -10,6 +10,8 @@ public class TilemapComponent {
     public GameObject[,] grid;
     public GameObject tile;
 
+    public SelectTilesSkill activatedSkill;
+
     public class SelectedTiles {
         public List<Tile> tiles;
         public string name;
@@ -57,11 +59,11 @@ public class TilemapComponent {
     }
 
     public void SelectTile(Tile tile) {
-        if (tile.occupier != null) {
+        if (tile.occupier != null && !tile.occupier.outOfHP) {
             GenerateAttackRange(tile.occupier);
             GenerateMoveRange(tile.occupier);
         }
-        if (skillRange.Contains(tile) && skillSelected.tiles.Count < 2) {
+        if (skillRange.Contains(tile) && skillSelected.tiles.Count < activatedSkill.targets) {
             if (tile.currentHighlights.Contains(Tile.HighlightTypes.SkillSelect)) {
                 tile.RemoveHighlight(Tile.HighlightTypes.SkillSelect);
                 skillSelected.tiles.Remove(tile);
@@ -70,10 +72,8 @@ public class TilemapComponent {
                 skillSelected.tiles.Add(tile);
             }
 
-            if (skillSelected.tiles.Count == 2) {
-                skillSelected.tiles.ForEach(t =>
-                    t.hazards.Add(new Caltrops())
-                );
+            if (skillSelected.tiles.Count == activatedSkill.targets) {
+                skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(x));
                 skillSelected.Clear(grid);
                 DeactivateSkill(parent.combat.selectedEntity);
             }
@@ -82,24 +82,25 @@ public class TilemapComponent {
 
     public void GenerateAttackRange(GridEntity entity) {
         if (entity.currentAttacks > 0) {
-                attackRange.tiles = GenerateTileCircle(entity.range, entity.tile)
-                                        .Where(tile => tile.occupier != null && tile.occupier.isHostile)
+                attackRange.tiles = GridUtils.GenerateTileCircle(grid, entity.range, entity.tile)
+                                        .Where(tile => tile.occupier != null && tile.occupier.isHostile && !tile.occupier.outOfHP)
                                         .ToList();
                 attackRange.Highlight();
         }
     }
 
     public void GenerateMoveRange(GridEntity entity) {
-        moveRange.tiles = GenerateTileCircle(entity.currentMoves, entity.tile)
+        moveRange.tiles = GridUtils.GenerateTileCircle(grid, entity.currentMoves, entity.tile)
                             .Where(tile => tile.occupier == null)
                             .ToList();
         moveRange.Highlight();
     }
 
-    public void ActivateSkill(GridEntity activeEntity) {
-        skillRange.tiles = GenerateTileCircle(3, activeEntity.tile);
+    public void ActivateSkill(GridEntity activeEntity, SelectTilesSkill skill) {
+        skillRange.tiles = skill.GetValidTiles(grid, activeEntity.tile);
         ResetTileSelection(moveRange, attackRange);
         skillRange.Highlight();
+        activatedSkill = skill;
     }
 
     public void DeactivateSkill(GridEntity activeEntity) {
@@ -119,37 +120,5 @@ public class TilemapComponent {
                 dest.occupier.Move(distance);
             }
         }
-    }
-
-    public List<Tile> GenerateTileCircle(int radius, Tile sourceTile) {
-        List<Tile> tiles = new List<Tile>() { sourceTile };
-        for (int depth = 0; depth < radius; depth++) {
-            var temp = new List<Tile>();
-            tiles.ForEach(tile => temp.AddRange(GetAdjacentTiles(tile)));
-            tiles.AddRange(temp);
-        }
-        tiles = tiles.Distinct().ToList();
-        tiles.Remove(sourceTile);
-        return tiles;
-    }
-
-    public List<Tile> GenerateTileRing(int radius, Tile sourceTile) {
-        return GenerateTileCircle(radius, sourceTile)
-        .Where(tile =>
-            Mathf.Abs(Mathf.Abs(sourceTile.x) - Mathf.Abs(tile.x)) +
-            Mathf.Abs(Mathf.Abs(sourceTile.y) - Mathf.Abs(tile.y))
-            == radius)
-        .ToList();
-    }
-
-    List<Tile> GetAdjacentTiles (Tile sourceTile) {
-        var x = sourceTile.x;
-        var y = sourceTile.y;
-        var adjacentGameObjects = new List<GameObject>();
-        if (x > 0) { adjacentGameObjects.Add(grid[x-1, y]); };
-        if (x < grid.GetLength(0) - 1) { adjacentGameObjects.Add(grid[x+1, y]); };
-        if (y > 0) { adjacentGameObjects.Add(grid[x, y-1]); };
-        if (y < grid.GetLength(1) - 1) { adjacentGameObjects.Add(grid[x, y+1]); };
-        return adjacentGameObjects.Select(o => o.GetComponent<Tile>()).ToList();
     }
 }

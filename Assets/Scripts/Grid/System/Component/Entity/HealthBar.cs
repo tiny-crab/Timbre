@@ -37,7 +37,8 @@ public class HealthBar {
         RecalculateHealth();
     }
 
-    public void Update () {
+    public void Update (int health) {
+        currentHealth = health;
         RecalculateHealth();
     }
 
@@ -46,7 +47,7 @@ public class HealthBar {
         RecalculateHealth();
     }
 
-    private void RecalculateHealth() {
+    public void RecalculateHealth() {
         var healthTier = Mathf.FloorToInt(currentHealth / 4);
         var fill = currentHealth % 4;
         if (healthTier > healthTierList.Count) {
