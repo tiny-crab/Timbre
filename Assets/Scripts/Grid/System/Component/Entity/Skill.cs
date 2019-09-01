@@ -33,7 +33,7 @@ public abstract class AttackSkill {}
 
 public static class SkillUtils {
     public static Dictionary<string, SelectTilesSkill> skillNameToSkill = new Dictionary<string, SelectTilesSkill>() {
-            {"Caltrops", new Revive()},
+            {"Caltrops", new CaltropsSkill()},
             {"Defend Self", new Revive()},
             {"Headshot", new Revive()},
             {"Protect Ally", new Revive()},
@@ -46,6 +46,19 @@ public static class SkillUtils {
 }
 
 // TILE SELECT SKILLS
+
+public class CaltropsSkill : SelectTilesSkill {
+    public override int radius { get { return 2; } }
+    public override int targets { get { return 2; } }
+
+    override public void ResolveEffect(Tile tile) {
+        tile.hazards.Add(new Caltrops());
+    }
+
+    override public List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {
+        return base.GetValidTiles(grid, sourceTile).Where(tile => tile.occupier == null).ToList();
+    }
+}
 
 // ENEMY SELECT SKILLS
 
