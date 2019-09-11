@@ -31,7 +31,14 @@ public class CombatComponent {
                     // clicking on another entity
                     // if entity is enemy: Attack
                     if (targetTile.occupier.isHostile && parent.tilemap.attackRange.Contains(targetTile)) {
-                        selectedEntity.MakeAttack(targetTile.occupier);
+                        if (selectedEntity.currentAttackSkill != null) {
+
+                            selectedEntity.currentAttackSkill.BeforeAttack(selectedEntity, targetTile.occupier);
+                            selectedEntity.MakeAttack(targetTile.occupier);
+                            selectedEntity.currentAttackSkill.AfterAttack(selectedEntity, targetTile.occupier);
+
+                        }
+                        else { selectedEntity.MakeAttack(targetTile.occupier); }
                     }
                     // if entity is ally: interact (to be implemented later)
                 }

@@ -123,13 +123,12 @@ public class GridSystem : MonoBehaviour {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
                         skillKeys.ForEach(keyPressed => {
                             if (Input.GetKeyDown(keyPressed)) {
-                                dialog.PostToDialog(combat.selectedEntity.skillNames[keyToSkillIndex[keyPressed]], dialogNoise, false);
-                                tilemap.ActivateSkill(combat.selectedEntity, combat.selectedEntity.skills[keyToSkillIndex[keyPressed]]);
+                                ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
                                 lastPressedKey = keyPressed;
                             }
                         });
                         StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
-                        currentState = State.SKILL_ACTIVATE;
+
                     }
                 }
                 break;
@@ -150,23 +149,21 @@ public class GridSystem : MonoBehaviour {
                     tilemap.SelectTile(mouseTile);
                 }
                 else if (Input.GetKeyDown(lastPressedKey)) {
-                    dialog.PostToDialog("skill deactivated", dialogNoise, false);
-                    tilemap.DeactivateSkill(combat.selectedEntity);
+                    DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
                     lastPressedKey = KeyCode.E;
                     currentState = State.ALLY_SELECTED;
                 }
-                else if (tilemap.skillRange.tiles.Count() == 0) {
+                if (tilemap.skillRange.tiles.Count() == 0) {
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
-                    currentState = State.ALLY_SELECTED;
                     lastPressedKey = KeyCode.E;
+                    currentState = State.ALLY_SELECTED;
                 }
                 // this is duplicated from the "ally selected" state in order to allow this state to loop back to itself
                 else {
                     skillKeys.ForEach(keyPressed => {
                         if (Input.GetKeyDown(keyPressed)) {
-                            dialog.PostToDialog(combat.selectedEntity.skillNames[keyToSkillIndex[keyPressed]], dialogNoise, false);
-                            tilemap.ActivateSkill(combat.selectedEntity, combat.selectedEntity.skills[keyToSkillIndex[keyPressed]]);
+                            ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
                             lastPressedKey = keyPressed;
                         }
                     });
@@ -227,7 +224,6 @@ public class GridSystem : MonoBehaviour {
     public static Tile GetTileUnderMouse() {
         Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
-        // Debug.Log(hitInfo.collider.gameObject.name);
         var collider = hitInfo.collider;
         if (collider != null) {
             return hitInfo.collider.gameObject.GetComponent<Tile>();
@@ -242,6 +238,38 @@ public class GridSystem : MonoBehaviour {
         entity.GetComponent<SpriteRenderer>().sortingOrder = 1;
         target.TryOccupy(entity);
         return entity;
+    }
+
+    void ActivateSkill(GridEntity selectedEntity, int index) {
+        if (index >= selectedEntity.skills.Count) { return; }
+        var skillToActivate = selectedEntity.skills[index];
+        if (skillToActivate is AttackSkill) {
+            combat.selectedEntity.currentAttackSkill = (AttackSkill) skillToActivate;
+            dialog.PostToDialog("Activated " + selectedEntity.skillNames[index], dialogNoise, false);
+        }
+        else if (skillToActivate is SelectTilesSkill) {
+            tilemap.ActivateSkill(combat.selectedEntity, (SelectTilesSkill) skillToActivate);
+            if (tilemap.skillRange.tiles.Count() != 0) {
+                currentState = State.SKILL_ACTIVATE;
+                dialog.PostToDialog("Activated " + selectedEntity.skillNames[index], dialogNoise, false);
+            } else {
+                dialog.PostToDialog("Tried to activate " + selectedEntity.skillNames[index] + " but there were no valid tiles", dialogNoise, false);
+                tilemap.DeactivateSkill(combat.selectedEntity);
+            }
+        }
+    }
+
+    void DeactivateSkill(GridEntity selectedEntity, int index) {
+        if (index >= selectedEntity.skills.Count) { return; }
+        var skillToDeactivate = selectedEntity.skills[index];
+        if (skillToDeactivate is AttackSkill) {
+            combat.selectedEntity.currentAttackSkill = null;
+        }
+        else if (skillToDeactivate is SelectTilesSkill) {
+            tilemap.DeactivateSkill(combat.selectedEntity);
+            currentState = State.ALLY_SELECTED;
+        }
+        dialog.PostToDialog("Deactivated " + selectedEntity.skillNames[index], dialogNoise, false);
     }
 
     IEnumerator WaitAMoment(float waitTime, string name) {

@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public abstract class SelectTilesSkill {
+public interface Skill {}
+
+public abstract class SelectTilesSkill : Skill {
     public abstract int radius {get;}
     public abstract int targets {get;}
     public abstract void ResolveEffect(Tile tile);
@@ -29,20 +32,51 @@ public abstract class SelectAlliesSkill : SelectTilesSkill {
     }
 }
 
-public abstract class AttackSkill {}
+public abstract class AttackSkill : Skill {
+    public abstract void BeforeAttack(GridEntity attacker, GridEntity target);
+    public abstract void AfterAttack(GridEntity attacker, GridEntity target);
+}
 
 public static class SkillUtils {
-    public static Dictionary<string, SelectTilesSkill> skillNameToSkill = new Dictionary<string, SelectTilesSkill>() {
+    public static Dictionary<string, Skill> skillNameToSkill = new Dictionary<string, Skill>() {
             {"Caltrops", new CaltropsSkill()},
             {"Defend Self", new Revive()},
-            {"Headshot", new Revive()},
+            {"Headshot", new Headshot()},
             {"Protect Ally", new Revive()},
             {"Retaliate", new Revive()},
             {"Revive", new Revive()}
         };
 
-    public static List<SelectTilesSkill> ToSkills(this List<string> skillNames)
+    public static List<Skill> ToSkills(this List<string> skillNames)
         { return skillNames.Select(name => skillNameToSkill[name]).ToList(); }
+
+    public enum GambleOdds {
+        COIN,
+        D4,
+        D6
+    }
+
+    public static bool Gamble(GambleOdds odds) {
+        int target = 0;
+        switch (odds) {
+            case GambleOdds.COIN:
+                target = 2;
+                break;
+            case GambleOdds.D4:
+                target = 4;
+                break;
+            case GambleOdds.D6:
+                target = 6;
+                break;
+            default:
+                target = 10;
+                break;
+        }
+        var random = new System.Random().Next(0, target);
+        Debug.Log("You rolled a " + random);
+
+        return random == target-1;
+    }
 }
 
 // TILE SELECT SKILLS
@@ -83,3 +117,14 @@ public class Revive : SelectAlliesSkill {
 }
 
 // ATTACKING SKILLS
+public class Headshot : AttackSkill {
+    override public void BeforeAttack(GridEntity attacker, GridEntity target) {
+        if (SkillUtils.Gamble(SkillUtils.GambleOdds.D4)) {
+            attacker.damageMult = 3;
+        }
+    }
+
+    override public void AfterAttack(GridEntity attacker, GridEntity target) {
+        attacker.damageMult = 1;
+    }
+}

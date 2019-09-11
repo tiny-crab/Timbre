@@ -28,6 +28,7 @@ public class GridEntity : MonoBehaviour {
     public int maxSP;
     public int currentSP;
     public bool outOfSP = false;
+    public AttackSkill currentAttackSkill;
 
     public int maxSkillUses;
     public int currentSkillUses;
@@ -35,7 +36,7 @@ public class GridEntity : MonoBehaviour {
     // skills
     // public List<Skill> skills = {};
     public List<string> skillNames;
-    public List<SelectTilesSkill> skills;
+    public List<Skill> skills;
 
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
@@ -109,5 +110,6 @@ public class GridEntity : MonoBehaviour {
         outOfMoves = false;
         currentAttacks = maxAttacks;
         outOfAttacks = false;
+        currentAttackSkill = null;
     }
 }
