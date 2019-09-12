@@ -75,7 +75,7 @@ public class TilemapComponent {
             if (skillSelected.tiles.Count == activatedSkill.targets) {
                 skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(x));
                 skillSelected.Clear(grid);
-                DeactivateSkill(parent.combat.selectedEntity);
+                DeactivateSelectTilesSkill(parent.combat.selectedEntity);
             }
         }
     }
@@ -96,14 +96,14 @@ public class TilemapComponent {
         moveRange.Highlight();
     }
 
-    public void ActivateSkill(GridEntity activeEntity, SelectTilesSkill skill) {
+    public void ActivateSelectTilesSkill(GridEntity activeEntity, SelectTilesSkill skill) {
         skillRange.tiles = skill.GetValidTiles(grid, activeEntity.tile);
         ResetTileSelection(moveRange, attackRange);
         skillRange.Highlight();
         activatedSkill = skill;
     }
 
-    public void DeactivateSkill(GridEntity activeEntity) {
+    public void DeactivateSelectTilesSkill(GridEntity activeEntity) {
         skillRange.Clear(grid);
         GenerateAttackRange(activeEntity);
         GenerateMoveRange(activeEntity);

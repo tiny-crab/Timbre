@@ -51,8 +51,7 @@ public class GridSystem : MonoBehaviour {
         NO_SELECTION,
         ALLY_SELECTED,
         ENEMY_SELECTED,
-        SKILL_ACTIVATE,
-        SKILL_SELECT,
+        SELECT_SKILL_ACTIVATED,
         END_TURN,
         AI_TURN
     }
@@ -143,7 +142,7 @@ public class GridSystem : MonoBehaviour {
                 break;
 
 
-            case State.SKILL_ACTIVATE:
+            case State.SELECT_SKILL_ACTIVATED:
 
                 if (Input.GetMouseButtonDown(0)) {
                     tilemap.SelectTile(mouseTile);
@@ -244,18 +243,10 @@ public class GridSystem : MonoBehaviour {
         if (index >= selectedEntity.skills.Count) { return; }
         var skillToActivate = selectedEntity.skills[index];
         if (skillToActivate is AttackSkill) {
-            combat.selectedEntity.currentAttackSkill = (AttackSkill) skillToActivate;
-            dialog.PostToDialog("Activated " + selectedEntity.skillNames[index], dialogNoise, false);
+            ActivateAttackSkill(selectedEntity, (AttackSkill) skillToActivate);
         }
         else if (skillToActivate is SelectTilesSkill) {
-            tilemap.ActivateSkill(combat.selectedEntity, (SelectTilesSkill) skillToActivate);
-            if (tilemap.skillRange.tiles.Count() != 0) {
-                currentState = State.SKILL_ACTIVATE;
-                dialog.PostToDialog("Activated " + selectedEntity.skillNames[index], dialogNoise, false);
-            } else {
-                dialog.PostToDialog("Tried to activate " + selectedEntity.skillNames[index] + " but there were no valid tiles", dialogNoise, false);
-                tilemap.DeactivateSkill(combat.selectedEntity);
-            }
+            ActivateSelectTilesSkill(selectedEntity, (SelectTilesSkill) skillToActivate);
         }
     }
 
@@ -263,13 +254,37 @@ public class GridSystem : MonoBehaviour {
         if (index >= selectedEntity.skills.Count) { return; }
         var skillToDeactivate = selectedEntity.skills[index];
         if (skillToDeactivate is AttackSkill) {
-            combat.selectedEntity.currentAttackSkill = null;
+            DeactivateAttackSkill();
         }
         else if (skillToDeactivate is SelectTilesSkill) {
-            tilemap.DeactivateSkill(combat.selectedEntity);
-            currentState = State.ALLY_SELECTED;
+            DeactivateSelectTilesSkill();
         }
-        dialog.PostToDialog("Deactivated " + selectedEntity.skillNames[index], dialogNoise, false);
+        dialog.PostToDialog("Deactivated " + skillToDeactivate.GetType().Name, dialogNoise, false);
+    }
+
+    void ActivateSelectTilesSkill(GridEntity selectedEntity, SelectTilesSkill skillToActivate) {
+        tilemap.ActivateSelectTilesSkill(combat.selectedEntity, skillToActivate);
+        if (tilemap.skillRange.tiles.Count() != 0) {
+            currentState = State.SELECT_SKILL_ACTIVATED;
+            dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
+        } else {
+            dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but there were no valid tiles", dialogNoise, false);
+            tilemap.DeactivateSelectTilesSkill(combat.selectedEntity);
+        }
+    }
+
+    void DeactivateSelectTilesSkill() {
+        tilemap.DeactivateSelectTilesSkill(combat.selectedEntity);
+        currentState = State.ALLY_SELECTED;
+    }
+
+    void ActivateAttackSkill(GridEntity selectedEntity, AttackSkill skillToActivate) {
+        combat.selectedEntity.currentAttackSkill = (AttackSkill) skillToActivate;
+        dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
+    }
+
+    void DeactivateAttackSkill() {
+        combat.selectedEntity.currentAttackSkill = null;
     }
 
     IEnumerator WaitAMoment(float waitTime, string name) {
