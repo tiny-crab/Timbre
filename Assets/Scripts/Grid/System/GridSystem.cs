@@ -118,7 +118,7 @@ public class GridSystem : MonoBehaviour {
                     }
                     currentState = State.NO_SELECTION;
                 }
-                else if ( skillKeys.Any(key => Input.GetKeyDown(key))) {
+                else if ( InputUtils.GetKeyPressed(skillKeys) != null ) {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
                         skillKeys.ForEach(keyPressed => {
                             if (Input.GetKeyDown(keyPressed)) {
@@ -127,7 +127,6 @@ public class GridSystem : MonoBehaviour {
                             }
                         });
                         StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
-
                     }
                 }
                 break;
@@ -148,13 +147,16 @@ public class GridSystem : MonoBehaviour {
                     tilemap.SelectTile(mouseTile);
                 }
                 else if (Input.GetKeyDown(lastPressedKey)) {
+                    // select skill is canceled
                     DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
                     lastPressedKey = KeyCode.E;
                     currentState = State.ALLY_SELECTED;
                 }
-                if (tilemap.skillRange.tiles.Count() == 0) {
+                if (tilemap.selectTilesSkillCompleted) {
+                    // select skill is complete
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
+                    DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
                     lastPressedKey = KeyCode.E;
                     currentState = State.ALLY_SELECTED;
                 }
@@ -242,7 +244,13 @@ public class GridSystem : MonoBehaviour {
     void ActivateSkill(GridEntity selectedEntity, int index) {
         if (index >= selectedEntity.skills.Count) { return; }
         var skillToActivate = selectedEntity.skills[index];
-        if (skillToActivate is AttackSkill) {
+        if (skillToActivate.cost > selectedEntity.currentSP) {
+            dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but not enough SP", dialogNoise, false);
+        }
+        else if (selectedEntity.outOfSkillUses) {
+            dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but not enough skill uses", dialogNoise, false);
+        }
+        else if (skillToActivate is AttackSkill) {
             ActivateAttackSkill(selectedEntity, (AttackSkill) skillToActivate);
         }
         else if (skillToActivate is SelectTilesSkill) {
@@ -274,6 +282,7 @@ public class GridSystem : MonoBehaviour {
     }
 
     void DeactivateSelectTilesSkill() {
+        if (tilemap.selectTilesSkillCompleted) { combat.selectedEntity.UseSkill(tilemap.activatedSkill); }
         tilemap.DeactivateSelectTilesSkill(combat.selectedEntity);
         currentState = State.ALLY_SELECTED;
     }

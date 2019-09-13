@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface Skill {}
+public interface Skill {
+    int cost {get;}
+}
 
 public abstract class SelectTilesSkill : Skill {
+    public abstract int cost {get;}
     public abstract int radius {get;}
     public abstract int targets {get;}
     public abstract void ResolveEffect(Tile tile);
@@ -33,6 +36,7 @@ public abstract class SelectAlliesSkill : SelectTilesSkill {
 }
 
 public abstract class AttackSkill : Skill {
+    public abstract int cost {get;}
     public abstract void BeforeAttack(GridEntity attacker, GridEntity target);
     public abstract void AfterAttack(GridEntity attacker, GridEntity target);
 }
@@ -82,6 +86,7 @@ public static class SkillUtils {
 // TILE SELECT SKILLS
 
 public class CaltropsSkill : SelectTilesSkill {
+    public override int cost { get { return 1; } }
     public override int radius { get { return 2; } }
     public override int targets { get { return 2; } }
 
@@ -99,6 +104,7 @@ public class CaltropsSkill : SelectTilesSkill {
 // ALLY SELECT SKILLS
 
 public class Revive : SelectAlliesSkill {
+    public override int cost { get { return 1; } }
     public override int radius { get { return 1; } }
     public override int targets { get { return 1; } }
 
@@ -118,6 +124,8 @@ public class Revive : SelectAlliesSkill {
 
 // ATTACKING SKILLS
 public class Headshot : AttackSkill {
+    public override int cost { get { return 2; } }
+
     override public void BeforeAttack(GridEntity attacker, GridEntity target) {
         if (SkillUtils.Gamble(SkillUtils.GambleOdds.D4)) {
             attacker.damageMult = 3;

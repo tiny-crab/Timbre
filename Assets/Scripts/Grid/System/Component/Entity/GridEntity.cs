@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class GridEntity : MonoBehaviour {
 
+    // character info
+    public string name;
+
     // HP
     public int maxHP;
     public int currentHP;
@@ -32,6 +35,7 @@ public class GridEntity : MonoBehaviour {
 
     public int maxSkillUses;
     public int currentSkillUses;
+    public bool outOfSkillUses = false;
 
     // skills
     // public List<Skill> skills = {};
@@ -60,6 +64,7 @@ public class GridEntity : MonoBehaviour {
         currentAttacks = maxAttacks;
         currentHP = maxHP;
         currentSkillUses = maxSkillUses;
+        currentSP = maxSP;
         skills = skillNames.ToSkills();
         healthBar = GenerateHealthBar();
         healthBar.Update(currentHP);
@@ -100,9 +105,19 @@ public class GridEntity : MonoBehaviour {
     }
 
     public void MakeAttack(GridEntity target) {
-        currentAttacks -= 1;
+        currentAttacks--;
         target.TakeDamage((damage + damageModify) * damageMult);
         if (currentAttacks <= 0) { outOfAttacks = true; }
+        if (currentAttackSkill != null) { UseSkill(currentAttackSkill); }
+    }
+
+    public void UseSkill(Skill skill) {
+        currentSP -= skill.cost;
+        currentSkillUses--;
+        if (currentSkillUses <= 0) { outOfSkillUses = true; }
+        if (currentSP <= 0) { outOfSP = true; }
+        Debug.Log("<color=blue>" + name + "</color> used <color=green>" + skill.GetType().Name + "</color>");
+        Debug.Log("<color=blue>" + name + "</color> has <color=green>" + currentSP + "</color> SP remaining.");
     }
 
     public void RefreshTurnResources() {
@@ -110,6 +125,14 @@ public class GridEntity : MonoBehaviour {
         outOfMoves = false;
         currentAttacks = maxAttacks;
         outOfAttacks = false;
+        currentSkillUses = maxSkillUses;
+        outOfSkillUses = false;
         currentAttackSkill = null;
+    }
+
+    public void RefreshEncounterResources() {
+        RefreshTurnResources();
+        currentHP = maxHP;
+        outOfHP = false;
     }
 }

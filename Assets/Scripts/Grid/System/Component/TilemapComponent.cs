@@ -11,6 +11,7 @@ public class TilemapComponent {
     public GameObject tile;
 
     public SelectTilesSkill activatedSkill;
+    public bool selectTilesSkillCompleted = true;
 
     public class SelectedTiles {
         public List<Tile> tiles;
@@ -72,10 +73,11 @@ public class TilemapComponent {
                 skillSelected.tiles.Add(tile);
             }
 
+            // select tiles skill completed!
             if (skillSelected.tiles.Count == activatedSkill.targets) {
                 skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(x));
                 skillSelected.Clear(grid);
-                DeactivateSelectTilesSkill(parent.combat.selectedEntity);
+                selectTilesSkillCompleted = true;
             }
         }
     }
@@ -101,12 +103,14 @@ public class TilemapComponent {
         ResetTileSelection(moveRange, attackRange);
         skillRange.Highlight();
         activatedSkill = skill;
+        selectTilesSkillCompleted = false;
     }
 
     public void DeactivateSelectTilesSkill(GridEntity activeEntity) {
         skillRange.Clear(grid);
         GenerateAttackRange(activeEntity);
         GenerateMoveRange(activeEntity);
+        activatedSkill = null;
     }
 
     public void MoveEntity (int x0, int y0, int xDest, int yDest) {
