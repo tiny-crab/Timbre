@@ -18,6 +18,7 @@ public class Tile : MonoBehaviour {
 
     public int x = 0;
     public int y = 0;
+    public bool disabled = false;
     public GridEntity occupier = null;
     public List<Hazard> hazards = new List<Hazard>();
     private bool selected = false;

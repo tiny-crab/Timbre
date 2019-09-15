@@ -33,7 +33,7 @@ public static class GridUtils {
         if (x < grid.GetLength(0) - 1) { adjacentGameObjects.Add(grid[x+1, y]); };
         if (y > 0) { adjacentGameObjects.Add(grid[x, y-1]); };
         if (y < grid.GetLength(1) - 1) { adjacentGameObjects.Add(grid[x, y+1]); };
-        return adjacentGameObjects.Select(o => o.GetComponent<Tile>()).ToList();
+        return adjacentGameObjects.Select(o => o.GetComponent<Tile>()).Where(tile => !tile.disabled).ToList();
     }
 
 }

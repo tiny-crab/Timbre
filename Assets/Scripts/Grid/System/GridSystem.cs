@@ -63,10 +63,10 @@ public class GridSystem : MonoBehaviour {
 
         // TODO UP: Should just get all entities from a parent system
         // this Start() function should handle clamping their position to the nearest tile
-        var npc = PutEntity(1, 1, gridNPC);
-        var npc2 = PutEntity(3, 0, gridNPC);
-        var player = PutEntity(5, 5, gridPlayer);
-        var knight = PutEntity(4, 3, knightPrefab);
+        var npc = PutEntity(2, 6, gridNPC);
+        var npc2 = PutEntity(2, 7, gridNPC);
+        var player = PutEntity(0, 5, gridPlayer);
+        var knight = PutEntity(0, 3, knightPrefab);
         var enemyFaction = new Faction("Enemy", false, npc, npc2);
         var playerFaction = new Faction("Player", true, player, knight);
 
@@ -209,12 +209,24 @@ public class GridSystem : MonoBehaviour {
         for (int i = 0; i < initTileMap.GetLength(0); i++) {
             for (int j = 0; j < initTileMap.GetLength(1); j++) {
                 var gameObj = Instantiate(tile, topLeft, Quaternion.identity);
-                gameObj.name = string.Format("{0},{1}", i, j);
+                gameObj.name = String.Format("{0},{1}", i, j);
+
+                var boxCollider = gameObj.GetComponent<BoxCollider2D>();
+                Collider2D[] colliders = new Collider2D[10];
+                boxCollider.OverlapCollider(new ContactFilter2D().NoFilter(), colliders);
+
                 var tileObj = gameObj.GetComponent<Tile>();
                 tileObj.x = i;
                 tileObj.y = j;
                 initTileMap[i,j] = gameObj;
                 topLeft.x += tileWidth / 2;
+                colliders.ToList().Where(collider => collider != null).ToList().ForEach(collider => {
+                    if (collider.name == "OOBMesh") {
+                        tileObj.disabled = true;
+                        gameObj.SetActive(false);
+                     }
+                });
+
             }
             topLeft.x = origin.x - (gridSize.x / 4);
             topLeft.y -= tileWidth / 2;

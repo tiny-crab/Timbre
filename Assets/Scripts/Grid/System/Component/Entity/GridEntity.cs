@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -106,9 +106,15 @@ public class GridEntity : MonoBehaviour {
 
     public void MakeAttack(GridEntity target) {
         currentAttacks--;
-        target.TakeDamage((damage + damageModify) * damageMult);
+        var calculatedDamage = (damage + damageModify) * damageMult;
+        target.TakeDamage(calculatedDamage);
         if (currentAttacks <= 0) { outOfAttacks = true; }
         if (currentAttackSkill != null) { UseSkill(currentAttackSkill); }
+        Debug.Log(String.Format("<color=blue>{0}</color> attacked <color=red>{1}</color> for <color=yellow>{2} damage</color>.",
+            this.name,
+            target.name,
+            calculatedDamage
+        ));
     }
 
     public void UseSkill(Skill skill) {
