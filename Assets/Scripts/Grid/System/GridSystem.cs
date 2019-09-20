@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class GridSystem : MonoBehaviour {
 
-    public GameObject[,] initTileMap = new GameObject[8,8];
+    public GameObject[,] initTileMap = new GameObject[10,10];
     public GameObject tile;
 
     // TODO UP: would be passed from a context in the overworld
@@ -221,7 +221,7 @@ public class GridSystem : MonoBehaviour {
                 initTileMap[i,j] = gameObj;
                 topLeft.x += tileWidth / 2;
                 colliders.ToList().Where(collider => collider != null).ToList().ForEach(collider => {
-                    if (collider.name == "OOBMesh") {
+                    if (collider.tag == "BlockGridMovement") {
                         tileObj.disabled = true;
                         gameObj.SetActive(false);
                      }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GridEntity : MonoBehaviour {
@@ -41,6 +42,9 @@ public class GridEntity : MonoBehaviour {
     // public List<Skill> skills = {};
     public List<string> skillNames;
     public List<Skill> skills;
+
+    // reactions
+    public List<Reaction> currentReactions = new List<Reaction>();
 
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
@@ -107,14 +111,19 @@ public class GridEntity : MonoBehaviour {
     public void MakeAttack(GridEntity target) {
         currentAttacks--;
         var calculatedDamage = (damage + damageModify) * damageMult;
-        target.TakeDamage(calculatedDamage);
+        var triggeredReactions = target.TriggerAttackReaction(this);
+        if(triggeredReactions.Count() > 0) {
+            triggeredReactions.ForEach(reaction => { reaction.ResolveAttack(this, target); });
+        } else {
+            target.TakeDamage(calculatedDamage);
+            Debug.Log(String.Format("<color=blue>{0}</color> attacked <color=red>{1}</color> for <color=yellow>{2} damage</color>.",
+                this.name,
+                target.name,
+                calculatedDamage
+            ));
+        }
         if (currentAttacks <= 0) { outOfAttacks = true; }
         if (currentAttackSkill != null) { UseSkill(currentAttackSkill); }
-        Debug.Log(String.Format("<color=blue>{0}</color> attacked <color=red>{1}</color> for <color=yellow>{2} damage</color>.",
-            this.name,
-            target.name,
-            calculatedDamage
-        ));
     }
 
     public void UseSkill(Skill skill) {
@@ -124,6 +133,15 @@ public class GridEntity : MonoBehaviour {
         if (currentSP <= 0) { outOfSP = true; }
         Debug.Log("<color=blue>" + name + "</color> used <color=green>" + skill.GetType().Name + "</color>");
         Debug.Log("<color=blue>" + name + "</color> has <color=green>" + currentSP + "</color> SP remaining.");
+    }
+
+    public void ConsumeTurnResources() {
+        currentMoves = 0;
+        outOfMoves = true;
+        currentAttacks = 0;
+        outOfAttacks = true;
+        currentSkillUses = 0;
+        outOfSkillUses = true;
     }
 
     public void RefreshTurnResources() {
@@ -140,5 +158,12 @@ public class GridEntity : MonoBehaviour {
         RefreshTurnResources();
         currentHP = maxHP;
         outOfHP = false;
+    }
+
+    private List<AttackReaction> TriggerAttackReaction(GridEntity attacker) {
+        return currentReactions
+                .Where(reaction => reaction is AttackReaction && reaction.ReactsTo(attacker))
+                .Select(reaction => (AttackReaction) reaction)
+                .ToList();
     }
 }

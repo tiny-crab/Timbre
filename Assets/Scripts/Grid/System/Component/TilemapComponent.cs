@@ -75,7 +75,7 @@ public class TilemapComponent {
 
             // select tiles skill completed!
             if (skillSelected.tiles.Count == activatedSkill.targets) {
-                skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(x));
+                skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(parent.combat.selectedEntity, x));
                 skillSelected.Clear(grid);
                 selectTilesSkillCompleted = true;
             }

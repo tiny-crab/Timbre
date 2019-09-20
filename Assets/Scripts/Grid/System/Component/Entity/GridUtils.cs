@@ -4,6 +4,10 @@ using UnityEngine;
 
 public static class GridUtils {
 
+    public static int GetDistanceBetweenTiles(Tile origin, Tile dest) {
+        return Mathf.Abs(Mathf.Abs(origin.x) - Mathf.Abs(dest.x)) + Mathf.Abs(Mathf.Abs(origin.y) - Mathf.Abs(dest.y));
+    }
+
     public static List<Tile> GenerateTileCircle(GameObject[,] grid, int radius, Tile sourceTile) {
         List<Tile> tiles = new List<Tile>() { sourceTile };
         for (int depth = 0; depth < radius; depth++) {
@@ -18,11 +22,8 @@ public static class GridUtils {
 
     public static List<Tile> GenerateTileRing(GameObject[,] grid, int radius, Tile sourceTile) {
         return GenerateTileCircle(grid, radius, sourceTile)
-        .Where(tile =>
-            Mathf.Abs(Mathf.Abs(sourceTile.x) - Mathf.Abs(tile.x)) +
-            Mathf.Abs(Mathf.Abs(sourceTile.y) - Mathf.Abs(tile.y))
-            == radius)
-        .ToList();
+            .Where(tile => GetDistanceBetweenTiles(sourceTile, tile) == radius)
+            .ToList();
     }
 
     static List<Tile> GetAdjacentTiles (GameObject[,] grid, Tile sourceTile) {
