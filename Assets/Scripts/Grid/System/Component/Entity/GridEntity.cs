@@ -71,28 +71,39 @@ public class GridEntity : MonoBehaviour {
         currentSP = maxSP;
         skills = skillNames.ToSkills();
         healthBar = GenerateHealthBar();
-        healthBar.Update(currentHP);
+        UpdateHealthBar();
     }
 
     void Update() {
-        healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
-        healthBar.Update(currentHP);
+        UpdateHealthBar();
         if (currentHP <= 0) { Die(); }
     }
 
     public HealthBar GenerateHealthBar() {
-        var fullBar = Instantiate(
-            healthBarPrefab,
-            new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta),
-            Quaternion.identity
-        );
+        if (!isHostile) {
+            var fullBar = Instantiate(
+                healthBarPrefab,
+                new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta),
+                Quaternion.identity
+            );
+            return new HealthBar(fullBar, maxHP);
+        }
+        else { return null; }
+    }
 
-        return new HealthBar(fullBar, maxHP);
+    private void UpdateHealthBar() {
+        if (!isHostile) {
+            healthBar.fullBar.transform.position = new Vector2(transform.position.x + healthBarXDelta, transform.position.y + healthBarYDelta);
+            healthBar.Update(currentHP);
+        }
+    }
+
+    private void DestroyHealthBar() {
+        if (!isHostile) { Destroy(healthBar.fullBar); }
     }
 
     public void TakeDamage(int damage) {
         // damage should be a positive value
-        healthBar.TakeDamage(damage);
         currentHP -= damage;
     }
 
@@ -120,6 +131,10 @@ public class GridEntity : MonoBehaviour {
                 this.name,
                 target.name,
                 calculatedDamage
+            ));
+            Debug.Log(String.Format("<color=red>{0}</color> has <color=yellow>{1} health</color> remaining.",
+                target.name,
+                target.currentHP
             ));
         }
         if (currentAttacks <= 0) { outOfAttacks = true; }

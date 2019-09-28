@@ -42,11 +42,6 @@ public class HealthBar {
         RecalculateHealth();
     }
 
-    public void TakeDamage(int number = 1) {
-        currentHealth -= number;
-        RecalculateHealth();
-    }
-
     public void RecalculateHealth() {
         var healthTier = Mathf.FloorToInt(currentHealth / 4);
         var fill = currentHealth % 4;
