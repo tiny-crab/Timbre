@@ -15,7 +15,9 @@ public class Faction {
         return isHostileFaction;
     }
 
-    public Faction(string name, bool isPlayerFaction, params GridEntity[] entities) {
+    public Faction(string name, bool isPlayerFaction, params GridEntity[] entities): this(name, isPlayerFaction, entities.ToList()) {}
+
+    public Faction(string name, bool isPlayerFaction, List<GridEntity> entities) {
         this.name = name;
         this.entities.AddRange(entities);
         isHostileFaction = !isPlayerFaction;

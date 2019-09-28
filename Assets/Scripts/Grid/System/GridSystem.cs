@@ -6,7 +6,10 @@ using UnityEngine;
 
 public class GridSystem : MonoBehaviour {
 
-    public GameObject[,] initTileMap = new GameObject[10,10];
+    public bool activated = false;
+
+    public int tileMapSize = 10;
+    public GameObject[,] initTileMap;
     public GameObject tile;
 
     // TODO UP: would be passed from a context in the overworld
@@ -15,10 +18,9 @@ public class GridSystem : MonoBehaviour {
     public GameObject gridPlayer;
     public GameObject knightPrefab;
 
-    public System.Random rnd = new System.Random();
-
     // this is less important once more allies are on the field
     public GridEntity player;
+    public Player overworldPlayer;
 
     // TODO SIDE: these feel like utility functions and should be moved
     public bool waiting = false;
@@ -56,24 +58,64 @@ public class GridSystem : MonoBehaviour {
         AI_TURN
     }
 
-    void Start () {
-        CreateTilemapComponent();
+    public void ActivateGrid (Vector2 playerLocation, List<GameObject> activeParty) {
+        activated = true;
+        waiting = false;
+        GridUtils.FlattenGridTiles(tilemap.grid)
+            .Where(tile => !tile.disabled).ToList()
+            .ForEach(tile => tile.gameObject.SetActive(true));
 
-        knightPrefab = Resources.Load<GameObject>("Prefabs/AllyClasses/Knight");
+        // snap player into Grid
+        var playerPrefab = activeParty.Find(obj => obj.name == "GridPlayer");
+        var closestTile = tilemap.ClosestTile(playerLocation);
+        player = PutEntity(closestTile.x, closestTile.y, playerPrefab);
 
-        // TODO UP: Should just get all entities from a parent system
-        // this Start() function should handle clamping their position to the nearest tile
-        var npc = PutEntity(2, 6, gridNPC);
-        var npc2 = PutEntity(2, 7, gridNPC);
-        var player = PutEntity(0, 5, gridPlayer);
-        var knight = PutEntity(0, 3, knightPrefab);
+        // snap party into Grid
+        var party = new List<GridEntity>() { player };
+        activeParty.Where(obj => obj.name != "GridPlayer").ToList().ForEach(entity => {
+            var adjacentTile = GridUtils.GenerateTileSquare(tilemap.grid, 1, player.tile)
+                                    .Where(tile => tile.occupier == null)
+                                    .First();
+            party.Add(PutEntity(adjacentTile.x, adjacentTile.y, entity));
+        });
+
+        var randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
+        Debug.Log("Placed NPC 1 at " + randomTile.name);
+        var npc = PutEntity(randomTile.x, randomTile.y, gridNPC);
+
+        randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
+        Debug.Log("Placed NPC 2 at " + randomTile.name);
+        var npc2 = PutEntity(randomTile.x, randomTile.y, gridNPC);
+
         var enemyFaction = new Faction("Enemy", false, npc, npc2);
-        var playerFaction = new Faction("Player", true, player, knight);
-
-        dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
+        var playerFaction = new Faction("Player", true, party);
 
         combat.Start(this, playerFaction, enemyFaction);
         currentState = State.NO_SELECTION;
+    }
+
+    public void DeactivateGrid () {
+        activated = false;
+        waiting = true;
+        GridUtils.FlattenGridTiles(tilemap.grid)
+            .Where(tile => !tile.disabled).ToList()
+            .ForEach(tile => tile.gameObject.SetActive(false));
+
+        combat.factions.ToList().ForEach(faction => {
+            faction.entities.ForEach(entity => entity.RemoveFromGrid());
+        });
+        combat.factions = new Queue<Faction>();
+    }
+
+    void Awake () {
+        initTileMap = new GameObject[tileMapSize, tileMapSize];
+    }
+
+    void Start () {
+        CreateTilemapComponent();
+        knightPrefab = Resources.Load<GameObject>("Prefabs/AllyClasses/Knight");
+        dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
+        DeactivateGrid();
     }
 
     // TODO: restructure this to be a bit clearer - but this is the main FSM of the grid system
@@ -209,6 +251,7 @@ public class GridSystem : MonoBehaviour {
         for (int i = 0; i < initTileMap.GetLength(0); i++) {
             for (int j = 0; j < initTileMap.GetLength(1); j++) {
                 var gameObj = Instantiate(tile, topLeft, Quaternion.identity);
+                gameObj.transform.parent = this.transform;
                 gameObj.name = String.Format("{0},{1}", i, j);
 
                 var boxCollider = gameObj.GetComponent<BoxCollider2D>();
@@ -216,17 +259,23 @@ public class GridSystem : MonoBehaviour {
                 boxCollider.OverlapCollider(new ContactFilter2D().NoFilter(), colliders);
 
                 var tileObj = gameObj.GetComponent<Tile>();
+
                 tileObj.x = i;
                 tileObj.y = j;
                 initTileMap[i,j] = gameObj;
                 topLeft.x += tileWidth / 2;
-                colliders.ToList().Where(collider => collider != null).ToList().ForEach(collider => {
-                    if (collider.tag == "BlockGridMovement") {
-                        tileObj.disabled = true;
-                        gameObj.SetActive(false);
-                     }
-                });
 
+                // determining if placement is in game-bounds
+                tileObj.disabled = true;
+                gameObj.SetActive(false);
+
+                if (
+                    colliders.Where(collider => collider != null).Any(collider => collider.tag == "EnableGrid") &&
+                    !colliders.Where(collider => collider != null).Any(collider => collider.tag == "BlockGridMovement")
+                ) {
+                    tileObj.disabled = false;
+                    gameObj.SetActive(true);
+                }
             }
             topLeft.x = origin.x - (gridSize.x / 4);
             topLeft.y -= tileWidth / 2;
@@ -236,13 +285,11 @@ public class GridSystem : MonoBehaviour {
 
     public static Tile GetTileUnderMouse() {
         Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hitInfo = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);
-        var collider = hitInfo.collider;
-        if (collider != null) {
-            return hitInfo.collider.gameObject.GetComponent<Tile>();
-        } else {
-            return null;
-        }
+        var hits = Physics2D.RaycastAll(mouseWorldPosition, Vector2.zero).ToList();
+        var objs = hits.Select(hit => hit.collider.gameObject);
+        var tiles = objs.Select(obj => obj.GetComponent<Tile>()).Where(obj => obj != null).ToList();
+        if (tiles.Count() != 0) { return tiles.First(); }
+        else { return null; }
     }
 
     GridEntity PutEntity (int x, int y, GameObject prefab) {

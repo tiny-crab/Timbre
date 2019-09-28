@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2344993098622739564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2344993098622739570}
+  - component: {fileID: 2344993098622739565}
+  m_Layer: 0
+  m_Name: GridSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2344993098622739570
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2344993098622739564}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 510, y: 47.911316, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2344993098622739565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2344993098622739564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0b4fd96e47b74d80b3108bb3fcb51cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tile: {fileID: 1641320663204136, guid: 24123749a2e0c42868ff72eb62b5c861, type: 3}
+  gridEntity: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+  gridNPC: {fileID: 6365471537866192612, guid: 8e8294a64fed648639d4d55901e5ecdd, type: 3}
+  gridPlayer: {fileID: 8454990926010455681, guid: e550932383e8f4a3686b2e597fc82a9a,
+    type: 3}
+  knightPrefab: {fileID: 0}
+  player: {fileID: 0}
+  waiting: 0
+  turnGapTime: 0.5
+  aiStepTime: 0.25
+  waitTime: 0.1
+  skillKeys: 610000007300000064000000
+  currentState: 0
+  dialog: {fileID: 0}
+  dialogNoise: {fileID: 8300000, guid: 9badb895c2602489e80e3335c52d9a5f, type: 3}

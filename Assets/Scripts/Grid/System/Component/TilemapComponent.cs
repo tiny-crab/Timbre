@@ -125,4 +125,8 @@ public class TilemapComponent {
             }
         }
     }
+
+    public Tile ClosestTile (Vector2 location) {
+        return GridUtils.FlattenGridTiles(grid, true).OrderBy(tile => Vector2.Distance(location, tile.transform.position)).First();
+    }
 }

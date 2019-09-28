@@ -8,6 +8,11 @@ public class Player : ControllerInteractable {
     public float speed = 5f;
     private BoxCollider2D boxCollider;
     private ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
+    private GridSystem grid;
+
+    private List<GameObject> partyPrefabs;
+
+    private bool waiting = false;
 
     // KEY INTERACTIONS
     private List<KeyCode> UP = new List<KeyCode>() {
@@ -25,13 +30,34 @@ public class Player : ControllerInteractable {
     private List<KeyCode> INTERACT = new List<KeyCode>() {
         KeyCode.F
     };
+
+    private List<KeyCode> ACTIVATE_GRID = new List<KeyCode>() {
+        KeyCode.N
+    };
+    private List<KeyCode> DEACTIVATE_GRID = new List<KeyCode>() {
+        KeyCode.M
+    };
     private bool keyPressed(List<KeyCode> input) { return input.Any(key => Input.GetKey(key)); }
 
     void Awake () {
         boxCollider = GetComponent<BoxCollider2D>();
+        grid = (GridSystem) GameObject.Find("GridSystem").GetComponent<GridSystem>();
+
+        partyPrefabs = new List<GameObject>() {
+            Resources.Load<GameObject>("Prefabs/AllyClasses/GridPlayer"),
+            Resources.Load<GameObject>("Prefabs/AllyClasses/Knight")
+        };
     }
 
     void Update () {
+        if (keyPressed(DEACTIVATE_GRID) && grid.activated) {
+            this.transform.position = grid.player.transform.position;
+            this.GetComponent<SpriteRenderer>().enabled = true;
+            grid.DeactivateGrid();
+            waiting = false;
+        }
+        if (waiting) { return; }
+
         Vector3 previousPos = transform.position;
         Vector3 movePos = transform.position;
 
@@ -40,6 +66,13 @@ public class Player : ControllerInteractable {
         if (keyPressed(DOWN)) { movePos.y -= speed * Time.deltaTime; }
         if (keyPressed(LEFT)) { movePos.x -= speed * Time.deltaTime; }
         if (keyPressed(RIGHT)) { movePos.x += speed * Time.deltaTime; }
+
+        if (keyPressed(ACTIVATE_GRID)) {
+            this.GetComponent<SpriteRenderer>().enabled = false;
+            grid.ActivateGrid(this.transform.position, partyPrefabs);
+            waiting = true;
+            return;
+        }
 
         transform.position = movePos;
 

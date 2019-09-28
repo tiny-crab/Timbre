@@ -114,6 +114,16 @@ public class GridEntity : MonoBehaviour {
         currentSP = 0;
     }
 
+    public void RemoveFromGrid() {
+        this.transform.position = new Vector2(int.MaxValue, int.MaxValue);
+        if (this.tile != null) {
+            this.tile.occupier = null;
+            this.tile = null;
+        }
+        DestroyHealthBar();
+        Destroy(this.gameObject);
+    }
+
     public void Move(int spaces) {
         currentMoves -= spaces;
         if (currentMoves <= 0) { outOfMoves = true; }

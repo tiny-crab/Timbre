@@ -9,7 +9,7 @@ public class CombatComponent {
     private GridSystem parent;
 
     public Faction currentFaction;
-    private Queue<Faction> factions = new Queue<Faction>();
+    public Queue<Faction> factions = new Queue<Faction>();
 
     public GridEntity selectedEntity;
 
