@@ -30,7 +30,6 @@ public class CameraController : MonoBehaviour
             player.transform.position.y,
             height
         );
-        Debug.Log(camera.orthographicSize);
     }
 
     void Update() {
@@ -56,7 +55,6 @@ public class CameraController : MonoBehaviour
                 ref velocity,
                 smoothTime
             );
-            Debug.Log(Vector2.Distance(transform.position, player.transform.position));
             transform.position = new Vector3(transition.x, transition.y, height);
         }
         if (Vector2.Distance(transform.position, player.transform.position) < .01f) {

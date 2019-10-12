@@ -80,11 +80,9 @@ public class GridSystem : MonoBehaviour {
         });
 
         var randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
-        Debug.Log("Placed NPC 1 at " + randomTile.name);
         var npc = PutEntity(randomTile.x, randomTile.y, gridNPC);
 
         randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
-        Debug.Log("Placed NPC 2 at " + randomTile.name);
         var npc2 = PutEntity(randomTile.x, randomTile.y, gridNPC);
 
         var enemyFaction = new Faction("Enemy", false, npc, npc2);
