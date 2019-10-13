@@ -46,7 +46,7 @@ public static class SkillUtils {
             {"Caltrops", new CaltropsSkill()},
             {"Defend Self", new DefendSelf()},
             {"Headshot", new Headshot()},
-            {"Protect Ally", new Revive()},
+            {"Protect Ally", new ProtectAlly()},
             {"Retaliate", new Revive()},
             {"Revive", new Revive()}
         };
@@ -100,7 +100,7 @@ public class CaltropsSkill : SelectTilesSkill {
 }
 
 public class DefendSelf : SelectTilesSkill {
-    public override int cost {get { return 1; } }
+    public override int cost { get { return 1; } }
     public override int radius { get { return 1; } }
     public override int targets { get { return 1; } }
 
@@ -131,6 +131,29 @@ public class Revive : SelectAlliesSkill {
 
     override public List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {
         return base.GetValidTiles(grid, sourceTile).Where(tile => tile.occupier.outOfHP).ToList();
+    }
+}
+
+public class ProtectAlly : SelectAlliesSkill {
+    public override int cost { get { return 1; } }
+    public override int radius { get { return 1; } }
+    public override int targets { get { return 1; } }
+
+    override public void ResolveEffect(GridEntity source, Tile tile) {
+        var entity = tile.occupier;
+        entity.damageReceiver = source;
+        // skill immediately "ends" the turn of the entity using it.
+        source.ConsumeTurnResources();
+        // skill immediately freezes the entity next to it
+        entity.currentMoves = 0;
+        entity.outOfMoves = true;
+
+        bool ProtectAllyOverride() {
+            entity.damageReceiver = entity;
+            return true;
+        }
+
+        entity.overrides.Add(new GridEntity.Override(1, ProtectAllyOverride));
     }
 }
 

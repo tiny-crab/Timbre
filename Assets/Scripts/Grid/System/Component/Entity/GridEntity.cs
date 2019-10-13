@@ -11,6 +11,7 @@ public class GridEntity : MonoBehaviour {
     // HP
     public int maxHP;
     public int currentHP;
+    public GridEntity damageReceiver;
     public bool outOfHP = false;
 
     // move
@@ -38,8 +39,21 @@ public class GridEntity : MonoBehaviour {
     public int currentSkillUses;
     public bool outOfSkillUses = false;
 
+    public class Override {
+
+        public int turnDuration = 0;
+        public Func<bool> overrideFunction;
+
+        public Override(int turnDuration, Func<bool> overrideFunction) {
+            this.turnDuration = turnDuration;
+            this.overrideFunction = overrideFunction;
+        }
+
+    }
+
+    public List<Override> overrides = new List<Override>();
+
     // skills
-    // public List<Skill> skills = {};
     public List<string> skillNames;
     public List<Skill> skills;
 
@@ -67,6 +81,7 @@ public class GridEntity : MonoBehaviour {
         currentMoves = maxMoves;
         currentAttacks = maxAttacks;
         currentHP = maxHP;
+        damageReceiver = this;
         currentSkillUses = maxSkillUses;
         currentSP = maxSP;
         skills = skillNames.ToSkills();
@@ -104,7 +119,7 @@ public class GridEntity : MonoBehaviour {
 
     public void TakeDamage(int damage) {
         // damage should be a positive value
-        currentHP -= damage;
+        damageReceiver.currentHP -= damage;
     }
 
     private void Die() {
@@ -177,6 +192,12 @@ public class GridEntity : MonoBehaviour {
         currentSkillUses = maxSkillUses;
         outOfSkillUses = false;
         currentAttackSkill = null;
+
+        overrides.ForEach(x => {
+            x.turnDuration--;
+            if (x.turnDuration <= 0) { x.overrideFunction(); }
+        });
+        overrides = overrides.Where(x => x.turnDuration > 0).ToList();
     }
 
     public void RefreshEncounterResources() {

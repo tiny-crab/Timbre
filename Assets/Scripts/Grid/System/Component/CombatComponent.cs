@@ -64,8 +64,8 @@ public class CombatComponent {
     public void EndTurn() {
         var previousFaction = factions.Dequeue();
         currentFaction = factions.Peek();
+        currentFaction.RefreshTurnResources();
         factions.Enqueue(previousFaction);
-        previousFaction.RefreshTurnResources();
     }
 
     public void TriggerAITurn() {
