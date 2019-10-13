@@ -8,6 +8,8 @@ public class GridSystem : MonoBehaviour {
 
     public bool activated = false;
 
+    public new Camera camera;
+
     public int tileMapSize = 10;
     public GameObject[,] initTileMap;
     public GameObject tile;
@@ -62,7 +64,16 @@ public class GridSystem : MonoBehaviour {
         activated = true;
         waiting = false;
         GridUtils.FlattenGridTiles(tilemap.grid)
-            .Where(tile => !tile.disabled).ToList()
+            .Where(tile => !tile.disabled)
+            .Where(tile => {
+                Vector3 screenPoint = camera.WorldToViewportPoint(tile.transform.position);
+                var leftRightMargin = .2f;
+                var topBottomMargin = .15f;
+                return
+                    screenPoint.z > 0 &&
+                    screenPoint.x > 0 + leftRightMargin && screenPoint.x < 1 - leftRightMargin &&
+                    screenPoint.y > 0 + topBottomMargin && screenPoint.y < 1 - topBottomMargin;
+            }).ToList()
             .ForEach(tile => tile.gameObject.SetActive(true));
 
         // snap player into Grid

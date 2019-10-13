@@ -674,6 +674,11 @@ PrefabInstance:
       propertyPath: tileMapSize
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 2344993098622739565, guid: 384a6b6ec7c8c4d53837820d28aaf62b,
+        type: 3}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 919906074}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 384a6b6ec7c8c4d53837820d28aaf62b, type: 3}
 --- !u!1001 &876460459
