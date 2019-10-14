@@ -324,6 +324,9 @@ public class GridSystem : MonoBehaviour {
         else if (skillToActivate is SelectTilesSkill) {
             ActivateSelectTilesSkill(selectedEntity, (SelectTilesSkill) skillToActivate);
         }
+        else if (skillToActivate is BuffSkill) {
+            ActivateBuffSkill(selectedEntity, (BuffSkill) skillToActivate);
+        }
     }
 
     void DeactivateSkill(GridEntity selectedEntity, int index) {
@@ -334,6 +337,9 @@ public class GridSystem : MonoBehaviour {
         }
         else if (skillToDeactivate is SelectTilesSkill) {
             DeactivateSelectTilesSkill();
+        }
+        else if (skillToDeactivate is BuffSkill) {
+            DeactivateBuffSkill();
         }
         dialog.PostToDialog("Deactivated " + skillToDeactivate.GetType().Name, dialogNoise, false);
     }
@@ -363,6 +369,13 @@ public class GridSystem : MonoBehaviour {
     void DeactivateAttackSkill() {
         combat.selectedEntity.currentAttackSkill = null;
     }
+
+    void ActivateBuffSkill(GridEntity selectedEntity, BuffSkill skillToActivate) {
+        skillToActivate.ResolveEffect(selectedEntity);
+        dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
+    }
+
+    void DeactivateBuffSkill() {}
 
     IEnumerator WaitAMoment(float waitTime, string name) {
         waiting = true;

@@ -39,8 +39,12 @@ public class GridEntity : MonoBehaviour {
     public int currentSkillUses;
     public bool outOfSkillUses = false;
 
+    // override turnDuration is as follows:
+    //      turnDuration is decremented at the beginning of an entity's turn...
+    //      When an effect needs to last through the enemy's turn, duration is 0
+    //      When an effect needs to last through the next player's turn, duration is 1
+    //      When an effect needs to last throughout the rest of the battle, duration is int.MaxValue
     public class Override {
-
         public int turnDuration = 0;
         public Func<bool> overrideFunction;
 
@@ -48,7 +52,6 @@ public class GridEntity : MonoBehaviour {
             this.turnDuration = turnDuration;
             this.overrideFunction = overrideFunction;
         }
-
     }
 
     public List<Override> overrides = new List<Override>();
@@ -148,9 +151,8 @@ public class GridEntity : MonoBehaviour {
         currentAttacks--;
         var calculatedDamage = (damage + damageModify) * damageMult;
         var triggeredReactions = target.TriggerAttackReaction(this);
-        if(triggeredReactions.Count() > 0) {
-            triggeredReactions.ForEach(reaction => { reaction.ResolveAttack(this, target); });
-        } else {
+
+        void ResolveDefaultAttack() {
             target.TakeDamage(calculatedDamage);
             Debug.Log(String.Format("<color=blue>{0}</color> attacked <color=red>{1}</color> for <color=yellow>{2} damage</color>.",
                 this.name,
@@ -162,8 +164,24 @@ public class GridEntity : MonoBehaviour {
                 target.currentHP
             ));
         }
+
+        if(triggeredReactions.Count() > 0) {
+            triggeredReactions.ForEach(reaction => {
+                var useDefaultAttackResolution = reaction.ResolveAttack(this, target);
+                if (useDefaultAttackResolution) { ResolveDefaultAttack(); }
+            });
+        } else {
+            ResolveDefaultAttack();
+        }
         if (currentAttacks <= 0) { outOfAttacks = true; }
         if (currentAttackSkill != null) { UseSkill(currentAttackSkill); }
+    }
+
+    private List<AttackReaction> TriggerAttackReaction(GridEntity attacker) {
+        return currentReactions
+                .Where(reaction => reaction is AttackReaction && reaction.ReactsTo(attacker))
+                .Select(reaction => (AttackReaction) reaction)
+                .ToList();
     }
 
     public void UseSkill(Skill skill) {
@@ -193,23 +211,19 @@ public class GridEntity : MonoBehaviour {
         outOfSkillUses = false;
         currentAttackSkill = null;
 
+        currentReactions.ForEach(reaction => reaction.turnDuration--);
+        currentReactions = currentReactions.Where(reaction => reaction.turnDuration >= 0).ToList();
+
         overrides.ForEach(x => {
             x.turnDuration--;
-            if (x.turnDuration <= 0) { x.overrideFunction(); }
+            if (x.turnDuration < 0) { x.overrideFunction(); }
         });
-        overrides = overrides.Where(x => x.turnDuration > 0).ToList();
+        overrides = overrides.Where(x => x.turnDuration >= 0).ToList();
     }
 
     public void RefreshEncounterResources() {
         RefreshTurnResources();
         currentHP = maxHP;
         outOfHP = false;
-    }
-
-    private List<AttackReaction> TriggerAttackReaction(GridEntity attacker) {
-        return currentReactions
-                .Where(reaction => reaction is AttackReaction && reaction.ReactsTo(attacker))
-                .Select(reaction => (AttackReaction) reaction)
-                .ToList();
     }
 }

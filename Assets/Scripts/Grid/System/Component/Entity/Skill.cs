@@ -35,6 +35,11 @@ public abstract class SelectAlliesSkill : SelectTilesSkill {
     }
 }
 
+public abstract class BuffSkill : Skill {
+    public abstract int cost {get;}
+    public abstract void ResolveEffect(GridEntity source);
+}
+
 public abstract class AttackSkill : Skill {
     public abstract int cost {get;}
     public abstract void BeforeAttack(GridEntity attacker, GridEntity target);
@@ -47,7 +52,7 @@ public static class SkillUtils {
             {"Defend Self", new DefendSelf()},
             {"Headshot", new Headshot()},
             {"Protect Ally", new ProtectAlly()},
-            {"Retaliate", new Revive()},
+            {"Retaliate", new Retaliate()},
             {"Revive", new Revive()}
         };
 
@@ -153,9 +158,19 @@ public class ProtectAlly : SelectAlliesSkill {
             return true;
         }
 
-        entity.overrides.Add(new GridEntity.Override(1, ProtectAllyOverride));
+        entity.overrides.Add(new GridEntity.Override(0, ProtectAllyOverride));
     }
 }
+
+// BUFF SKILLS
+public class Retaliate : BuffSkill {
+    public override int cost { get { return 1; } }
+
+    override public void ResolveEffect(GridEntity source) {
+        source.currentReactions.Add(new RetaliateReaction(source));
+    }
+}
+
 
 // ATTACKING SKILLS
 public class Headshot : AttackSkill {
