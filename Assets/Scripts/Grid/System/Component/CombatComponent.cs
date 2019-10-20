@@ -69,34 +69,11 @@ public class CombatComponent {
     }
 
     public void TriggerAITurn() {
-        currentFaction.entities.Where(entity => !entity.outOfHP).ToList().ForEach(entity => {
-            // the vocabulary currently is "relative" to the characters,
-            // even though the enemies are the only ones intended with AI right now
-            var playerFaction = factions.ToList().Find(faction => faction.isPlayerFaction);
-            var targets = playerFaction.entities;
-
-            var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileCircle(parent.tilemap.grid, entity.range, target.tile)).ToList();
-            var nextTurnRange = GridUtils.GenerateTileCircle(parent.tilemap.grid, entity.maxMoves, entity.tile);
-
-            var nextMoveMap = new Dictionary<Tile, int>();
-            nextTurnRange.ForEach(tile => {
-                var score = targetRanges.Select(attackTile =>
-                    Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)
-                ).Sum();
-                nextMoveMap[tile] = score;
-            });
-
-            var nextTile = nextMoveMap.OrderBy(element => element.Value).First().Key;
-
-            parent.tilemap.MoveEntity(
-                entity.tile.x, entity.tile.y,
-                nextTile.x, nextTile.y
-            );
-
-            var tileWithTarget = GridUtils.GenerateTileCircle(parent.tilemap.grid, entity.range, entity.tile)
-                                .ToList()
-                                .FirstOrDefault(tile => tile.occupier != null && (tile.occupier.isAllied || tile.occupier.isFriendly));
-            if (tileWithTarget != null) { entity.MakeAttack(tileWithTarget.occupier); }
+        currentFaction.entities.Where(entity => !entity.outOfHP).ToList().ForEach(aiEntity => {
+            aiEntity.behaviors
+                .OrderBy(behavior => behavior.FindBestAction(parent.tilemap.grid))
+                .First()
+                .DoBestAction(this, parent.tilemap);
         });
     }
 }

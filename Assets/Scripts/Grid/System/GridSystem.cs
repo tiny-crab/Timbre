@@ -95,6 +95,8 @@ public class GridSystem : MonoBehaviour {
 
         randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
         var npc2 = PutEntity(randomTile.x, randomTile.y, gridNPC);
+        npc2.gameObject.name = npc2.gameObject.name + "2";
+        // npc2.behaviors = new List<Behavior>() { new RangedAttackV1() };
 
         var enemyFaction = new Faction("Enemy", false, npc, npc2);
         var playerFaction = new Faction("Player", true, party);

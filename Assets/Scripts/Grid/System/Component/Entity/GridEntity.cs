@@ -63,6 +63,10 @@ public class GridEntity : MonoBehaviour {
     // reactions
     public List<Reaction> currentReactions = new List<Reaction>();
 
+    // AI
+    public List<string> behaviorNames;
+    public List<Behavior> behaviors = new List<Behavior>();
+
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
     public Color attackRangeColor;
@@ -88,6 +92,7 @@ public class GridEntity : MonoBehaviour {
         currentSkillUses = maxSkillUses;
         currentSP = maxSP;
         skills = skillNames.ToSkills();
+        behaviors = behaviorNames.ToBehaviors(this);
         healthBar = GenerateHealthBar();
         UpdateHealthBar();
     }
