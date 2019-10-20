@@ -50,7 +50,12 @@ public class Player : ControllerInteractable {
     }
 
     void Update () {
-        if (keyPressed(DEACTIVATE_GRID) && grid.activated) {
+        var allEnemiesDefeated = grid.combat.factions
+                                    .Where(faction => faction.isHostileFaction)
+                                    .All(faction => {
+                                        return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
+                                    });
+        if ((allEnemiesDefeated || keyPressed(DEACTIVATE_GRID)) && grid.activated) {
             this.transform.position = grid.player.transform.position;
             this.GetComponent<SpriteRenderer>().enabled = true;
             grid.DeactivateGrid();
