@@ -8,6 +8,8 @@ TagManager:
   - BlockGridMovement
   - BlockGridLineOfSight
   - EnableGrid
+  - Encounter
+  - TriggeredEncounter
   layers:
   - Default
   - TransparentFX

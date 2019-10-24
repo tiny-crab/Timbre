@@ -55,12 +55,7 @@ public class Player : ControllerInteractable {
                                     .All(faction => {
                                         return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
                                     });
-        if ((allEnemiesDefeated || keyPressed(DEACTIVATE_GRID)) && grid.activated) {
-            this.transform.position = grid.player.transform.position;
-            this.GetComponent<SpriteRenderer>().enabled = true;
-            grid.DeactivateGrid();
-            waiting = false;
-        }
+        if ((allEnemiesDefeated || keyPressed(DEACTIVATE_GRID)) && grid.activated) { DeactivateGrid(); }
         if (waiting) { return; }
 
         Vector3 previousPos = transform.position;
@@ -72,12 +67,7 @@ public class Player : ControllerInteractable {
         if (keyPressed(LEFT)) { movePos.x -= speed * Time.deltaTime; }
         if (keyPressed(RIGHT)) { movePos.x += speed * Time.deltaTime; }
 
-        if (keyPressed(ACTIVATE_GRID)) {
-            this.GetComponent<SpriteRenderer>().enabled = false;
-            grid.ActivateGrid(this.transform.position, partyPrefabs);
-            waiting = true;
-            return;
-        }
+        if (keyPressed(ACTIVATE_GRID)) { ActivateGrid(); }
 
         transform.position = movePos;
 
@@ -112,5 +102,32 @@ public class Player : ControllerInteractable {
             if (keyPressed(INTERACT)) { results.First().collider.gameObject.BroadcastMessage("PlayerInteract"); }
         }
 
+        var encounterColliders = Physics2D.BoxCastAll(
+            origin: transform.position,
+            size: new Vector2(0.5f, 0.5f),
+            angle: 0,
+            direction: Vector2.zero
+        ).Select(hit => hit.collider).ToList();
+
+        encounterColliders.ForEach(collider => {
+            if (collider.gameObject.tag == "Encounter") {
+                ActivateGrid();
+                collider.gameObject.tag = "TriggeredEncounter";
+            }
+        });
+    }
+
+    private void ActivateGrid() {
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        grid.ActivateGrid(this.transform.position, partyPrefabs);
+        waiting = true;
+        return;
+    }
+
+    private void DeactivateGrid() {
+        this.transform.position = grid.player.transform.position;
+        this.GetComponent<SpriteRenderer>().enabled = true;
+        grid.DeactivateGrid();
+        waiting = false;
     }
 }
