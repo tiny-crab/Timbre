@@ -43,13 +43,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b4fd96e47b74d80b3108bb3fcb51cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activated: 0
+  camera: {fileID: 0}
+  tileMapSize: 10
   tile: {fileID: 1641320663204136, guid: 24123749a2e0c42868ff72eb62b5c861, type: 3}
   gridEntity: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
   gridNPC: {fileID: 6365471537866192612, guid: 8e8294a64fed648639d4d55901e5ecdd, type: 3}
   gridPlayer: {fileID: 8454990926010455681, guid: e550932383e8f4a3686b2e597fc82a9a,
     type: 3}
-  knightPrefab: {fileID: 0}
+  knightPrefab: {fileID: 4818064959235432609, guid: 2b4610377aa9c41ab9f5c57d2f7ea7de,
+    type: 3}
   player: {fileID: 0}
+  overworldPlayer: {fileID: 0}
   waiting: 0
   turnGapTime: 0.5
   aiStepTime: 0.25

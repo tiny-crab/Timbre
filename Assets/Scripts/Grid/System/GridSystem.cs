@@ -124,7 +124,7 @@ public class GridSystem : MonoBehaviour {
 
     void Start () {
         CreateTilemapComponent();
-        knightPrefab = Resources.Load<GameObject>("Prefabs/AllyClasses/Knight");
+        knightPrefab = Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight");
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
         DeactivateGrid();
     }

@@ -44,8 +44,8 @@ public class Player : ControllerInteractable {
         grid = (GridSystem) GameObject.Find("GridSystem").GetComponent<GridSystem>();
 
         partyPrefabs = new List<GameObject>() {
-            Resources.Load<GameObject>("Prefabs/AllyClasses/GridPlayer"),
-            Resources.Load<GameObject>("Prefabs/AllyClasses/Knight")
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/GridPlayer"),
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight")
         };
     }
 
