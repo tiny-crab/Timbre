@@ -60,7 +60,7 @@ public class GridSystem : MonoBehaviour {
         AI_TURN
     }
 
-    public void ActivateGrid (Vector2 playerLocation, List<GameObject> activeParty) {
+    public void ActivateGrid (Vector2 playerLocation, List<GameObject> activeParty, List<GameObject> enemiesToSpawn) {
         activated = true;
         waiting = false;
         GridUtils.FlattenGridTiles(tilemap.grid)
@@ -90,15 +90,13 @@ public class GridSystem : MonoBehaviour {
             party.Add(PutEntity(adjacentTile.x, adjacentTile.y, entity));
         });
 
-        var randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
-        var npc = PutEntity(randomTile.x, randomTile.y, gridNPC);
+        // randomize enemies into Grid
+        var enemies = enemiesToSpawn.Select(enemyPrefab => {
+            var randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
+            return PutEntity(randomTile.x, randomTile.y, enemyPrefab);
+        }).ToList();
 
-        randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
-        var npc2 = PutEntity(randomTile.x, randomTile.y, gridNPC);
-        npc2.gameObject.name = npc2.gameObject.name + "2";
-        // npc2.behaviors = new List<Behavior>() { new RangedAttackV1() };
-
-        var enemyFaction = new Faction("Enemy", false, npc, npc2);
+        var enemyFaction = new Faction("Enemy", false, enemies);
         var playerFaction = new Faction("Player", true, party);
 
         combat.Start(this, playerFaction, enemyFaction);

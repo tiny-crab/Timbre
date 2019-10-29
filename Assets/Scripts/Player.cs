@@ -111,17 +111,32 @@ public class Player : ControllerInteractable {
 
         encounterColliders.ForEach(collider => {
             if (collider.gameObject.tag == "Encounter") {
-                ActivateGrid();
+                var encounterObj = collider.GetComponent<Encounter>();
+                if (encounterObj != null) {
+                    ActivateGrid(encounterObj.enemyPrefabs);
+                }
+                else { ActivateGrid(); }
                 collider.gameObject.tag = "TriggeredEncounter";
             }
         });
     }
 
-    private void ActivateGrid() {
+    private void ActivateGrid(List<GameObject> encounteredEnemies = null) {
         this.GetComponent<SpriteRenderer>().enabled = false;
-        grid.ActivateGrid(this.transform.position, partyPrefabs);
+        grid.ActivateGrid(this.transform.position, partyPrefabs, encounteredEnemies ?? GenerateRandomEnemies());
+        // determine tile placement for party members
+        // determine tile placement for enemies
+        // grid.PopulateGrid(partyObjects, enemyObjects)
         waiting = true;
         return;
+    }
+
+    private List<GameObject> GenerateRandomEnemies() {
+        return new List<GameObject>() {
+            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
+            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
+            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin")
+        };
     }
 
     private void DeactivateGrid() {
