@@ -14,15 +14,7 @@ public class GridSystem : MonoBehaviour {
     public GameObject[,] initTileMap;
     public GameObject tile;
 
-    // TODO UP: would be passed from a context in the overworld
-    public GameObject gridEntity;
-    public GameObject gridNPC;
-    public GameObject gridPlayer;
-    public GameObject knightPrefab;
-
-    // this is less important once more allies are on the field
     public GridEntity player;
-    public Player overworldPlayer;
 
     // TODO SIDE: these feel like utility functions and should be moved
     public bool waiting = false;
@@ -122,7 +114,6 @@ public class GridSystem : MonoBehaviour {
 
     void Start () {
         CreateTilemapComponent();
-        knightPrefab = Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight");
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
         DeactivateGrid();
     }
