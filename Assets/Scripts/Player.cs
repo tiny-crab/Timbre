@@ -113,6 +113,7 @@ public class Player : ControllerInteractable {
             if (collider.gameObject.tag == "Encounter") {
                 var encounterObj = collider.GetComponent<Encounter>();
                 if (encounterObj != null) {
+                    encounterObj.Trigger();
                     ActivateGrid(encounterObj.enemyPrefabs);
                 }
                 else { ActivateGrid(); }
@@ -121,26 +122,28 @@ public class Player : ControllerInteractable {
         });
     }
 
-    private void ActivateGrid(List<GameObject> encounteredEnemies = null) {
+    private void ActivateGrid(List<KeyValuePair<GameObject, Vector2>> encounteredEnemies = null) {
         this.GetComponent<SpriteRenderer>().enabled = false;
-        grid.ActivateGrid(this.transform.position, partyPrefabs, encounteredEnemies ?? GenerateRandomEnemies());
-        // determine tile placement for party members
-        // determine tile placement for enemies
-        // grid.PopulateGrid(partyObjects, enemyObjects)
+        grid.ActivateGrid(
+            this.transform.position,
+            partyPrefabs,
+            encounteredEnemies ?? GenerateRandomEnemies()
+        );
         waiting = true;
         return;
     }
 
-    private List<GameObject> GenerateRandomEnemies() {
-        return new List<GameObject>() {
+    private List<KeyValuePair<GameObject, Vector2>> GenerateRandomEnemies() {
+        var pair = new KeyValuePair<GameObject, Vector2>(
             Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
-            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
-            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin")
-        };
+            new Vector2(int.MaxValue, int.MaxValue)
+        );
+
+        return new List<KeyValuePair<GameObject, Vector2>>() { pair, pair, pair };
     }
 
     private void DeactivateGrid() {
-        this.transform.position = grid.player.transform.position;
+        this.transform.position = grid.gridPlayer.transform.position;
         this.GetComponent<SpriteRenderer>().enabled = true;
         grid.DeactivateGrid();
         waiting = false;

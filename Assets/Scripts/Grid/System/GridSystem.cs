@@ -14,7 +14,7 @@ public class GridSystem : MonoBehaviour {
     public GameObject[,] initTileMap;
     public GameObject tile;
 
-    public GridEntity player;
+    public GridEntity gridPlayer;
 
     // TODO SIDE: these feel like utility functions and should be moved
     public bool waiting = false;
@@ -52,7 +52,11 @@ public class GridSystem : MonoBehaviour {
         AI_TURN
     }
 
-    public void ActivateGrid (Vector2 playerLocation, List<GameObject> activeParty, List<GameObject> enemiesToSpawn) {
+    public void ActivateGrid (
+        Vector2 playerLocation,
+        List<GameObject> activeParty,
+        List<KeyValuePair<GameObject, Vector2>> enemiesToSpawn
+    ) {
         activated = true;
         waiting = false;
         GridUtils.FlattenGridTiles(tilemap.grid)
@@ -71,21 +75,23 @@ public class GridSystem : MonoBehaviour {
         // snap player into Grid
         var playerPrefab = activeParty.Find(obj => obj.name == "GridPlayer");
         var closestTile = tilemap.ClosestTile(playerLocation);
-        player = PutEntity(closestTile.x, closestTile.y, playerPrefab);
+        gridPlayer = PutEntity(closestTile.x, closestTile.y, playerPrefab);
 
         // snap party into Grid
-        var party = new List<GridEntity>() { player };
+        var party = new List<GridEntity>() { gridPlayer };
         activeParty.Where(obj => obj.name != "GridPlayer").ToList().ForEach(entity => {
-            var adjacentTile = GridUtils.GenerateTileSquare(tilemap.grid, 1, player.tile)
+            var adjacentTile = GridUtils.GenerateTileSquare(tilemap.grid, 1, gridPlayer.tile)
                                     .Where(tile => tile.occupier == null)
                                     .First();
             party.Add(PutEntity(adjacentTile.x, adjacentTile.y, entity));
         });
 
         // randomize enemies into Grid
-        var enemies = enemiesToSpawn.Select(enemyPrefab => {
-            var randomTile = GridUtils.GetRandomEnabledTile(tilemap.grid);
-            return PutEntity(randomTile.x, randomTile.y, enemyPrefab);
+        var enemies = enemiesToSpawn.Select(enemyPair => {
+            var enemyPrefab = enemyPair.Key;
+            var location = enemyPair.Value;
+            var tile = tilemap.ClosestTile(location);
+            return PutEntity(tile.x, tile.y, enemyPrefab);
         }).ToList();
 
         var enemyFaction = new Faction("Enemy", false, enemies);

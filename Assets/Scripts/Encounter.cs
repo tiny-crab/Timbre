@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class Encounter : MonoBehaviour
 {
-    public List<GameObject> enemyPrefabs = new List<GameObject>();
+    public List<KeyValuePair<GameObject, Vector2>> enemyPrefabs = new List<KeyValuePair<GameObject, Vector2>>();
 
     void Awake() {
         foreach (Transform child in transform) {
             var overworldNPC = child.GetComponent<NPC>();
             if (overworldNPC != null) {
-                enemyPrefabs.Add(overworldNPC.gridPrefab);
+                enemyPrefabs.Add(
+                    new KeyValuePair<GameObject, Vector2>(overworldNPC.gridPrefab, overworldNPC.transform.position)
+                );
             }
             overworldNPC.enabled = false;
+        }
+    }
+
+    public void Trigger() {
+        foreach (Transform child in transform) {
+            child.GetComponent<SpriteRenderer>().enabled = false;
         }
     }
 }
