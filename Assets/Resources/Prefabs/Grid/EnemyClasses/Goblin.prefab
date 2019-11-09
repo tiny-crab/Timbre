@@ -28,7 +28,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_Name
-      value: GridNPC
+      value: Goblin
       objectReference: {fileID: 0}
     - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -162,6 +162,23 @@ PrefabInstance:
       propertyPath: behaviorNames.Array.data[1]
       value: RangedAttackV1
       objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: deathSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 11926dfebfa144376b668a01b62d0752,
+        type: 3}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: isAllied
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: corpse
+      value: 
+      objectReference: {fileID: 9170540517610406404, guid: d2b1cb4d9d31246c0bf88df08950996e,
+        type: 3}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Sprite

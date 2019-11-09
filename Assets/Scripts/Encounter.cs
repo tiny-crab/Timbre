@@ -21,6 +21,7 @@ public class Encounter : MonoBehaviour
     public void Trigger() {
         foreach (Transform child in transform) {
             child.GetComponent<SpriteRenderer>().enabled = false;
+            Destroy(child.gameObject);
         }
     }
 }

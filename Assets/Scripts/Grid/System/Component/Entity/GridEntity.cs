@@ -78,6 +78,8 @@ public class GridEntity : MonoBehaviour {
 
     public Tile tile;
 
+    public GameObject corpse;
+
     [SerializeField]
     private GameObject healthBarPrefab;
     private float healthBarXDelta = -0.25f;
@@ -99,7 +101,7 @@ public class GridEntity : MonoBehaviour {
 
     void Update() {
         UpdateHealthBar();
-        if (currentHP <= 0) { Die(); }
+        if (currentHP <= 0 && !outOfHP) { Die(); }
     }
 
     public HealthBar GenerateHealthBar() {
@@ -128,6 +130,9 @@ public class GridEntity : MonoBehaviour {
     public void TakeDamage(int damage) {
         // damage should be a positive value
         damageReceiver.currentHP -= damage;
+        if (damageReceiver.currentHP <= 0) {
+            damageReceiver.Die();
+        }
     }
 
     private void Die() {
@@ -135,6 +140,10 @@ public class GridEntity : MonoBehaviour {
         currentHP = 0;
         currentMoves = 0;
         currentSP = 0;
+        if (isHostile) {
+            this.GetComponent<Animator>().enabled = false;
+            this.GetComponent<SpriteRenderer>().sprite = corpse.GetComponent<SpriteRenderer>().sprite;
+        }
     }
 
     public void RemoveFromGrid() {

@@ -318,7 +318,7 @@ GameObject:
   - component: {fileID: 314989616}
   - component: {fileID: 314989615}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: GridSeparatorObject
   m_TagString: BlockGridMovement
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

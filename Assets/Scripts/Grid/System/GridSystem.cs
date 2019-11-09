@@ -108,6 +108,16 @@ public class GridSystem : MonoBehaviour {
             .Where(tile => !tile.disabled).ToList()
             .ForEach(tile => tile.gameObject.SetActive(false));
 
+        combat.factions.ToList()
+            .Where(faction => faction.isHostileFaction).ToList()
+            .ForEach(faction => {
+                faction.entities
+                    .Where(entity => entity.outOfHP).ToList()
+                    .ForEach(entity => {
+                        Instantiate(entity.corpse, entity.transform.position, Quaternion.identity);
+                    });
+            });
+
         combat.factions.ToList().ForEach(faction => {
             faction.entities.ForEach(entity => entity.RemoveFromGrid());
         });
