@@ -51,6 +51,8 @@ public static class SkillUtils {
             {"Caltrops", new CaltropsSkill()},
             {"Defend Self", new DefendSelf()},
             {"Headshot", new Headshot()},
+            {"HitAndRun", new HitAndRun()},
+            {"Maul", new Headshot()},
             {"Protect Ally", new ProtectAlly()},
             {"Retaliate", new Retaliate()},
             {"Revive", new Revive()}
@@ -184,5 +186,17 @@ public class Headshot : AttackSkill {
 
     override public void AfterAttack(GridEntity attacker, GridEntity target) {
         attacker.damageMult = 1;
+    }
+}
+
+public class HitAndRun : AttackSkill {
+    public override int cost { get { return 1; } }
+
+    override public void BeforeAttack(GridEntity attacker, GridEntity target) {
+        // do nothing
+    }
+
+    override public void AfterAttack(GridEntity attacker, GridEntity target) {
+        attacker.currentMoves += attacker.maxMoves * 2;
     }
 }
