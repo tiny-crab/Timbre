@@ -86,11 +86,14 @@ public class GridSystem : MonoBehaviour {
             party.Add(PutEntity(adjacentTile.x, adjacentTile.y, entity));
         });
 
-        // randomize enemies into Grid
+        // put enemies into Grid
         var enemies = enemiesToSpawn.Select(enemyPair => {
             var enemyPrefab = enemyPair.Key;
             var location = enemyPair.Value;
             var tile = tilemap.ClosestTile(location);
+            if (location == new Vector2(int.MaxValue, int.MaxValue)) {
+                tile = GridUtils.GetRandomEnabledTile(tilemap.grid);
+            }
             return PutEntity(tile.x, tile.y, enemyPrefab);
         }).ToList();
 
