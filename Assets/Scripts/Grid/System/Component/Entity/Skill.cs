@@ -123,7 +123,7 @@ public class DefendSelf : SelectTilesSkill {
 
 public class Brambles : SelectEnemiesSkill {
     public override int cost { get { return 1; } }
-    public override int radius { get { return -1; } }
+    public override int radius { get { return int.MaxValue; } }
     public override int targets { get { return 1; } }
 
     override public void ResolveEffect(GridEntity source, Tile tile) {

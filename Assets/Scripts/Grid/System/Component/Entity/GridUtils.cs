@@ -10,20 +10,11 @@ public static class GridUtils {
     }
 
     public static List<Tile> GenerateTileCircle(GameObject[,] grid, int radius, Tile sourceTile) {
-        if (radius == -1) {
-            return GridUtils.FlattenGridTiles(grid, true);
-        }
-        List<Tile> tiles = new List<Tile>() { sourceTile };
-        for (int depth = 0; depth < radius; depth++) {
-            var temp = new List<Tile>();
-            tiles.ForEach(tile => temp.AddRange(GetAdjacentTiles(grid, tile)));
-            tiles.AddRange(temp);
-        }
-        tiles = tiles.Distinct().ToList();
-        tiles.Remove(sourceTile);
-        return tiles;
+        return GridUtils.FlattenGridTiles(grid, true).Where(tile => GetDistanceBetweenTiles(tile, sourceTile) <= radius).ToList();
     }
 
+    // TODO optimize this when it is beginning to lag more
+    // at the moment it's only used in determining adjacent tiles for party placement
     public static List<Tile> GenerateTileSquare(GameObject[,] grid, int radius, Tile sourceTile) {
         List<Tile> tiles = new List<Tile>() { sourceTile };
         for (int depth = 0; depth < radius; depth++) {
