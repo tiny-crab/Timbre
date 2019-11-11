@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: timbre_protag_Idle
+  m_Name: timbre_protag_SouthWest
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,19 +20,19 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: -2938920363476318618, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
+      value: {fileID: -8640378156162003628, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
         type: 3}
     - time: 0.1
-      value: {fileID: 167096430163226113, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
+      value: {fileID: 3332202321670588791, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
         type: 3}
     - time: 0.2
-      value: {fileID: -8957781174372668338, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
+      value: {fileID: 8805594927102499468, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
         type: 3}
     - time: 0.3
-      value: {fileID: 4627199742233029124, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
+      value: {fileID: 3987224438677942372, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
         type: 3}
     - time: 0.38333333
-      value: {fileID: 4627199742233029124, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
+      value: {fileID: 3987224438677942372, guid: 8bc8f0a4ce4b0413ab253f7372b824c2,
         type: 3}
     attribute: m_Sprite
     path: 
@@ -53,11 +53,11 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: -2938920363476318618, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
-    - {fileID: 167096430163226113, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
-    - {fileID: -8957781174372668338, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
-    - {fileID: 4627199742233029124, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
-    - {fileID: 4627199742233029124, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
+    - {fileID: -8640378156162003628, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
+    - {fileID: 3332202321670588791, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
+    - {fileID: 8805594927102499468, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
+    - {fileID: 3987224438677942372, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
+    - {fileID: 3987224438677942372, guid: 8bc8f0a4ce4b0413ab253f7372b824c2, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
