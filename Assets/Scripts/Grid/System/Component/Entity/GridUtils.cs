@@ -10,6 +10,9 @@ public static class GridUtils {
     }
 
     public static List<Tile> GenerateTileCircle(GameObject[,] grid, int radius, Tile sourceTile) {
+        if (radius == -1) {
+            return GridUtils.FlattenGridTiles(grid, true);
+        }
         List<Tile> tiles = new List<Tile>() { sourceTile };
         for (int depth = 0; depth < radius; depth++) {
             var temp = new List<Tile>();

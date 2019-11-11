@@ -46,7 +46,8 @@ public class Player : ControllerInteractable {
         partyPrefabs = new List<GameObject>() {
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/GridPlayer"),
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight"),
-            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Dog")
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Dog"),
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Woodsman")
         };
     }
 
@@ -139,7 +140,6 @@ public class Player : ControllerInteractable {
             Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
             new Vector2(int.MaxValue, int.MaxValue)
         );
-
         return new List<KeyValuePair<GameObject, Vector2>>() { pair, pair, pair };
     }
 

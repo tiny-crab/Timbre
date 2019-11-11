@@ -48,6 +48,7 @@ public abstract class AttackSkill : Skill {
 
 public static class SkillUtils {
     public static Dictionary<string, Skill> skillNameToSkill = new Dictionary<string, Skill>() {
+            {"Brambles", new Brambles()},
             {"Caltrops", new CaltropsSkill()},
             {"Defend Self", new DefendSelf()},
             {"Headshot", new Headshot()},
@@ -120,6 +121,25 @@ public class DefendSelf : SelectTilesSkill {
 
 // ENEMY SELECT SKILLS
 
+public class Brambles : SelectEnemiesSkill {
+    public override int cost { get { return 1; } }
+    public override int radius { get { return -1; } }
+    public override int targets { get { return 1; } }
+
+    override public void ResolveEffect(GridEntity source, Tile tile) {
+        var maxMoves = tile.occupier.maxMoves;
+        tile.occupier.maxMoves = 0;
+        tile.occupier.overrides.Add(new GridEntity.Override(1, () => {
+            tile.occupier.maxMoves = maxMoves;
+            return true;
+        }));
+    }
+
+    override public List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {
+        return base.GetValidTiles(grid, sourceTile);
+    }
+}
+
 // ALLY SELECT SKILLS
 
 public class Revive : SelectAlliesSkill {
@@ -155,12 +175,10 @@ public class ProtectAlly : SelectAlliesSkill {
         entity.currentMoves = 0;
         entity.outOfMoves = true;
 
-        bool ProtectAllyOverride() {
+        entity.overrides.Add(new GridEntity.Override(0, () => {
             entity.damageReceiver = entity;
             return true;
-        }
-
-        entity.overrides.Add(new GridEntity.Override(0, ProtectAllyOverride));
+        }));
     }
 }
 

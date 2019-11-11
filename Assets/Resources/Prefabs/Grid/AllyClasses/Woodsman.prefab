@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &2547804436450261923
+--- !u!1001 &3279989698409804729
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_Name
-      value: Dog
+      value: Woodsman
       objectReference: {fileID: 0}
     - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -57,31 +57,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: skillNames.Array.size
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
+      propertyPath: skillNames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
       propertyPath: name
-      value: Ramdog
+      value: Rodrigo
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: maxHP
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: maxMoves
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -101,17 +101,22 @@ PrefabInstance:
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: maxSP
-      value: 4
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: maxSkillUses
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: skillNames.Array.data[0]
-      value: HitAndRun
+      value: Brambles
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
-      propertyPath: skillNames.Array.data[1]
-      value: Maul
+      propertyPath: outOfSkillUses
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -138,6 +143,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: ffb66b0844a294fab80cf80372e16e22, type: 2}
+      objectReference: {fileID: 9100000, guid: 57a12fb5e25dd467980e87aabc68df16, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}

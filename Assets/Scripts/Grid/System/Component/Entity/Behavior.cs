@@ -115,6 +115,7 @@ public class RangedAttackV1 : Behavior {
 
         // get tiles that are valid to move to in this turn
         var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile);
+        nextTurnRange.Add(entity.tile);
 
         // score each tile in valid move range with distance to be in range of target
         var nextMoveMap = new Dictionary<Tile, int>();
