@@ -67,6 +67,13 @@ public class GridEntity : MonoBehaviour {
     public List<string> behaviorNames;
     public List<Behavior> behaviors = new List<Behavior>();
 
+    // Fear
+    public int fearValue;
+    public List<string> fearNames;
+    public List<Fear> fears = new List<Fear>();
+    public List<string> afraidBehaviorNames;
+    public List<Behavior> afraidBehaviors = new List<Behavior>();
+
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
     public Color attackRangeColor;
@@ -95,6 +102,8 @@ public class GridEntity : MonoBehaviour {
         currentSP = maxSP;
         skills = skillNames.ToSkills();
         behaviors = behaviorNames.ToBehaviors(this);
+        fears = fearNames.ToFears();
+        afraidBehaviors = afraidBehaviorNames.ToBehaviors(this);
         healthBar = GenerateHealthBar();
         UpdateHealthBar();
     }
@@ -233,6 +242,13 @@ public class GridEntity : MonoBehaviour {
             if (x.turnDuration < 0) { x.overrideFunction(); }
         });
         overrides = overrides.Where(x => x.turnDuration >= 0).ToList();
+
+        fearValue = fears.Select(fear => fear.CalculateFear(this)).Sum();
+
+        // once an enemy becomes afraid, they will stay afraid
+        if (behaviors.Count > 0 && fearValue >= 4) {
+            behaviors = afraidBehaviors;
+        }
     }
 
     public void RefreshEncounterResources() {

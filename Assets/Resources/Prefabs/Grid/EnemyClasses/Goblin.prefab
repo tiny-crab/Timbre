@@ -89,6 +89,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
+      propertyPath: fearNames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: afraidBehaviorNames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
       propertyPath: health
       value: 4
       objectReference: {fileID: 0}
@@ -155,7 +165,7 @@ PrefabInstance:
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: behaviorNames.Array.data[0]
-      value: RangedAttackV1
+      value: MeleeAttackV1
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -179,6 +189,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9170540517610406404, guid: d2b1cb4d9d31246c0bf88df08950996e,
         type: 3}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: fearNames.Array.data[0]
+      value: Damage
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: afraidBehaviorNames.Array.data[0]
+      value: Flee
+      objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Sprite
