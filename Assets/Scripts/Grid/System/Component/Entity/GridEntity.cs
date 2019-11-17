@@ -71,8 +71,10 @@ public class GridEntity : MonoBehaviour {
     public int fearValue;
     public List<string> fearNames;
     public List<Fear> fears = new List<Fear>();
+    public int fearThreshold;
     public List<string> afraidBehaviorNames;
     public List<Behavior> afraidBehaviors = new List<Behavior>();
+
 
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
@@ -246,7 +248,7 @@ public class GridEntity : MonoBehaviour {
         fearValue = fears.Select(fear => fear.CalculateFear(this)).Sum();
 
         // once an enemy becomes afraid, they will stay afraid
-        if (behaviors.Count > 0 && fearValue >= 4) {
+        if (behaviors.Count > 0 && fearValue >= fearThreshold) {
             behaviors = afraidBehaviors;
         }
     }

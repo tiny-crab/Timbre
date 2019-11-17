@@ -163,6 +163,8 @@ public class Flee : Behavior {
     private Dictionary<Tile, int> ScoreGrid(GameObject[,] grid) {
         tiles = GridUtils.FlattenGridTiles(grid);
 
+        var edges = GridUtils.GetEdgesOfEnabledGrid(grid);
+
         // find all valid targets that could do damage to this entity
         var targets = BehaviorUtils.GetAllEntitiesFromGrid(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
 
@@ -179,6 +181,10 @@ public class Flee : Behavior {
             var score = targetRanges.Select(attackTile =>
                 (Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)) * -1
             ).Sum();
+
+            if (edges.Contains(tile)) {
+                score *= 2;
+            }
             nextMoveMap[tile] = score;
         });
         return nextMoveMap;
@@ -197,6 +203,11 @@ public class Flee : Behavior {
             entity.tile.x, entity.tile.y,
             nextTile.x, nextTile.y
         );
+
+        if (GridUtils.GetEdgesOfEnabledGrid(tilemap.grid).Contains(nextTile)) {
+            this.entity.RemoveFromGrid();
+            combat.currentFaction.entities.Remove(this.entity);
+        }
 
         return true;
     }
