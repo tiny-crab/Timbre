@@ -111,6 +111,8 @@ public class GridSystem : MonoBehaviour {
             .Where(tile => !tile.disabled).ToList()
             .ForEach(tile => tile.gameObject.SetActive(false));
 
+        tilemap.ResetTileSelection();
+
         combat.factions.ToList()
             .Where(faction => faction.isHostileFaction).ToList()
             .ForEach(faction => {

@@ -47,12 +47,19 @@ public class TilemapComponent {
 
     public SelectedTiles skillSelected = new SelectedTiles(Tile.HighlightTypes.SkillSelect);
 
+    public SelectedTiles testTiles = new SelectedTiles(Tile.HighlightTypes.Test);
+
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
         parent = gridSystem;
         grid = initTileMap;
     }
 
     public void ResetTileSelection (params SelectedTiles[] targets) {
+        if (targets.Count() == 0) {
+            targets = new SelectedTiles[] {
+                testTiles, attackRange, moveRange, skillRange, skillSelected
+            };
+        }
         targets.ToList().ForEach( selectedTiles => {
             selectedTiles.tiles.ForEach(t => t.RemoveHighlight(selectedTiles.name));
             selectedTiles.Clear(grid);

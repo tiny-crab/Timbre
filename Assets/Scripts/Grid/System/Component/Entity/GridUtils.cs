@@ -55,6 +55,30 @@ public static class GridUtils {
         return adjacentGameObjects.Select(o => o.GetComponent<Tile>()).Where(tile => !tile.disabled).ToList();
     }
 
+    public static List<Tile> GetEdgesOfEnabledGrid (GameObject[,] grid) {
+        var allEnabledTiles = FlattenGridTiles(grid, true).Where(tile => tile.gameObject.activeInHierarchy);
+        var columnValues = allEnabledTiles.Select(tile => tile.x);
+        var rowValues = allEnabledTiles.Select(tile => tile.y);
+
+        var eastWestEdges = rowValues.SelectMany(rowId => {
+            var row = allEnabledTiles.Where(tile => tile.y == rowId).OrderBy(tile => tile.x);
+            return new List<Tile>() {
+                { row.First() },
+                { row.Last() }
+            };
+        });
+
+        var northSouthEdges = columnValues.SelectMany(columnId => {
+            var column = allEnabledTiles.Where(tile => tile.x == columnId).OrderBy(tile => tile.y);
+            return new List<Tile>() {
+                { column.First() },
+                { column.Last() }
+            };
+        });
+
+        return eastWestEdges.Concat(northSouthEdges).ToList();
+    }
+
     public static List<Tile> FlattenGridTiles(GameObject[,] grid, bool onlyEnabled=false) {
         var aggregate = new List<Tile>();
         for (int i = 0; i < grid.GetLength(0); i++) {

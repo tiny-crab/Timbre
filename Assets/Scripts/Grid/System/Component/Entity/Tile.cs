@@ -14,6 +14,9 @@ public class Tile : MonoBehaviour {
 
         // select
         public const string SkillSelect = "skill_select";
+
+        // test
+        public const string Test = "test";
     }
 
     public int x = 0;
@@ -81,6 +84,9 @@ public class Tile : MonoBehaviour {
             }
             if (currentHighlights.Contains(HighlightTypes.SkillSelect)) {
                 tileColor = Color.magenta;
+            }
+            if (currentHighlights.Contains(HighlightTypes.Test)) {
+                tileColor = Color.white;
             }
             if (currentHighlights.Count == 0) {
                 tileColor = unselectedColor;
