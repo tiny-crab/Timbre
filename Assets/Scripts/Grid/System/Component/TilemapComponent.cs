@@ -99,7 +99,7 @@ public class TilemapComponent {
     }
 
     public void GenerateMoveRange(GridEntity entity) {
-        moveRange.tiles = GridUtils.GenerateTileCircle(grid, entity.currentMoves, entity.tile)
+        moveRange.tiles = GridUtils.GenerateTileCircle(grid, entity.currentMoves, entity.tile, true)
                             .Where(tile => tile.occupier == null)
                             .ToList();
         moveRange.Highlight();

@@ -9,8 +9,83 @@ public static class GridUtils {
         return Mathf.Abs(Mathf.Abs(origin.x) - Mathf.Abs(dest.x)) + Mathf.Abs(Mathf.Abs(origin.y) - Mathf.Abs(dest.y));
     }
 
-    public static List<Tile> GenerateTileCircle(GameObject[,] grid, int radius, Tile sourceTile) {
-        return GridUtils.FlattenGridTiles(grid, true).Where(tile => GetDistanceBetweenTiles(tile, sourceTile) <= radius).ToList();
+    // public static int GetWalkingDistanceBetweenTiles(GameObject[,] grid, Tile origin, Tile dest) {
+
+    // }
+
+    public static List<Tile> GetPathBetweenTiles(GameObject[,] grid, Tile origin, Tile dest, bool onlyActiveTiles = true) {
+
+        int Heuristic(Tile tile) {
+            return 0;
+        }
+
+        List<Tile> ReconstructPath(Dictionary<Tile, Tile> pathDict, Tile current) {
+            var totalPath = new List<Tile> { current };
+            while (pathDict.Keys.Contains(current)) {
+                current = pathDict[current];
+                totalPath.Add(current);
+            }
+            totalPath.Reverse();
+            return totalPath;
+        }
+
+        var open = new List<Tile> { origin };
+
+        var cameFrom = new Dictionary<Tile, Tile>();
+        var gScore = new Dictionary<Tile, int> {
+            { origin, 0 }
+        };
+        var fScore = new Dictionary<Tile, int> {
+            { origin, Heuristic(origin) }
+        };
+
+        var iterations = 0;
+
+        while (open.Count() != 0) {
+            var currentTile = open.OrderBy(tile => fScore[tile]).First();
+            if (currentTile == dest) {
+                return ReconstructPath(cameFrom, currentTile);
+            }
+            open.Remove(currentTile);
+            var neighbors = GetAdjacentTiles(grid, currentTile).Where(tile => tile.enabled).ToList();
+            if (onlyActiveTiles) {
+                neighbors = neighbors.Where(tile => tile.gameObject.activeInHierarchy).ToList();
+            }
+            neighbors.ForEach(neighbor => {
+                var tentativeGScore = gScore[currentTile] + 1;
+                if (!gScore.Keys.Contains(neighbor)) {
+                    gScore.Add(neighbor, int.MaxValue);
+                }
+                if (tentativeGScore < gScore[neighbor]) {
+                    cameFrom[neighbor] = currentTile;
+                    gScore[neighbor] = tentativeGScore;
+                    fScore[neighbor] = tentativeGScore + Heuristic(neighbor);
+                    if (!open.Contains(neighbor)) {
+                        open.Add(neighbor);
+                    }
+                }
+            });
+            iterations++;
+            if (iterations == 1000) {
+                Debug.Log("Pathfinding infinitely looped");
+                break;
+            }
+        }
+
+        // empty path is considered failure
+        return new List<Tile>();
+    }
+
+    public static List<Tile> GenerateTileCircle(GameObject[,] grid, int radius, Tile sourceTile, bool movement = false) {
+        var circle = GridUtils.FlattenGridTiles(grid, true).Where(tile => GetDistanceBetweenTiles(tile, sourceTile) <= radius).ToList();
+        if (movement) {
+            circle = circle.Where(tile => {
+                // this path length is decremented because it contains source tile
+                var pathLength = GetPathBetweenTiles(grid, sourceTile, tile, true).Count() - 1;
+                return pathLength > 0 && pathLength <= radius;
+            }).ToList();
+        }
+        return circle;
     }
 
     // TODO optimize this when it is beginning to lag more
