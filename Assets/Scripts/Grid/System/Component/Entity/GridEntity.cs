@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 public class GridEntity : MonoBehaviour {
 
@@ -200,6 +201,8 @@ public class GridEntity : MonoBehaviour {
         }
         if (currentAttacks <= 0) { outOfAttacks = true; }
         if (currentAttackSkill != null) { UseSkill(currentAttackSkill); }
+
+        transform.DOMove(target.gameObject.transform.position, .3f);
     }
 
     private List<AttackReaction> TriggerAttackReaction(GridEntity attacker) {
