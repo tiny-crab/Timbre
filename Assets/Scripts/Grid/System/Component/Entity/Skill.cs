@@ -4,13 +4,19 @@ using System.Linq;
 using UnityEngine;
 
 public interface Skill {
+    string name {get;}
+    string desc {get;}
     int cost {get;}
 }
 
 public abstract class SelectTilesSkill : Skill {
+    public abstract string name {get;}
+    public abstract string desc {get;}
+
     public abstract int cost {get;}
     public abstract int radius {get;}
     public abstract int targets {get;}
+
     public abstract void ResolveEffect(GridEntity source, Tile tile);
     public virtual List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {
         return GridUtils.GenerateTileCircle(grid, radius, sourceTile);
@@ -36,11 +42,17 @@ public abstract class SelectAlliesSkill : SelectTilesSkill {
 }
 
 public abstract class BuffSkill : Skill {
+    public abstract string name {get;}
+    public abstract string desc {get;}
+
     public abstract int cost {get;}
     public abstract void ResolveEffect(GridEntity source);
 }
 
 public abstract class AttackSkill : Skill {
+    public abstract string name {get;}
+    public abstract string desc {get;}
+
     public abstract int cost {get;}
     public abstract void BeforeAttack(GridEntity attacker, GridEntity target);
     public abstract void AfterAttack(GridEntity attacker, GridEntity target);
@@ -94,6 +106,14 @@ public static class SkillUtils {
 // TILE SELECT SKILLS
 
 public class CaltropsSkill : SelectTilesSkill {
+    public override string name { get {
+        return "Caltrops";
+    } }
+    public override string desc { get {
+        return "Target: Spaces within 2 tiles" +
+        "\n\tScatter spikes on tiles nearby. Does 1 damage when stepped on.";
+    } }
+
     public override int cost { get { return 1; } }
     public override int radius { get { return 2; } }
     public override int targets { get { return 2; } }
@@ -108,6 +128,14 @@ public class CaltropsSkill : SelectTilesSkill {
 }
 
 public class DefendSelf : SelectTilesSkill {
+    public override string name { get {
+        return "Defend Self";
+    } }
+    public override string desc { get {
+        return "Target: Adjacent tile" +
+        "\n\tNullify all ranged attacks and melee attacks from the selected tile";
+    } }
+
     public override int cost { get { return 1; } }
     public override int radius { get { return 1; } }
     public override int targets { get { return 1; } }
@@ -122,6 +150,14 @@ public class DefendSelf : SelectTilesSkill {
 // ENEMY SELECT SKILLS
 
 public class Brambles : SelectEnemiesSkill {
+    public override string name { get {
+        return "Brambles";
+    } }
+    public override string desc { get {
+        return "Target: Enemy in combat" +
+        "\n\tImmobilize an enemy for one turn.";
+    } }
+
     public override int cost { get { return 1; } }
     public override int radius { get { return int.MaxValue; } }
     public override int targets { get { return 1; } }
@@ -143,6 +179,14 @@ public class Brambles : SelectEnemiesSkill {
 // ALLY SELECT SKILLS
 
 public class Revive : SelectAlliesSkill {
+    public override string name { get {
+        return "Revive";
+    } }
+    public override string desc { get {
+        return "Target: Adjacent ally with 0 HP" +
+        "\n\tBring an ally back into the fray.";
+    } }
+
     public override int cost { get { return 1; } }
     public override int radius { get { return 1; } }
     public override int targets { get { return 1; } }
@@ -162,6 +206,14 @@ public class Revive : SelectAlliesSkill {
 }
 
 public class ProtectAlly : SelectAlliesSkill {
+    public override string name { get {
+        return "Protect Ally";
+    } }
+    public override string desc { get {
+        return "Target: Adjacent ally" +
+        "\n\tAbsorb damage on behalf of the selected ally.";
+    } }
+
     public override int cost { get { return 1; } }
     public override int radius { get { return 1; } }
     public override int targets { get { return 1; } }
@@ -184,6 +236,14 @@ public class ProtectAlly : SelectAlliesSkill {
 
 // BUFF SKILLS
 public class Retaliate : BuffSkill {
+    public override string name { get {
+        return "Retaliate";
+    } }
+    public override string desc { get {
+        return "Triggered: When melee attacked by enemy" +
+        "\n\tDouble damage after being attacked.";
+    } }
+
     public override int cost { get { return 1; } }
 
     override public void ResolveEffect(GridEntity source) {
@@ -194,6 +254,14 @@ public class Retaliate : BuffSkill {
 
 // ATTACKING SKILLS
 public class Headshot : AttackSkill {
+    public override string name { get {
+        return "Headshot";
+    } }
+    public override string desc { get {
+        return "Target: Enemy in attack range" +
+        "\n\t25% chance to do triple damage.";
+    } }
+
     public override int cost { get { return 2; } }
 
     override public void BeforeAttack(GridEntity attacker, GridEntity target) {
@@ -208,6 +276,14 @@ public class Headshot : AttackSkill {
 }
 
 public class HitAndRun : AttackSkill {
+    public override string name { get {
+        return "Hit and Run";
+    } }
+    public override string desc { get {
+        return "Target: Enemy in attack range" +
+        "\n\tRegain double your max movement after attacking an enemy.";
+    } }
+
     public override int cost { get { return 1; } }
 
     override public void BeforeAttack(GridEntity attacker, GridEntity target) {

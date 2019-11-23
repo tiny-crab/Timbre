@@ -8,6 +8,7 @@ public class GridEntity : MonoBehaviour {
 
     // character info
     public string name;
+    public string subname;
 
     // HP
     public int maxHP;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridSystem : MonoBehaviour {
 
@@ -15,6 +16,7 @@ public class GridSystem : MonoBehaviour {
     public GameObject tile;
 
     public GridEntity gridPlayer;
+    public GridEntity lastSelectedAlly;
 
     // TODO SIDE: these feel like utility functions and should be moved
     public bool waiting = false;
@@ -42,6 +44,8 @@ public class GridSystem : MonoBehaviour {
     // TODO SIDE: Audio + UI should be in a different class
     public Dialog dialog;
     public AudioClip dialogNoise;
+
+    public GameObject skillMenu;
 
     public enum State {
         NO_SELECTION,
@@ -136,6 +140,8 @@ public class GridSystem : MonoBehaviour {
     void Start () {
         CreateTilemapComponent();
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
+        skillMenu = GameObject.Find("SkillMenu");
+        skillMenu.SetActive(false);
         DeactivateGrid();
     }
 
@@ -144,6 +150,10 @@ public class GridSystem : MonoBehaviour {
     void Update () {
 
         var mouseTile = GetTileUnderMouse();
+
+        lastSelectedAlly = combat.selectedEntity ?? gridPlayer;
+        if (Input.GetKeyDown(KeyCode.Tab)) { ToggleSkillMenu(); }
+        UpdateSkillMenu();
 
         if (waiting) { return; }
         switch (currentState) {
@@ -388,6 +398,51 @@ public class GridSystem : MonoBehaviour {
     }
 
     void DeactivateBuffSkill() {}
+
+    void ToggleSkillMenu() {
+        skillMenu.SetActive(!skillMenu.activeInHierarchy);
+        UpdateSkillMenu();
+    }
+
+    void UpdateSkillMenu() {
+        if (lastSelectedAlly == null) { return; }
+
+        var title = skillMenu.transform.Find("Title");
+        var nameText = (Text) title.transform.Find("Name").GetComponent<Text>();
+        var subnameText = (Text) title.transform.Find("Subname").GetComponent<Text>();
+
+        nameText.text = lastSelectedAlly.name;
+        subnameText.text = lastSelectedAlly.subname;
+
+        var skillElements = new List<Transform> {
+            skillMenu.transform.Find("Skill1"),
+            skillMenu.transform.Find("Skill2"),
+            skillMenu.transform.Find("Skill3")
+        };
+
+        var skillNameTexts = skillElements.Select(element => {
+            return element.Find("SkillName").GetComponent<Text>();
+        }).ToList();
+
+        var skillDescTexts = skillElements.Select(element => {
+            return element.Find("SkillDesc").GetComponent<Text>();
+        }).ToList();
+
+        lastSelectedAlly.skills.ForEach(skill => {
+            var skillNameText = skillNameTexts[0];
+            skillNameTexts.Remove(skillNameText);
+
+            skillNameText.text = skill.name ?? "";
+
+            var skillDescText = skillDescTexts[0];
+            skillDescTexts.Remove(skillDescText);
+
+            skillDescText.text = skill.desc ?? "";
+        });
+
+        skillNameTexts.ForEach(text => text.text = "");
+        skillDescTexts.ForEach(text => text.text = "");
+    }
 
     IEnumerator WaitAMoment(float waitTime, string name) {
         waiting = true;
