@@ -70,7 +70,8 @@ public class GridEntity : MonoBehaviour {
     public List<Behavior> behaviors = new List<Behavior>();
 
     // Fear
-    public int fearValue;
+    public int baseFearValue;
+    public int totalFearValue;
     public List<string> fearNames;
     public List<Fear> fears = new List<Fear>();
     public int fearThreshold;
@@ -249,10 +250,10 @@ public class GridEntity : MonoBehaviour {
         });
         overrides = overrides.Where(x => x.turnDuration >= 0).ToList();
 
-        fearValue = fears.Select(fear => fear.CalculateFear(this)).Sum();
+        totalFearValue = fears.Select(fear => fear.CalculateFear(this)).Sum() + baseFearValue;
 
         // once an enemy becomes afraid, they will stay afraid
-        if (behaviors.Count > 0 && fearValue >= fearThreshold) {
+        if (behaviors.Count > 0 && totalFearValue >= fearThreshold) {
             behaviors = afraidBehaviors;
         }
     }

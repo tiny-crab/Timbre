@@ -65,7 +65,7 @@ public static class SkillUtils {
             {"Defend Self", new DefendSelf()},
             {"Headshot", new Headshot()},
             {"HitAndRun", new HitAndRun()},
-            {"Maul", new Headshot()},
+            {"Maul", new Maul()},
             {"Protect Ally", new ProtectAlly()},
             {"Retaliate", new Retaliate()},
             {"Revive", new Revive()}
@@ -292,5 +292,27 @@ public class HitAndRun : AttackSkill {
 
     override public void AfterAttack(GridEntity attacker, GridEntity target) {
         attacker.currentMoves += attacker.maxMoves * 2;
+    }
+}
+
+public class Maul : AttackSkill {
+    public override string name { get {
+        return "Maul";
+    } }
+    public override string desc { get {
+        return "Target: Enemy in attack range" +
+        "\n\t50% chance to make enemy instantly afraid.";
+    } }
+
+    public override int cost { get { return 1; } }
+
+    override public void BeforeAttack(GridEntity attacker, GridEntity target) {
+        // do nothing
+    }
+
+    override public void AfterAttack(GridEntity attacker, GridEntity target) {
+        if (SkillUtils.Gamble(SkillUtils.GambleOdds.COIN)) {
+            target.baseFearValue = target.fearThreshold;
+        }
     }
 }
