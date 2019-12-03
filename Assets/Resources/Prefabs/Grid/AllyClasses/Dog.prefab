@@ -139,6 +139,16 @@ PrefabInstance:
       propertyPath: subname
       value: Loyal Companion
       objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: entityName
+      value: Dog
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: entitySubname
+      value: Loyal Companion
+      objectReference: {fileID: 0}
     - target: {fileID: -8292581000985229284, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Controller
