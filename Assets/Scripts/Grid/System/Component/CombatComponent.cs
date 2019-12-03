@@ -28,14 +28,16 @@ public class CombatComponent {
             } else {
                 // what is the tile they are clicking on? do they want to move? do they want to attack?
                 if(targetTile.occupier != null) {
+                    var target = targetTile.occupier;
+
                     // clicking on another entity
                     // if entity is enemy: Attack
-                    if (targetTile.occupier.isHostile && parent.tilemap.attackRange.Contains(targetTile)) {
+                    if (target.isHostile && parent.tilemap.attackRange.Contains(targetTile)) {
                         if (selectedEntity.currentAttackSkill != null) {
 
-                            selectedEntity.currentAttackSkill.BeforeAttack(selectedEntity, targetTile.occupier);
-                            selectedEntity.MakeAttack(targetTile.occupier);
-                            selectedEntity.currentAttackSkill.AfterAttack(selectedEntity, targetTile.occupier);
+                            selectedEntity.currentAttackSkill.BeforeAttack(selectedEntity, target);
+                            selectedEntity.MakeAttack(target);
+                            selectedEntity.currentAttackSkill.AfterAttack(selectedEntity, target);
 
                         }
                         else { selectedEntity.MakeAttack(targetTile.occupier); }
