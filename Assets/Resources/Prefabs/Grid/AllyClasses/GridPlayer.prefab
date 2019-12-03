@@ -228,6 +228,16 @@ PrefabInstance:
       propertyPath: subname
       value: Grim Apprentice
       objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: entityName
+      value: Gethis
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: entitySubname
+      value: Grim Apprentice
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
 --- !u!1 &8454990926010455681 stripped

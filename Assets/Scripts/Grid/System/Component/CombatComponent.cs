@@ -54,7 +54,7 @@ public class CombatComponent {
     public void SelectEntity(GridEntity entity) {
         if (currentFaction.entities.Contains(entity)) {
             selectedEntity = entity;
-            parent.dialog.PostToDialog("Selected " + selectedEntity.name, null, false);
+            parent.dialog.PostToDialog("Selected " + selectedEntity.entityName, null, false);
         }
         else {
             // show some information about the enemy (?)

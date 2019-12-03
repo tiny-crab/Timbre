@@ -7,7 +7,7 @@ public class CameraController : MonoBehaviour
     public GameObject player;
     public float height = -10f;
 
-    private Camera camera;
+    private Camera playerCamera;
 
     private float moveCameraRadius = 2f;
     private bool transitioning = false;
@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        camera = this.GetComponent<Camera>();
+        playerCamera = this.GetComponent<Camera>();
         gridSystem = (GridSystem) GameObject.Find("GridSystem").GetComponent<GridSystem>();
         transform.position = new Vector3(
             player.transform.position.x,
@@ -63,8 +63,8 @@ public class CameraController : MonoBehaviour
         }
 
         // zooming when grid is activated
-        if (camera.orthographicSize != targetOrtho) {
-            camera.orthographicSize = Mathf.MoveTowards (camera.orthographicSize, targetOrtho, smoothZoomSpeed * Time.deltaTime);
+        if (playerCamera.orthographicSize != targetOrtho) {
+            playerCamera.orthographicSize = Mathf.MoveTowards (playerCamera.orthographicSize, targetOrtho, smoothZoomSpeed * Time.deltaTime);
         }
     }
 }

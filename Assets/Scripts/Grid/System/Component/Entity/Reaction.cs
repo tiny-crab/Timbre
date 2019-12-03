@@ -29,8 +29,8 @@ public class DefendSelfReaction : AttackReaction {
     public override bool ResolveAttack(GridEntity attacker, GridEntity target) {
         // target takes no damage
         Debug.Log(String.Format("<color=blue>{0}</color> attacked <color=red>{1}</color>, but <color=red>{1}</color> defended themselves.",
-            attacker.name,
-            target.name
+            attacker.entityName,
+            target.entityName
         ));
         return false;
     }

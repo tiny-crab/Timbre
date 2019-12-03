@@ -7,8 +7,8 @@ using DG.Tweening;
 public class GridEntity : MonoBehaviour {
 
     // character info
-    public string name;
-    public string subname;
+    public string entityName;
+    public string entitySubname;
 
     // HP
     public int maxHP;
@@ -183,12 +183,12 @@ public class GridEntity : MonoBehaviour {
         void ResolveDefaultAttack() {
             target.TakeDamage(calculatedDamage);
             Debug.Log(String.Format("<color=blue>{0}</color> attacked <color=red>{1}</color> for <color=yellow>{2} damage</color>.",
-                this.name,
-                target.name,
+                this.entityName,
+                target.entityName,
                 calculatedDamage
             ));
             Debug.Log(String.Format("<color=red>{0}</color> has <color=yellow>{1} health</color> remaining.",
-                target.name,
+                target.entityName,
                 target.currentHP
             ));
         }
@@ -219,8 +219,8 @@ public class GridEntity : MonoBehaviour {
         currentSkillUses--;
         if (currentSkillUses <= 0) { outOfSkillUses = true; }
         if (currentSP <= 0) { outOfSP = true; }
-        Debug.Log("<color=blue>" + name + "</color> used <color=green>" + skill.GetType().Name + "</color>");
-        Debug.Log("<color=blue>" + name + "</color> has <color=green>" + currentSP + "</color> SP remaining.");
+        Debug.Log("<color=blue>" + entityName + "</color> used <color=green>" + skill.GetType().Name + "</color>");
+        Debug.Log("<color=blue>" + entityName + "</color> has <color=green>" + currentSP + "</color> SP remaining.");
     }
 
     public void ConsumeTurnResources() {

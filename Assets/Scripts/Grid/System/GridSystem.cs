@@ -411,8 +411,8 @@ public class GridSystem : MonoBehaviour {
         var nameText = (Text) title.transform.Find("Name").GetComponent<Text>();
         var subnameText = (Text) title.transform.Find("Subname").GetComponent<Text>();
 
-        nameText.text = lastSelectedAlly.name;
-        subnameText.text = lastSelectedAlly.subname;
+        nameText.text = lastSelectedAlly.entityName;
+        subnameText.text = lastSelectedAlly.entitySubname;
 
         var skillElements = new List<Transform> {
             skillMenu.transform.Find("Skill1"),
