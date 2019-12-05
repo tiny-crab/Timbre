@@ -249,7 +249,6 @@ public class GridSystem : MonoBehaviour {
             case State.END_TURN:
 
                 if (combat.currentFaction.isHostileFaction) {
-                    combat.TriggerAITurn();
                     currentState = State.AI_TURN;
                 }
                 else if (combat.currentFaction.isPlayerFaction) {
@@ -260,9 +259,23 @@ public class GridSystem : MonoBehaviour {
 
             case State.AI_TURN:
 
-                combat.EndTurn();
-                StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
-                currentState = State.END_TURN;
+                if (combat.aiSteps == null) {
+                    combat.aiSteps = combat.DetermineAITurns();
+                } else {
+                    var nextStep = combat.aiSteps.First();
+                    combat.aiSteps.RemoveAt(0);
+                    nextStep.ToList().ForEach(behavior => behavior.DoBestAction(combat, tilemap));
+                    StartCoroutine(
+                        WaitAMoment(aiStepTime, String.Format("Finishing actions on target {0}", nextStep.First().entity))
+                    );
+                    if (combat.aiSteps.Count() == 0) {
+                        combat.aiSteps = null;
+                        combat.EndTurn();
+                        StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
+                        currentState = State.END_TURN;
+                    }
+                }
+
                 break;
 
 
@@ -444,7 +457,7 @@ public class GridSystem : MonoBehaviour {
         skillDescTexts.ForEach(text => text.text = "");
     }
 
-    IEnumerator WaitAMoment(float waitTime, string name) {
+    public IEnumerator WaitAMoment(float waitTime, string name) {
         waiting = true;
         Debug.Log("Waiting for... " + name);
         yield return new WaitForSeconds(waitTime);

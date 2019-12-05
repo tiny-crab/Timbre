@@ -19,6 +19,7 @@ public abstract class Behavior {
     public GridEntity entity;
     public List<Tile> tiles;
     public KeyValuePair<Tile, int> bestAction;
+    public GridEntity bestTarget;
     public abstract int FindBestAction(GameObject[,] grid);
     public abstract bool DoBestAction(CombatComponent combat, TilemapComponent tilemap);
 }
@@ -82,6 +83,7 @@ public class MeleeAttackV1 : Behavior {
 
     public override int FindBestAction(GameObject[,] grid) {
         bestAction = ScoreGrid(grid).OrderBy(element => element.Value).First();
+        bestTarget = bestAction.Key.occupier;
         return bestAction.Value;
     }
     public override bool DoBestAction(CombatComponent combat, TilemapComponent tilemap) {
@@ -135,6 +137,7 @@ public class RangedAttackV1 : Behavior {
 
     public override int FindBestAction(GameObject[,] grid) {
         bestAction = ScoreGrid(grid).OrderBy(element => element.Value).First();
+        bestTarget = bestAction.Key.occupier;
         return bestAction.Value;
     }
 
@@ -192,6 +195,7 @@ public class Flee : Behavior {
 
     public override int FindBestAction(GameObject[,] grid) {
         bestAction = ScoreGrid(grid).OrderBy(element => element.Value).First();
+        bestTarget = entity;
         return bestAction.Value;
     }
 

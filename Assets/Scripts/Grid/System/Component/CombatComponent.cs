@@ -11,6 +11,8 @@ public class CombatComponent {
     public Faction currentFaction;
     public Queue<Faction> factions = new Queue<Faction>();
 
+    public List<IGrouping<GridEntity, Behavior>> aiSteps;
+
     public GridEntity selectedEntity;
 
     public void Start(GridSystem gridSystem, params Faction[] factions) {
@@ -70,12 +72,15 @@ public class CombatComponent {
         factions.Enqueue(previousFaction);
     }
 
-    public void TriggerAITurn() {
-        currentFaction.entities.Where(entity => !entity.outOfHP).ToList().ForEach(aiEntity => {
-            aiEntity.behaviors
+    public List<IGrouping<GridEntity, Behavior>> DetermineAITurns() {
+        var aiActionsByTarget = currentFaction.entities.Where(entity => !entity.outOfHP).ToList().Select(aiEntity => {
+            return aiEntity.behaviors
                 .OrderBy(behavior => behavior.FindBestAction(parent.tilemap.grid))
-                .First()
-                .DoBestAction(this, parent.tilemap);
-        });
+                .First();
+        })
+        .GroupBy(behavior => behavior.bestTarget)
+        .ToList();
+
+        return aiActionsByTarget;
     }
 }
