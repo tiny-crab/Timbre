@@ -66,16 +66,22 @@ public class MeleeAttackV1 : Behavior {
     private Dictionary<Tile, int> ScoreGrid(GameObject[,] grid) {
         tiles = GridUtils.FlattenGridTiles(grid);
 
+        // find all valid targets for a melee attack
         var targets = BehaviorUtils.GetAllEntitiesFromGrid(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
 
+        // get all the tiles that the aiEntity can use to attack each target
         var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileCircle(grid, 1, target.tile)).ToList();
-        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile);
 
+        // get tiles that are valid to move to in this turn
+        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile);
+        nextTurnRange.Add(entity.tile);
+
+        // score each tile in valid move range with distance to be in range of target
         var nextMoveMap = new Dictionary<Tile, int>();
         nextTurnRange.ForEach(tile => {
             var score = targetRanges.Select(attackTile =>
                 Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)
-            ).Sum();
+            ).Min();
             nextMoveMap[tile] = score;
         });
         return nextMoveMap;

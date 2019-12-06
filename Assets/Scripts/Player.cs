@@ -140,7 +140,14 @@ public class Player : ControllerInteractable {
             Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
             new Vector2(int.MaxValue, int.MaxValue)
         );
-        return new List<KeyValuePair<GameObject, Vector2>>() { pair, pair, pair };
+        return new List<KeyValuePair<GameObject, Vector2>>() {
+            pair,
+            pair,
+            pair,
+            pair,
+            pair,
+            pair,
+        };
     }
 
     private void DeactivateGrid() {
