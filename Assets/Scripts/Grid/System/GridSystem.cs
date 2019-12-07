@@ -196,7 +196,7 @@ public class GridSystem : MonoBehaviour {
                     if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
                         skillKeys.ForEach(keyPressed => {
                             if (Input.GetKeyDown(keyPressed)) {
-                                ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
+                                currentState = ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
                                 lastPressedKey = keyPressed;
                             }
                         });
@@ -204,7 +204,7 @@ public class GridSystem : MonoBehaviour {
                     }
                 }
                 else if (Input.GetKeyDown(KeyCode.T)) {
-                    ActivateTeleport(combat.selectedEntity);
+                    currentState = ActivateTeleport(combat.selectedEntity);
                 }
                 break;
 
@@ -225,7 +225,7 @@ public class GridSystem : MonoBehaviour {
                 }
                 else if (Input.GetKeyDown(lastPressedKey)) {
                     // select skill is canceled
-                    DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
+                    currentState = DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
                     lastPressedKey = KeyCode.E;
                     currentState = State.ALLY_SELECTED;
@@ -233,7 +233,7 @@ public class GridSystem : MonoBehaviour {
                 if (tilemap.selectTilesSkillCompleted) {
                     // select skill is complete
                     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
-                    DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
+                    currentState = DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
                     lastPressedKey = KeyCode.E;
                     currentState = State.ALLY_SELECTED;
                 }
@@ -241,7 +241,7 @@ public class GridSystem : MonoBehaviour {
                 else {
                     skillKeys.ForEach(keyPressed => {
                         if (Input.GetKeyDown(keyPressed)) {
-                            ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
+                            currentState = ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
                             lastPressedKey = keyPressed;
                         }
                     });
@@ -256,13 +256,11 @@ public class GridSystem : MonoBehaviour {
                 }
                 else if (Input.GetKeyDown(KeyCode.T)) {
                     // teleport is canceled
-                    DeactivateTeleport(combat.selectedEntity);
-                    currentState = State.ALLY_SELECTED;
+                    currentState = DeactivateTeleport(combat.selectedEntity);
                 }
                 if (tilemap.teleportCompleted) {
                     StartCoroutine(WaitAMoment(waitTime, "Teleport Deactivation"));
-                    DeactivateTeleport(combat.selectedEntity);
-                    currentState = State.ALLY_SELECTED;
+                    currentState = DeactivateTeleport(combat.selectedEntity);
                 }
 
                 break;
@@ -367,8 +365,8 @@ public class GridSystem : MonoBehaviour {
     }
 
     // TODO refactor all of the state changes into the update method - have these methods return the state to transition into
-    void ActivateSkill(GridEntity selectedEntity, int index) {
-        if (index >= selectedEntity.skills.Count) { return; }
+    State ActivateSkill(GridEntity selectedEntity, int index) {
+        if (index >= selectedEntity.skills.Count) { return currentState; }
         var skillToActivate = selectedEntity.skills[index];
         if (skillToActivate.cost > selectedEntity.currentSP) {
             dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but not enough SP", dialogNoise, false);
@@ -381,32 +379,36 @@ public class GridSystem : MonoBehaviour {
         }
         else if (skillToActivate is SelectTilesSkill) {
             ActivateSelectTilesSkill(selectedEntity, (SelectTilesSkill) skillToActivate);
+            return State.SELECT_SKILL_ACTIVATED;
         }
         else if (skillToActivate is BuffSkill) {
             ActivateBuffSkill(selectedEntity, (BuffSkill) skillToActivate);
         }
+        return currentState;
     }
 
-    void DeactivateSkill(GridEntity selectedEntity, int index) {
-        if (index >= selectedEntity.skills.Count) { return; }
+    State DeactivateSkill(GridEntity selectedEntity, int index) {
+        if (index >= selectedEntity.skills.Count) { return currentState; }
         var skillToDeactivate = selectedEntity.skills[index];
         if (skillToDeactivate is AttackSkill) {
             DeactivateAttackSkill();
         }
         else if (skillToDeactivate is SelectTilesSkill) {
             DeactivateSelectTilesSkill();
+            return State.ALLY_SELECTED;
         }
         else if (skillToDeactivate is BuffSkill) {
             DeactivateBuffSkill();
         }
         dialog.PostToDialog("Deactivated " + skillToDeactivate.GetType().Name, dialogNoise, false);
+        return currentState;
     }
 
     // TODO selectedEntity arg isn't even used... either remove the arg or remove the reference to combat.selectedEntity
     void ActivateSelectTilesSkill(GridEntity selectedEntity, SelectTilesSkill skillToActivate) {
         tilemap.ActivateSelectTilesSkill(combat.selectedEntity, skillToActivate);
         if (tilemap.skillRange.tiles.Count() != 0) {
-            currentState = State.SELECT_SKILL_ACTIVATED;
+
             dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
         } else {
             dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but there were no valid tiles", dialogNoise, false);
@@ -417,7 +419,6 @@ public class GridSystem : MonoBehaviour {
     void DeactivateSelectTilesSkill() {
         if (tilemap.selectTilesSkillCompleted) { combat.selectedEntity.UseSkill(tilemap.activatedSkill); }
         tilemap.DeactivateSelectTilesSkill(combat.selectedEntity);
-        currentState = State.ALLY_SELECTED;
     }
 
     void ActivateAttackSkill(GridEntity selectedEntity, AttackSkill skillToActivate) {
@@ -436,22 +437,24 @@ public class GridSystem : MonoBehaviour {
 
     void DeactivateBuffSkill() {}
 
-    void ActivateTeleport(GridEntity selectedEntity) {
+    State ActivateTeleport(GridEntity selectedEntity) {
         if (selectedEntity.currentTeleports >= 0) {
             tilemap.ActivateTeleport(combat.selectedEntity);
-            currentState = State.TELEPORT_ACTIVATED;
+            return State.TELEPORT_ACTIVATED;
         }
         else {
             dialog.PostToDialog("Tried to teleport but " + combat.selectedEntity.entityName + " has already teleported this encounter", dialogNoise, false);
         }
+        return currentState;
     }
 
-    void DeactivateTeleport(GridEntity selectedEntity) {
+    State DeactivateTeleport(GridEntity selectedEntity) {
         if (tilemap.teleportCompleted) {
             combat.selectedEntity.UseTeleport();
+            return State.NO_SELECTION;
         }
         tilemap.DeactivateTeleport(combat.selectedEntity);
-        currentState = State.ALLY_SELECTED;
+        return State.ALLY_SELECTED;
     }
 
     void ToggleSkillMenu() {
