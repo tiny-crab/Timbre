@@ -41,6 +41,11 @@ public class GridEntity : MonoBehaviour {
     public int currentSkillUses;
     public bool outOfSkillUses = false;
 
+    // teleportation
+    public int maxTeleports = 1;
+    public int currentTeleports;
+    public bool outOfTeleports = false;
+
     // override turnDuration is as follows:
     //      turnDuration is decremented at the beginning of an entity's turn...
     //      When an effect needs to last through the enemy's turn, duration is 0
@@ -223,6 +228,12 @@ public class GridEntity : MonoBehaviour {
         Debug.Log("<color=blue>" + entityName + "</color> has <color=green>" + currentSP + "</color> SP remaining.");
     }
 
+    public void UseTeleport() {
+        currentTeleports--;
+        if (currentTeleports <= 0) { outOfTeleports = true; }
+        Debug.Log("<color=blue>" + entityName + "</color> <color=green> teleported.</color>");
+    }
+
     public void ConsumeTurnResources() {
         currentMoves = 0;
         outOfMoves = true;
@@ -262,5 +273,6 @@ public class GridEntity : MonoBehaviour {
         RefreshTurnResources();
         currentHP = maxHP;
         outOfHP = false;
+        currentTeleports = maxTeleports;
     }
 }

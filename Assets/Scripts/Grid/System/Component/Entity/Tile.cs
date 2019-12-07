@@ -14,6 +14,7 @@ public class Tile : MonoBehaviour {
 
         // select
         public const string SkillSelect = "skill_select";
+        public const string Teleport = "teleport";
 
         // test
         public const string Test = "test";
@@ -84,6 +85,9 @@ public class Tile : MonoBehaviour {
             }
             if (currentHighlights.Contains(HighlightTypes.SkillSelect)) {
                 tileColor = Color.magenta;
+            }
+            if (currentHighlights.Contains(HighlightTypes.Teleport)) {
+                tileColor = Color.cyan;
             }
             if (currentHighlights.Contains(HighlightTypes.Test)) {
                 tileColor = Color.white;

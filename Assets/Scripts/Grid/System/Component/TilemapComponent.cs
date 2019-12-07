@@ -13,6 +13,8 @@ public class TilemapComponent {
     public SelectTilesSkill activatedSkill;
     public bool selectTilesSkillCompleted = true;
 
+    public bool teleportCompleted = true;
+
     public class SelectedTiles {
         public List<Tile> tiles;
         public string name;
@@ -44,6 +46,7 @@ public class TilemapComponent {
     public SelectedTiles moveRange = new SelectedTiles(Tile.HighlightTypes.Move);
     public SelectedTiles attackRange = new SelectedTiles(Tile.HighlightTypes.Attack);
     public SelectedTiles skillRange = new SelectedTiles(Tile.HighlightTypes.Skill);
+    public SelectedTiles teleportRange = new SelectedTiles(Tile.HighlightTypes.Teleport);
 
     public SelectedTiles skillSelected = new SelectedTiles(Tile.HighlightTypes.SkillSelect);
 
@@ -87,6 +90,11 @@ public class TilemapComponent {
                 selectTilesSkillCompleted = true;
             }
         }
+        if (teleportRange.Contains(tile)) {
+            teleportRange.Clear(grid);
+            MoveEntity(parent.combat.selectedEntity.tile.x, parent.combat.selectedEntity.tile.y, tile.x, tile.y);
+            teleportCompleted = true;
+        }
     }
 
     public void GenerateAttackRange(GridEntity entity) {
@@ -118,6 +126,19 @@ public class TilemapComponent {
         GenerateAttackRange(activeEntity);
         GenerateMoveRange(activeEntity);
         activatedSkill = null;
+    }
+
+    public void ActivateTeleport(GridEntity activeEntity) {
+        teleportRange.tiles = GridUtils.FlattenGridTiles(grid, true);
+        ResetTileSelection(moveRange, attackRange);
+        teleportRange.Highlight();
+        teleportCompleted = false;
+    }
+
+    public void DeactivateTeleport(GridEntity activeEntity) {
+        teleportRange.Clear(grid);
+        GenerateAttackRange(activeEntity);
+        GenerateMoveRange(activeEntity);
     }
 
     public void MoveEntity (int x0, int y0, int xDest, int yDest) {
