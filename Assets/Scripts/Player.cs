@@ -45,9 +45,9 @@ public class Player : ControllerInteractable {
 
         partyPrefabs = new List<GameObject>() {
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/GridPlayer"),
-            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight"),
+            // Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight"),
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Dog"),
-            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Woodsman")
+            // Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Woodsman")
         };
     }
 

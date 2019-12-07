@@ -152,10 +152,10 @@ public class GridSystem : MonoBehaviour {
         var mouseTile = GetTileUnderMouse();
 
         lastSelectedAlly = combat.selectedEntity ?? gridPlayer;
-        if (Input.GetKeyDown(KeyCode.Tab)) { ToggleSkillMenu(); }
         UpdateSkillMenu();
 
         if (waiting) { return; }
+        if (Input.GetKeyDown(KeyCode.Tab)) { ToggleSkillMenu(); }
         switch (currentState) {
 
             case State.NO_SELECTION:
@@ -423,9 +423,19 @@ public class GridSystem : MonoBehaviour {
         var title = skillMenu.transform.Find("Title");
         var nameText = (Text) title.transform.Find("Name").GetComponent<Text>();
         var subnameText = (Text) title.transform.Find("Subname").GetComponent<Text>();
+        var damage = (Image) title.transform.Find("Damage").GetComponent<Image>();
+        var damageChips = GetChipsForSkillMenu(damage.transform);
+        var moveRange = (Image) title.transform.Find("MoveRange").GetComponent<Image>();
+        var moveRangeChips = GetChipsForSkillMenu(moveRange.transform);
+        var atkRange = (Image) title.transform.Find("AtkRange").GetComponent<Image>();
+        var atkRangeChips = GetChipsForSkillMenu(atkRange.transform);
+
 
         nameText.text = lastSelectedAlly.entityName;
         subnameText.text = lastSelectedAlly.entitySubname;
+        SetChips(damageChips, lastSelectedAlly.damage);
+        SetChips(moveRangeChips, lastSelectedAlly.maxMoves);
+        SetChips(atkRangeChips, lastSelectedAlly.range);
 
         var skillElements = new List<Transform> {
             skillMenu.transform.Find("Skill1"),
@@ -455,6 +465,19 @@ public class GridSystem : MonoBehaviour {
 
         skillNameTexts.ForEach(text => text.text = "");
         skillDescTexts.ForEach(text => text.text = "");
+    }
+
+    private IEnumerable<Image> GetChipsForSkillMenu(Transform transform) {
+        return Enumerable.Range(0,8).Select(index => {
+            return (Image) transform.Find(
+                String.Format("Chip{0}", index)
+            ).GetComponent<Image>();
+        });
+    }
+
+    private void SetChips(IEnumerable<Image> chips, int number) {
+        chips.Take(number).ToList().ForEach(chip => chip.gameObject.SetActive(true));
+        chips.Skip(number).ToList().ForEach(chip => chip.gameObject.SetActive(false));
     }
 
     public IEnumerator WaitAMoment(float waitTime, string name) {
