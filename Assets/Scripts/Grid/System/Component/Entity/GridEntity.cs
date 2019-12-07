@@ -231,7 +231,7 @@ public class GridEntity : MonoBehaviour {
     public void UseTeleport() {
         currentTeleports--;
         if (currentTeleports <= 0) { outOfTeleports = true; }
-        Debug.Log("<color=blue>" + entityName + "</color> <color=green> teleported.</color>");
+        Debug.Log("<color=blue>" + entityName + "</color> <color=green>teleported.</color>");
     }
 
     public void ConsumeTurnResources() {

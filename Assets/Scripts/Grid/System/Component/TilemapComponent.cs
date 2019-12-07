@@ -92,7 +92,7 @@ public class TilemapComponent {
         }
         if (teleportRange.Contains(tile)) {
             teleportRange.Clear(grid);
-            MoveEntity(parent.combat.selectedEntity.tile.x, parent.combat.selectedEntity.tile.y, tile.x, tile.y);
+            TeleportEntity(parent.combat.selectedEntity.tile, tile);
             teleportCompleted = true;
         }
     }
@@ -129,7 +129,7 @@ public class TilemapComponent {
     }
 
     public void ActivateTeleport(GridEntity activeEntity) {
-        teleportRange.tiles = GridUtils.FlattenGridTiles(grid, true);
+        teleportRange.tiles = GridUtils.FlattenGridTiles(grid, true).Where(tile => tile.occupier == null).ToList();
         ResetTileSelection(moveRange, attackRange);
         teleportRange.Highlight();
         teleportCompleted = false;
@@ -141,16 +141,21 @@ public class TilemapComponent {
         GenerateMoveRange(activeEntity);
     }
 
-    public void MoveEntity (int x0, int y0, int xDest, int yDest) {
-        var origin = grid[x0, y0].GetComponent<Tile>();
-        var distance = Mathf.Abs(x0-xDest) + Mathf.Abs(y0-yDest);
-        if(xDest < grid.GetLength(0) && yDest < grid.GetLength(1)) {
-            var dest = grid[xDest, yDest].GetComponent<Tile>();
-            if (dest.TryOccupy(origin.occupier)) {
-                dest.occupier = origin.occupier;
-                origin.occupier = null;
-                dest.occupier.Move(distance);
-            }
+    public bool TeleportEntity(Tile origin, Tile dest) {
+        var distance = GridUtils.GetPathBetweenTiles(grid, origin, dest).Count;
+        if (dest.TryOccupy(origin.occupier)) {
+            origin.occupier = null;
+            return true;
+        } else {
+            Debug.Log(string.Format("Failed to teleport entity {0} to {1}", origin.occupier, dest.name));
+            return false;
+        }
+    }
+
+    public void MoveEntity (Tile origin, Tile dest) {
+        if (TeleportEntity(origin, dest)) {
+            var distance = GridUtils.GetPathBetweenTiles(grid, origin, dest).Count;
+            dest.occupier.Move(distance);
         }
     }
 

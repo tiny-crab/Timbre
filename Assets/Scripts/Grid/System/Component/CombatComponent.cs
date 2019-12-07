@@ -48,7 +48,7 @@ public class CombatComponent {
                 }
                 else if (parent.tilemap.moveRange.Contains(targetTile)) {
                     // if space is empty: move there (if possible)
-                    parent.tilemap.MoveEntity(selectedEntity.tile.x, selectedEntity.tile.y, targetTile.x, targetTile.y);
+                    parent.tilemap.MoveEntity(selectedEntity.tile, targetTile);
                 }
                 selectedEntity = null;
             }

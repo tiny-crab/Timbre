@@ -96,10 +96,7 @@ public class MeleeAttackV1 : Behavior {
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "MeleeAttackV1", bestAction.Value));
 
         var nextTile = bestAction.Key;
-        tilemap.MoveEntity(
-            entity.tile.x, entity.tile.y,
-            nextTile.x, nextTile.y
-        );
+        tilemap.MoveEntity(entity.tile, nextTile);
 
         var tileWithTarget = GridUtils.GenerateTileCircle(tilemap.grid, 1, entity.tile)
                             .ToList()
@@ -151,10 +148,7 @@ public class RangedAttackV1 : Behavior {
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "RangedAttackV1", bestAction.Value));
 
         var nextTile = bestAction.Key;
-        tilemap.MoveEntity(
-            entity.tile.x, entity.tile.y,
-            nextTile.x, nextTile.y
-        );
+        tilemap.MoveEntity(entity.tile, nextTile);
 
         var tileWithTarget = GridUtils.GenerateTileRing(tilemap.grid, entity.range, entity.tile)
                             .ToList()
@@ -209,10 +203,7 @@ public class Flee : Behavior {
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "Flee", bestAction.Value));
 
         var nextTile = bestAction.Key;
-        tilemap.MoveEntity(
-            entity.tile.x, entity.tile.y,
-            nextTile.x, nextTile.y
-        );
+        tilemap.MoveEntity(entity.tile, nextTile);
 
         if (GridUtils.GetEdgesOfEnabledGrid(tilemap.grid).Contains(nextTile)) {
             this.entity.RemoveFromGrid();
