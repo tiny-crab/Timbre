@@ -39,7 +39,7 @@ public class GridSystem : MonoBehaviour {
     private KeyCode lastPressedKey;
 
     public State currentState;
-    // public State previousState = State.NO_SELECTION;
+    public State previousState = State.NO_SELECTION;
 
     // TODO SIDE: Audio + UI should be in a different class
     public Dialog dialog;
@@ -161,6 +161,12 @@ public class GridSystem : MonoBehaviour {
 
             case State.NO_SELECTION:
 
+                // virtually a StateStart method
+                if (previousState != State.NO_SELECTION) {
+                    tilemap.ResetTileSelection();
+                    previousState = State.NO_SELECTION;
+                }
+
                 if (mouseTile == null) { break; }
                 else if (Input.GetMouseButtonDown(0) && mouseTile.occupier.isAllied) {
                     combat.SelectTile(mouseTile);
@@ -182,6 +188,9 @@ public class GridSystem : MonoBehaviour {
 
 
             case State.ALLY_SELECTED:
+
+                // virtually a no-op StateStart method
+                previousState = currentState;
 
                 if (mouseTile == null) { break; }
                 else if (Input.GetMouseButtonDown(0)) {
@@ -211,6 +220,9 @@ public class GridSystem : MonoBehaviour {
 
             case State.ENEMY_SELECTED:
 
+                // virtually a no-op StateStart method
+                previousState = currentState;
+
                 if (mouseTile == null) { break; }
                 else if (Input.GetMouseButtonDown(0) && mouseTile.occupier == null) {
                     currentState = State.NO_SELECTION;
@@ -220,8 +232,15 @@ public class GridSystem : MonoBehaviour {
 
             case State.SELECT_SKILL_ACTIVATED:
 
+                // virtually a no-op StateStart method
+                previousState = currentState;
+
                 if (Input.GetMouseButtonDown(0)) {
                     tilemap.SelectTile(mouseTile);
+                    if (mouseTile.occupier == null) {
+                        currentState = State.NO_SELECTION;
+                        break;
+                    }
                 }
                 else if (Input.GetKeyDown(lastPressedKey)) {
                     // select skill is canceled
@@ -251,6 +270,9 @@ public class GridSystem : MonoBehaviour {
 
             case State.TELEPORT_ACTIVATED:
 
+                // virtually a no-op StateStart method
+                previousState = currentState;
+
                 if (Input.GetMouseButtonDown(0)) {
                     tilemap.SelectTile(mouseTile);
                 }
@@ -268,6 +290,9 @@ public class GridSystem : MonoBehaviour {
 
             case State.END_TURN:
 
+                // virtually a no-op StateStart method
+                previousState = currentState;
+
                 if (combat.currentFaction.isHostileFaction) {
                     currentState = State.AI_TURN;
                 }
@@ -278,6 +303,9 @@ public class GridSystem : MonoBehaviour {
 
 
             case State.AI_TURN:
+
+                // virtually a no-op StateStart method
+                previousState = currentState;
 
                 if (combat.aiSteps == null) {
                     combat.aiSteps = combat.DetermineAITurns();
@@ -364,7 +392,6 @@ public class GridSystem : MonoBehaviour {
         return entity;
     }
 
-    // TODO refactor all of the state changes into the update method - have these methods return the state to transition into
     State ActivateSkill(GridEntity selectedEntity, int index) {
         if (index >= selectedEntity.skills.Count) { return currentState; }
         var skillToActivate = selectedEntity.skills[index];
@@ -449,11 +476,11 @@ public class GridSystem : MonoBehaviour {
     }
 
     State DeactivateTeleport(GridEntity selectedEntity) {
+        tilemap.DeactivateTeleport(combat.selectedEntity);
         if (tilemap.teleportCompleted) {
             combat.selectedEntity.UseTeleport();
-            return State.NO_SELECTION;
+            // return State.NO_SELECTION;
         }
-        tilemap.DeactivateTeleport(combat.selectedEntity);
         return State.ALLY_SELECTED;
     }
 

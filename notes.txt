@@ -1,0 +1,30 @@
+# Notes
+
+Just thought I would add some notes in as I work.
+This is to just talk about code stuff, instead of adding it in comments. Ew. Gross.
+
+Idea: This would be an awesome learning resource for others - it might help explain my thoughts on 
+structure if anybody else starts contributing to this.
+
+Probably will just become an empty outdated wasteland, though.
+
+## 2019.12.07
+
+Working on the stupid state machine bugs revolving around Teleporting and SelectSkills.
+
+Right now Teleporting forces the GridSystem into an explicit State (the enum) that isn't actually inferred
+from the state (concept) of the tilemap and combat components.
+
+What I would like to do is refactor the whole damn thing. Give the tilemap and combat components less power. Make them just Util function classes.
+It's extremely frustrating to have to follow threads through three different classes and not be sure what influences another.
+
+However, I'll probably just stick to making the States (enums) in the GridSystem force the inferred state in the subcomponents. 
+
+I fixed the bug without a refactor - I just was forgetting to generate the attack / move range circles when entering into the ALLY_SELECT state, even
+though I would much prefer to enter into NO_SELECTION after a successful teleport. That seems like a preference thing though.
+
+Creating a StateEnter / StateExit structure may help... but I worry about the codebloat. It might be too heavy-handed and entering / exiting behavior may
+start to branch depending on the previous state. Is that bad or not? Not sure.
+
+I fixed the State.SELECT_SKILL_ACTIVATED -> State.NO_SELECTION transition now that all tiles are cleared on entering State.NO_SELECTION.
+There are still lingering "double select" allies in order to make the State.ALLY_SELECTED state actually generate the right tiles.
