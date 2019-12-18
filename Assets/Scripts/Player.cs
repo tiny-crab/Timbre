@@ -52,7 +52,7 @@ public class Player : ControllerInteractable {
     }
 
     void Update () {
-        var allEnemiesDefeated = grid.combat.factions
+        var allEnemiesDefeated = grid.stateMachine.factions
                                     .Where(faction => faction.isHostileFaction)
                                     .All(faction => {
                                         return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);

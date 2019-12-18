@@ -21,7 +21,7 @@ public abstract class Behavior {
     public KeyValuePair<Tile, int> bestAction;
     public GridEntity bestTarget;
     public abstract int FindBestAction(GameObject[,] grid);
-    public abstract bool DoBestAction(CombatComponent combat, TilemapComponent tilemap);
+    public abstract bool DoBestAction(TilemapComponent tilemap, State currentState);
 }
 
 public static class BehaviorUtils {
@@ -92,7 +92,7 @@ public class MeleeAttackV1 : Behavior {
         bestTarget = bestAction.Key.occupier;
         return bestAction.Value;
     }
-    public override bool DoBestAction(CombatComponent combat, TilemapComponent tilemap) {
+    public override bool DoBestAction(TilemapComponent tilemap, State currentState) {
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "MeleeAttackV1", bestAction.Value));
 
         var nextTile = bestAction.Key;
@@ -144,7 +144,7 @@ public class RangedAttackV1 : Behavior {
         return bestAction.Value;
     }
 
-    public override bool DoBestAction(CombatComponent combat, TilemapComponent tilemap) {
+    public override bool DoBestAction(TilemapComponent tilemap, State currentState) {
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "RangedAttackV1", bestAction.Value));
 
         var nextTile = bestAction.Key;
@@ -199,7 +199,8 @@ public class Flee : Behavior {
         return bestAction.Value;
     }
 
-    public override bool DoBestAction(CombatComponent combat, TilemapComponent tilemap) {
+    public override bool DoBestAction(TilemapComponent tilemap, State currentState) {
+        var stateData = (EnemyTurnState) currentState;
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "Flee", bestAction.Value));
 
         var nextTile = bestAction.Key;
@@ -207,7 +208,7 @@ public class Flee : Behavior {
 
         if (GridUtils.GetEdgesOfEnabledGrid(tilemap.grid).Contains(nextTile)) {
             this.entity.RemoveFromGrid();
-            combat.currentFaction.entities.Remove(this.entity);
+            stateData.enemies.Remove(this.entity);
         }
 
         return true;

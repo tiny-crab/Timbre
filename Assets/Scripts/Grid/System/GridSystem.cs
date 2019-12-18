@@ -27,7 +27,7 @@ public class GridSystem : MonoBehaviour {
     // just wait whenever you feel like it
     public float waitTime = 0.1f;
 
-    public CombatComponent combat = new CombatComponent();
+    public StateMachineComponent stateMachine = new StateMachineComponent();
     public TilemapComponent tilemap = new TilemapComponent();
 
     public List<KeyCode> skillKeys = new List<KeyCode>() { KeyCode.A, KeyCode.S, KeyCode.D };
@@ -36,26 +36,14 @@ public class GridSystem : MonoBehaviour {
         {KeyCode.S, 1},
         {KeyCode.D, 2}
     };
-    private KeyCode lastPressedKey;
 
-    public State currentState;
-    public State previousState = State.NO_SELECTION;
+    public State currentState = new NoSelectionState();
 
     // TODO SIDE: Audio + UI should be in a different class
     public Dialog dialog;
     public AudioClip dialogNoise;
 
     public GameObject skillMenu;
-
-    public enum State {
-        NO_SELECTION,
-        ALLY_SELECTED,
-        ENEMY_SELECTED,
-        SELECT_SKILL_ACTIVATED,
-        TELEPORT_ACTIVATED,
-        END_TURN,
-        AI_TURN
-    }
 
     public void ActivateGrid (
         Vector2 playerLocation,
@@ -105,8 +93,7 @@ public class GridSystem : MonoBehaviour {
         var enemyFaction = new Faction("Enemy", false, enemies);
         var playerFaction = new Faction("Player", true, party);
 
-        combat.Start(this, playerFaction, enemyFaction);
-        currentState = State.NO_SELECTION;
+        stateMachine.Start(this, playerFaction, enemyFaction);
     }
 
     public void DeactivateGrid () {
@@ -118,7 +105,7 @@ public class GridSystem : MonoBehaviour {
 
         tilemap.ResetTileSelection();
 
-        combat.factions.ToList()
+        stateMachine.factions.ToList()
             .Where(faction => faction.isHostileFaction).ToList()
             .ForEach(faction => {
                 faction.entities
@@ -128,10 +115,10 @@ public class GridSystem : MonoBehaviour {
                     });
             });
 
-        combat.factions.ToList().ForEach(faction => {
+        stateMachine.factions.ToList().ForEach(faction => {
             faction.entities.ForEach(entity => entity.RemoveFromGrid());
         });
-        combat.factions = new Queue<Faction>();
+        stateMachine.factions = new Queue<Faction>();
     }
 
     void Awake () {
@@ -152,185 +139,114 @@ public class GridSystem : MonoBehaviour {
 
         var mouseTile = GetTileUnderMouse();
 
-        lastSelectedAlly = combat.selectedEntity ?? gridPlayer;
+        lastSelectedAlly = currentState.source ?? gridPlayer;
         UpdateSkillMenu();
 
         if (waiting) { return; }
         if (Input.GetKeyDown(KeyCode.Tab)) { ToggleSkillMenu(); }
-        switch (currentState) {
 
-            case State.NO_SELECTION:
-
-                // virtually a StateStart method
-                if (previousState != State.NO_SELECTION) {
-                    tilemap.ResetTileSelection();
-                    previousState = State.NO_SELECTION;
-                }
-
-                if (mouseTile == null) { break; }
-                else if (Input.GetMouseButtonDown(0) && mouseTile.occupier.isAllied) {
-                    combat.SelectTile(mouseTile);
-                    tilemap.SelectTile(mouseTile);
-                    if(combat.selectedEntity == null) {
-                        tilemap.ResetTileSelection(tilemap.moveRange, tilemap.attackRange);
-                    }
-                    currentState = State.ALLY_SELECTED;
-                }
-                else if (Input.GetMouseButtonDown(0) && mouseTile.occupier.isHostile) {
-                    currentState = State.ENEMY_SELECTED;
-                }
-                else if (Input.GetKeyDown(KeyCode.G)) {
-                    combat.EndTurn();
-                    StartCoroutine(WaitAMoment(turnGapTime, "Ending Player Turn"));
-                    currentState = State.END_TURN;
-                }
-                break;
-
-
-            case State.ALLY_SELECTED:
-
-                // virtually a no-op StateStart method
-                previousState = currentState;
-
-                if (mouseTile == null) { break; }
-                else if (Input.GetMouseButtonDown(0)) {
-                    combat.SelectTile(mouseTile);
-                    tilemap.SelectTile(mouseTile);
-                    if(combat.selectedEntity == null) {
-                        tilemap.ResetTileSelection(tilemap.moveRange, tilemap.attackRange);
-                    }
-                    currentState = State.NO_SELECTION;
-                }
-                else if (InputUtils.GetKeyPressed(skillKeys) != null) {
-                    if (combat.selectedEntity != null && tilemap.skillRange.tiles.Count == 0) {
-                        skillKeys.ForEach(keyPressed => {
-                            if (Input.GetKeyDown(keyPressed)) {
-                                currentState = ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
-                                lastPressedKey = keyPressed;
-                            }
-                        });
-                        StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
-                    }
-                }
-                else if (Input.GetKeyDown(KeyCode.T)) {
-                    currentState = ActivateTeleport(combat.selectedEntity);
-                }
-                break;
-
-
-            case State.ENEMY_SELECTED:
-
-                // virtually a no-op StateStart method
-                previousState = currentState;
-
-                if (mouseTile == null) { break; }
-                else if (Input.GetMouseButtonDown(0) && mouseTile.occupier == null) {
-                    currentState = State.NO_SELECTION;
-                }
-                break;
-
-
-            case State.SELECT_SKILL_ACTIVATED:
-
-                // virtually a no-op StateStart method
-                previousState = currentState;
-
-                if (Input.GetMouseButtonDown(0)) {
-                    tilemap.SelectTile(mouseTile);
-                    if (mouseTile.occupier == null) {
-                        currentState = State.NO_SELECTION;
-                        break;
-                    }
-                }
-                else if (Input.GetKeyDown(lastPressedKey)) {
-                    // select skill is canceled
-                    currentState = DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
-                    StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
-                    lastPressedKey = KeyCode.E;
-                    currentState = State.ALLY_SELECTED;
-                }
-                if (tilemap.selectTilesSkillCompleted) {
-                    // select skill is complete
-                    StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
-                    currentState = DeactivateSkill(combat.selectedEntity, keyToSkillIndex[lastPressedKey]);
-                    lastPressedKey = KeyCode.E;
-                    currentState = State.ALLY_SELECTED;
-                }
-                // this is duplicated from the "ally selected" state in order to allow this state to loop back to itself
-                else {
-                    skillKeys.ForEach(keyPressed => {
-                        if (Input.GetKeyDown(keyPressed)) {
-                            currentState = ActivateSkill(combat.selectedEntity, keyToSkillIndex[keyPressed]);
-                            lastPressedKey = keyPressed;
-                        }
-                    });
-                }
-
-                break;
-
-            case State.TELEPORT_ACTIVATED:
-
-                // virtually a no-op StateStart method
-                previousState = currentState;
-
-                if (Input.GetMouseButtonDown(0)) {
-                    tilemap.SelectTile(mouseTile);
-                }
-                else if (Input.GetKeyDown(KeyCode.T)) {
-                    // teleport is canceled
-                    currentState = DeactivateTeleport(combat.selectedEntity);
-                }
-                if (tilemap.teleportCompleted) {
-                    StartCoroutine(WaitAMoment(waitTime, "Teleport Deactivation"));
-                    currentState = DeactivateTeleport(combat.selectedEntity);
-                }
-
-                break;
-
-
-            case State.END_TURN:
-
-                // virtually a no-op StateStart method
-                previousState = currentState;
-
-                if (combat.currentFaction.isHostileFaction) {
-                    currentState = State.AI_TURN;
-                }
-                else if (combat.currentFaction.isPlayerFaction) {
-                    currentState = State.NO_SELECTION;
-                }
-                break;
-
-
-            case State.AI_TURN:
-
-                // virtually a no-op StateStart method
-                previousState = currentState;
-
-                if (combat.aiSteps == null) {
-                    combat.aiSteps = combat.DetermineAITurns();
-                } else {
-                    var nextStep = combat.aiSteps.First();
-                    combat.aiSteps.RemoveAt(0);
-                    nextStep.ToList().ForEach(behavior => behavior.DoBestAction(combat, tilemap));
-                    StartCoroutine(
-                        WaitAMoment(aiStepTime, String.Format("Finishing actions on target {0}", nextStep.First().entity))
-                    );
-                    if (combat.aiSteps.Count() == 0) {
-                        combat.aiSteps = null;
-                        combat.EndTurn();
-                        StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
-                        currentState = State.END_TURN;
-                    }
-                }
-
-                break;
-
-
-            default:
-                currentState = State.NO_SELECTION;
-                break;
+        if (currentState is NoSelectionState) {
+            if (mouseTile == null) { return; }
+            else if (Input.GetMouseButtonDown(0) && mouseTile.occupier.isAllied) {
+                currentState = TransitionOnClick(currentState, mouseTile);
+            }
+            // this needs to be able to be triggered in any state
+            else if (Input.GetKeyDown(KeyCode.G)) {
+                currentState = TransitionOnEndTurn();
+            }
         }
+
+        else if (currentState is AllySelectedState) {
+            if (mouseTile == null) { return; }
+            else if (Input.GetMouseButtonDown(0)) {
+                currentState = TransitionOnClick(currentState, mouseTile);
+            }
+            else if (InputUtils.GetKeyPressed(skillKeys) != null) {
+                skillKeys.ForEach(keyPressed => {
+                    if (Input.GetKeyDown(keyPressed)) {
+                        currentState = TransitionOnSkillKeyPress(currentState, keyPressed);
+                    }
+                });
+                StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
+            }
+            else if (Input.GetKeyDown(KeyCode.T)) {
+                currentState = TransitionOnTeleportKeyPress(currentState);
+            }
+        }
+
+        else if (currentState is SelectSkillActivatedState) {
+            if (Input.GetMouseButtonDown(0)) {
+                currentState = TransitionOnClick(currentState, mouseTile);
+            }
+            // if (tilemap.selectTilesSkillCompleted) {
+            //     // select skill is complete
+            //     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
+            //     // currentState = DeactivateSkill(stateMachine.selectedEntity, keyToSkillIndex[lastPressedKey]);
+            //     lastPressedKey = KeyCode.E;
+            //     // currentState = State.ALLY_SELECTED;
+            // }
+            // this is duplicated from the "ally selected" state in order to allow this state to loop back to itself
+            else if (InputUtils.GetKeyPressed(skillKeys) != null) {
+                skillKeys.ForEach(keyPressed => {
+                    if (Input.GetKeyDown(keyPressed)) {
+                        currentState = TransitionOnSkillKeyPress(currentState, keyPressed);
+                    }
+                });
+                StartCoroutine(WaitAMoment(waitTime, "Skill Activation"));
+            }
+        }
+
+        else if (currentState is TeleportActivatedState) {
+            if (Input.GetMouseButtonDown(0)) {
+                currentState = TransitionOnClick(currentState, mouseTile);
+            }
+            else if (Input.GetKeyDown(KeyCode.T)) {
+                // teleport is canceled
+                currentState = TransitionOnTeleportKeyPress(currentState);
+            }
+            // if (tilemap.teleportCompleted) {
+            //     StartCoroutine(WaitAMoment(waitTime, "Teleport Deactivation"));
+            //     currentState = TransitionOnTeleportKeyPress(currentState);
+            // }
+        }
+
+        else if (currentState is EnemyTurnState) {
+            var stateData = (EnemyTurnState) currentState;
+            if (stateData.aiSteps == null) {
+                // should be written something like
+                // stateData.aiSteps = aiComponent.DetermineAITurns(faction, grid);
+                stateData.aiSteps = stateMachine.DetermineAITurns();
+            } else {
+                var outputString = String.Format("Finishing actions on target {0}", stateData.aiSteps.First().Key);
+                currentState = stateMachine.ExecuteAITurn(currentState);
+                StartCoroutine(WaitAMoment(aiStepTime, outputString));
+                if (stateData.aiSteps.Count == 0) {
+                    // temporary hack to allow enemies to flee properly
+                    // once factions are migrated into states, then the faction can be updated in the ExecuteAIStep action
+                    stateMachine.currentFaction.entities = stateData.enemies;
+                    stateMachine.EndTurn(currentState);
+                    StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
+                }
+            }
+        }
+    }
+
+    private State TransitionOnClick(State currentState, Tile clickedTile) {
+        return stateMachine.SelectTile(currentState, clickedTile);
+    }
+
+    private State TransitionOnEndTurn() {
+        var nextState = stateMachine.EndTurn(currentState);
+        StartCoroutine(WaitAMoment(turnGapTime, "Ending Player Turn"));
+        return nextState;
+    }
+
+    private State TransitionOnSkillKeyPress(State currentState, KeyCode keyPressed) {
+        return stateMachine.ActivateSkill(currentState, keyToSkillIndex[keyPressed]);
+    }
+
+    private State TransitionOnTeleportKeyPress(State currentState) {
+        return stateMachine.ActivateTeleport(currentState);
     }
 
     void CreateTilemapComponent() {
@@ -390,98 +306,6 @@ public class GridSystem : MonoBehaviour {
         entity.GetComponent<SpriteRenderer>().sortingOrder = 1;
         target.TryOccupy(entity);
         return entity;
-    }
-
-    State ActivateSkill(GridEntity selectedEntity, int index) {
-        if (index >= selectedEntity.skills.Count) { return currentState; }
-        var skillToActivate = selectedEntity.skills[index];
-        if (skillToActivate.cost > selectedEntity.currentSP) {
-            dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but not enough SP", dialogNoise, false);
-        }
-        else if (selectedEntity.outOfSkillUses) {
-            dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but not enough skill uses", dialogNoise, false);
-        }
-        else if (skillToActivate is AttackSkill) {
-            ActivateAttackSkill(selectedEntity, (AttackSkill) skillToActivate);
-        }
-        else if (skillToActivate is SelectTilesSkill) {
-            ActivateSelectTilesSkill(selectedEntity, (SelectTilesSkill) skillToActivate);
-            return State.SELECT_SKILL_ACTIVATED;
-        }
-        else if (skillToActivate is BuffSkill) {
-            ActivateBuffSkill(selectedEntity, (BuffSkill) skillToActivate);
-        }
-        return currentState;
-    }
-
-    State DeactivateSkill(GridEntity selectedEntity, int index) {
-        if (index >= selectedEntity.skills.Count) { return currentState; }
-        var skillToDeactivate = selectedEntity.skills[index];
-        if (skillToDeactivate is AttackSkill) {
-            DeactivateAttackSkill();
-        }
-        else if (skillToDeactivate is SelectTilesSkill) {
-            DeactivateSelectTilesSkill();
-            return State.ALLY_SELECTED;
-        }
-        else if (skillToDeactivate is BuffSkill) {
-            DeactivateBuffSkill();
-        }
-        dialog.PostToDialog("Deactivated " + skillToDeactivate.GetType().Name, dialogNoise, false);
-        return currentState;
-    }
-
-    // TODO selectedEntity arg isn't even used... either remove the arg or remove the reference to combat.selectedEntity
-    void ActivateSelectTilesSkill(GridEntity selectedEntity, SelectTilesSkill skillToActivate) {
-        tilemap.ActivateSelectTilesSkill(combat.selectedEntity, skillToActivate);
-        if (tilemap.skillRange.tiles.Count() != 0) {
-
-            dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
-        } else {
-            dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but there were no valid tiles", dialogNoise, false);
-            tilemap.DeactivateSelectTilesSkill(combat.selectedEntity);
-        }
-    }
-
-    void DeactivateSelectTilesSkill() {
-        if (tilemap.selectTilesSkillCompleted) { combat.selectedEntity.UseSkill(tilemap.activatedSkill); }
-        tilemap.DeactivateSelectTilesSkill(combat.selectedEntity);
-    }
-
-    void ActivateAttackSkill(GridEntity selectedEntity, AttackSkill skillToActivate) {
-        combat.selectedEntity.currentAttackSkill = (AttackSkill) skillToActivate;
-        dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
-    }
-
-    void DeactivateAttackSkill() {
-        combat.selectedEntity.currentAttackSkill = null;
-    }
-
-    void ActivateBuffSkill(GridEntity selectedEntity, BuffSkill skillToActivate) {
-        skillToActivate.ResolveEffect(selectedEntity);
-        dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
-    }
-
-    void DeactivateBuffSkill() {}
-
-    State ActivateTeleport(GridEntity selectedEntity) {
-        if (selectedEntity.currentTeleports >= 0) {
-            tilemap.ActivateTeleport(combat.selectedEntity);
-            return State.TELEPORT_ACTIVATED;
-        }
-        else {
-            dialog.PostToDialog("Tried to teleport but " + combat.selectedEntity.entityName + " has already teleported this encounter", dialogNoise, false);
-        }
-        return currentState;
-    }
-
-    State DeactivateTeleport(GridEntity selectedEntity) {
-        tilemap.DeactivateTeleport(combat.selectedEntity);
-        if (tilemap.teleportCompleted) {
-            combat.selectedEntity.UseTeleport();
-            // return State.NO_SELECTION;
-        }
-        return State.ALLY_SELECTED;
     }
 
     void ToggleSkillMenu() {

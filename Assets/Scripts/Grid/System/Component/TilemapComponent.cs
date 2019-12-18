@@ -43,6 +43,7 @@ public class TilemapComponent {
 
     // not a fan of using Tile.HighlightTypes here... seems a little tangential
     // but it does confirm the dependency between SelectedTiles and Tiles
+    // these should also move into StateData
     public SelectedTiles moveRange = new SelectedTiles(Tile.HighlightTypes.Move);
     public SelectedTiles attackRange = new SelectedTiles(Tile.HighlightTypes.Attack);
     public SelectedTiles skillRange = new SelectedTiles(Tile.HighlightTypes.Skill);
@@ -60,7 +61,7 @@ public class TilemapComponent {
     public void ResetTileSelection (params SelectedTiles[] targets) {
         if (targets.Count() == 0) {
             targets = new SelectedTiles[] {
-                testTiles, attackRange, moveRange, skillRange, skillSelected
+                testTiles, attackRange, moveRange, skillRange, skillSelected, teleportRange
             };
         }
         targets.ToList().ForEach( selectedTiles => {
@@ -69,56 +70,60 @@ public class TilemapComponent {
         });
     }
 
-    public void SelectTile(Tile tile) {
-        if (tile.occupier != null && !tile.occupier.outOfHP) {
-            GenerateAttackRange(tile.occupier);
-            GenerateMoveRange(tile.occupier);
-        }
-        if (skillRange.Contains(tile) && skillSelected.tiles.Count < activatedSkill.targets) {
-            if (tile.currentHighlights.Contains(Tile.HighlightTypes.SkillSelect)) {
-                tile.RemoveHighlight(Tile.HighlightTypes.SkillSelect);
-                skillSelected.tiles.Remove(tile);
-            } else {
-                tile.HighlightAs(Tile.HighlightTypes.SkillSelect);
-                skillSelected.tiles.Add(tile);
-            }
+    // public void SelectTile(Tile tile) {
+    //     // if (tile.occupier != null && !tile.occupier.outOfHP) {
+    //     //     GenerateAttackRange(tile.occupier);
+    //     //     GenerateMoveRange(tile.occupier);
+    //     // }
+    //     if (skillRange.Contains(tile) && skillSelected.tiles.Count < activatedSkill.targets) {
+    //         if (tile.currentHighlights.Contains(Tile.HighlightTypes.SkillSelect)) {
+    //             tile.RemoveHighlight(Tile.HighlightTypes.SkillSelect);
+    //             skillSelected.tiles.Remove(tile);
+    //         } else {
+    //             tile.HighlightAs(Tile.HighlightTypes.SkillSelect);
+    //             skillSelected.tiles.Add(tile);
+    //         }
 
-            // select tiles skill completed!
-            if (skillSelected.tiles.Count == activatedSkill.targets) {
-                skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(parent.combat.selectedEntity, x));
-                skillSelected.Clear(grid);
-                selectTilesSkillCompleted = true;
-            }
-        }
-        if (teleportRange.Contains(tile)) {
-            teleportRange.Clear(grid);
-            TeleportEntity(parent.combat.selectedEntity.tile, tile);
-            teleportCompleted = true;
-        }
-    }
+    //         // select tiles skill completed!
+    //         if (skillSelected.tiles.Count == activatedSkill.targets) {
+    //             skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(parent.stateMachine.selectedEntity, x));
+    //             skillSelected.Clear(grid);
+    //             selectTilesSkillCompleted = true;
+    //         }
+    //     }
+    //     if (teleportRange.Contains(tile)) {
+    //         teleportRange.Clear(grid);
+    //         TeleportEntity(parent.stateMachine.selectedEntity.tile, tile);
+    //         teleportCompleted = true;
+    //     }
+    // }
 
-    public void GenerateAttackRange(GridEntity entity) {
+    public List<Tile> GenerateAttackRange(GridEntity entity) {
+        var tiles = new List<Tile>();
         if (entity.currentAttacks > 0) {
                 attackRange.tiles = GridUtils.GenerateTileCircle(grid, entity.range, entity.tile)
                                         .Where(tile => tile.occupier != null && tile.occupier.isHostile && !tile.occupier.outOfHP)
                                         .ToList();
                 attackRange.Highlight();
         }
+        return attackRange.tiles;
     }
 
-    public void GenerateMoveRange(GridEntity entity) {
+    public List<Tile> GenerateMoveRange(GridEntity entity) {
         moveRange.tiles = GridUtils.GenerateTileCircle(grid, entity.currentMoves, entity.tile, true)
                             .Where(tile => tile.occupier == null)
                             .ToList();
         moveRange.Highlight();
+        return moveRange.tiles;
     }
 
-    public void ActivateSelectTilesSkill(GridEntity activeEntity, SelectTilesSkill skill) {
-        skillRange.tiles = skill.GetValidTiles(grid, activeEntity.tile);
+    public List<Tile> ActivateSelectTilesSkill(GridEntity activeEntity, SelectTilesSkill skill) {
+        skillRange.tiles =  skill.GetValidTiles(grid, activeEntity.tile);
         ResetTileSelection(moveRange, attackRange);
         skillRange.Highlight();
         activatedSkill = skill;
         selectTilesSkillCompleted = false;
+        return skillRange.tiles;
     }
 
     public void DeactivateSelectTilesSkill(GridEntity activeEntity) {
@@ -128,11 +133,12 @@ public class TilemapComponent {
         activatedSkill = null;
     }
 
-    public void ActivateTeleport(GridEntity activeEntity) {
+    public List<Tile> ActivateTeleport(GridEntity activeEntity) {
         teleportRange.tiles = GridUtils.FlattenGridTiles(grid, true).Where(tile => tile.occupier == null).ToList();
         ResetTileSelection(moveRange, attackRange);
         teleportRange.Highlight();
         teleportCompleted = false;
+        return teleportRange.tiles;
     }
 
     public void DeactivateTeleport(GridEntity activeEntity) {

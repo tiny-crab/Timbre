@@ -3,7 +3,7 @@
 Just thought I would add some notes in as I work.
 This is to just talk about code stuff, instead of adding it in comments. Ew. Gross.
 
-Idea: This would be an awesome learning resource for others - it might help explain my thoughts on 
+Idea: This would be an awesome learning resource for others - it might help explain my thoughts on
 structure if anybody else starts contributing to this.
 
 Probably will just become an empty outdated wasteland, though.
@@ -18,7 +18,7 @@ from the state (concept) of the tilemap and combat components.
 What I would like to do is refactor the whole damn thing. Give the tilemap and combat components less power. Make them just Util function classes.
 It's extremely frustrating to have to follow threads through three different classes and not be sure what influences another.
 
-However, I'll probably just stick to making the States (enums) in the GridSystem force the inferred state in the subcomponents. 
+However, I'll probably just stick to making the States (enums) in the GridSystem force the inferred state in the subcomponents.
 
 I fixed the bug without a refactor - I just was forgetting to generate the attack / move range circles when entering into the ALLY_SELECT state, even
 though I would much prefer to enter into NO_SELECTION after a successful teleport. That seems like a preference thing though.
@@ -28,3 +28,60 @@ start to branch depending on the previous state. Is that bad or not? Not sure.
 
 I fixed the State.SELECT_SKILL_ACTIVATED -> State.NO_SELECTION transition now that all tiles are cleared on entering State.NO_SELECTION.
 There are still lingering "double select" allies in order to make the State.ALLY_SELECTED state actually generate the right tiles.
+
+## 2019.12.10
+
+In thinking about Tilemap and Combat components, I realized a couple of things:
+
+* By "saving" steps or actions that are made by the player in object form, it will be easier to create a debuggable log of encounters later
+* The Combat component is really defining what is "executed", except for the skill select flow that is pretty crudely determined by Tilemap
+* Tilemap just works to display everything - no surprise that the select skill state is the most buggy right now... combat and tilemap logic aren't cohesive here
+
+My goal right now is to extract the CombatComponent into a more "functional" class that returns Actions to the GridSystem. The TilemapComponent will help to visualize
+these actions as they are executed in a more utility-like fashion.
+
+Flow:
+    GridSystem -> determines mouseTile (tile that mouse is hovering over) and when clicked:
+        CombatComponent.GetUserDesignatedAction() : Action
+        returnedAction.Display(tilemap) -> calls TilemapUtils
+        returnedAction.Execute(combat) -> calls CombatUtils
+
+    Action class is designated outside of GridSystem, and uses instances of tilemap and combat instead of OO-style execution
+
+Current bugs before I pick up and go home:
+* selectedEntity is not being updated in CombatComponent which leads to problems with the Move actions
+  * since this shouldn't be updated in CombatComponent anyway, just gotta store it somewhere.
+
+## 2019.12.11
+
+On top of the CombatComponent -> StateMachineComponent change, I need to focus on restructuring even the Action / State interactions.
+
+Perhaps there's some duplicate code that I can remove and use StateData within the Actions. Not sure yet.
+Perhaps a better name for Actions would be Transitions, as they are the functions that execute when the
+StateMachine moves from one state to another.
+
+I think the goal that separates the StateMachineComponent from the state machine switch case in GridSystem is the following:
+1. The GridSystem focuses on forwarding user input
+2. The StateMachineComponent focuses on determining current conditions and figuring out what logic needs to be executed under those conditions.
+
+## 2019.12.13
+
+Realized that the SkillSelectTile action/transition should still be one, as "move" and "attack" are transitions yet stay within
+the same state.
+
+This is growing to be quite a large change and I think I'm getting a bit lost in the details. I'll see what I can manage to finish by
+the end of Saturday morning. I'll hold off on the simplification of the Action/Transition class for now. What I would like to do there is:
+* Reduce the number of member variables in an action, instead keep that data in the StateData objects that will be passed in
+* Reduce the call in GridSystem to just currentState = stateMachine.Transition(currentState); instead of Execute, Display, etc.
+  * Those Display and Execute methods will still help the readability and structure, but they'll work only within the Action/Transition objects
+
+## 2019.12.14
+
+I reduced the StateType / StateData classes into a single State class - since the type of the subclass explicitly specifies the StateType.
+
+## 2019.12.18
+
+Noticing some bugs with skill deactivation, but everything is now "functional". I think I'll still scan through the remainder
+of the code to clean it up before the end of the year, so it's unlikely that I'll get many features implemented before 2020. That should be okay.
+
+Gonna make a commit a bit early just to nail down the new structure, and then will fix bugs, and finally will clean everything out.
