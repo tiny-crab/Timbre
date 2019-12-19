@@ -70,10 +70,7 @@ public class StateMachineComponent {
 
         if (action != null) {
             // remove all instances of parent here
-            action.Execute(currentState, parent.tilemap);
-            action.DisplayInGrid(parent.tilemap);
-            action.DisplayInDialog(parent.dialog);
-            nextState = action.Transition(currentState);
+            nextState = action.Transition(currentState, parent.tilemap, parent.dialog);
         }
 
         return nextState;
@@ -107,10 +104,7 @@ public class StateMachineComponent {
 
         if (action != null) {
             // remove all instances of parent here
-            action.Execute(currentState, parent.tilemap);
-            action.DisplayInGrid(parent.tilemap);
-            action.DisplayInDialog(parent.dialog);
-            nextState = action.Transition(currentState);
+            nextState = action.Transition(currentState, parent.tilemap, parent.dialog);
         }
 
         return nextState;
@@ -134,10 +128,7 @@ public class StateMachineComponent {
 
         if (action != null) {
             // remove all instances of parent here
-            action.Execute(currentState, parent.tilemap);
-            action.DisplayInGrid(parent.tilemap);
-            action.DisplayInDialog(parent.dialog);
-            nextState = action.Transition(currentState);
+            nextState = action.Transition(currentState, parent.tilemap, parent.dialog);
         }
 
         return nextState;
@@ -169,10 +160,7 @@ public class StateMachineComponent {
 
         if (action != null) {
             // remove all instances of parent here
-            action.Execute(currentState, parent.tilemap);
-            action.DisplayInGrid(parent.tilemap);
-            action.DisplayInDialog(parent.dialog);
-            nextState = action.Transition(currentState);
+            nextState = action.Transition(currentState, parent.tilemap, parent.dialog);
         }
 
         return nextState;

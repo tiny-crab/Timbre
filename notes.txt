@@ -87,3 +87,8 @@ of the code to clean it up before the end of the year, so it's unlikely that I'l
 Gonna make a commit a bit early just to nail down the new structure, and then will fix bugs, and finally will clean everything out.
 
 Now I'm working on picking out some stuff from StateMachineComponent and making sure that Actions don't contain any data that States do not.
+
+Just realized that logging the actions taken (along with saving AI choices), I can create an event log to replay encounters. Creating a headless
+encounter replayer would be a fabulous way to unit test TBH. That could be very very helpful.
+
+Bug: Deactivating a select tiles skill still uses the SP needed for the skill.
