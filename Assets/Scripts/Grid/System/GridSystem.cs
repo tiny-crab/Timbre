@@ -140,10 +140,7 @@ public class GridSystem : MonoBehaviour {
         DeactivateGrid();
     }
 
-    // TODO: restructure this to be a bit clearer - but this is the main FSM of the grid system
-    // nothing else actually contain input and user behavior checks, so this is actually not bad...
     void Update () {
-
         var mouseTile = GetTileUnderMouse();
 
         lastSelectedAlly = currentState.source ?? gridPlayer;
@@ -185,14 +182,6 @@ public class GridSystem : MonoBehaviour {
             if (Input.GetMouseButtonDown(0)) {
                 currentState = TransitionOnClick(currentState, mouseTile);
             }
-            // if (tilemap.selectTilesSkillCompleted) {
-            //     // select skill is complete
-            //     StartCoroutine(WaitAMoment(waitTime, "Skill Deactivation"));
-            //     // currentState = DeactivateSkill(stateMachine.selectedEntity, keyToSkillIndex[lastPressedKey]);
-            //     lastPressedKey = KeyCode.E;
-            //     // currentState = State.ALLY_SELECTED;
-            // }
-            // this is duplicated from the "ally selected" state in order to allow this state to loop back to itself
             else if (InputUtils.GetKeyPressed(skillKeys) != null) {
                 skillKeys.ForEach(keyPressed => {
                     if (Input.GetKeyDown(keyPressed)) {
@@ -208,13 +197,8 @@ public class GridSystem : MonoBehaviour {
                 currentState = TransitionOnClick(currentState, mouseTile);
             }
             else if (Input.GetKeyDown(KeyCode.T)) {
-                // teleport is canceled
                 currentState = TransitionOnTeleportKeyPress(currentState);
             }
-            // if (tilemap.teleportCompleted) {
-            //     StartCoroutine(WaitAMoment(waitTime, "Teleport Deactivation"));
-            //     currentState = TransitionOnTeleportKeyPress(currentState);
-            // }
         }
 
         else if (currentState is EnemyTurnState) {
@@ -226,13 +210,12 @@ public class GridSystem : MonoBehaviour {
             } else {
                 var outputString = String.Format("Finishing actions on target {0}", stateData.aiSteps.First().Key);
                 currentState = stateMachine.ExecuteAITurn(currentState);
-                StartCoroutine(WaitAMoment(aiStepTime, outputString));
                 if (stateData.aiSteps.Count == 0) {
-                    // temporary hack to allow enemies to flee properly
-                    // once factions are migrated into states, then the faction can be updated in the ExecuteAIStep action
                     currentFaction.entities = stateData.enemies;
                     currentState = TransitionOnEndTurn();
                     StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
+                } else {
+                    StartCoroutine(WaitAMoment(aiStepTime, outputString));
                 }
             }
         }
