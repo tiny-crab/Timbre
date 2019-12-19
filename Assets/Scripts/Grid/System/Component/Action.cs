@@ -201,7 +201,6 @@ public class DeactivateSkill : Action {
             //dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
         }
         else if (skillToDeactivate is SelectTilesSkill) {
-            if (tilemap.selectTilesSkillCompleted) { source.UseSkill(skillToDeactivate); }
             tilemap.DeactivateSelectTilesSkill(source);
         }
         else if (skillToDeactivate is BuffSkill) {
