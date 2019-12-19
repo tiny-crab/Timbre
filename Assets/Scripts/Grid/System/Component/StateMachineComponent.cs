@@ -8,17 +8,11 @@ public class StateMachineComponent {
 
     private GridSystem parent;
 
-    // migrate to GridSystem
-    public Faction currentFaction;
-    public Queue<Faction> factions = new Queue<Faction>();
-
     // migrate to StateData
     public List<IGrouping<GridEntity, Behavior>> aiSteps;
 
-    public void Start(GridSystem gridSystem, params Faction[] factions) {
+    public void Start(GridSystem gridSystem) {
         parent = gridSystem;
-        foreach (var faction in factions) { this.factions.Enqueue(faction); };
-        currentFaction = this.factions.First();
     }
 
     // change this to return State
@@ -30,7 +24,7 @@ public class StateMachineComponent {
         // I wonder if I can somehow make this a bit more logical
         // instead of stepping through the conditions and returning an Action/Transition,
         // can I define the conditions for an Action/Transition and return whatever Transition matches the current conditions?
-        if (currentFaction.isPlayerFaction) {
+        if (!(currentState is EnemyTurnState)) {
             if (currentState is NoSelectionState) {
                 if (targetTile.occupier != null) {
                     action = new SelectEntity(targetTile.occupier);
@@ -149,14 +143,10 @@ public class StateMachineComponent {
         return nextState;
     }
 
-    public State EndTurn(State currentState) {
-        // Action action = null;
+    public State EndTurn(State currentState, Faction currentFaction) {
         var nextState = currentState;
 
-        var previousFaction = factions.Dequeue();
-        currentFaction = factions.Peek();
         currentFaction.RefreshTurnResources();
-        factions.Enqueue(previousFaction);
 
         if (currentFaction.isHostileFaction) {
             nextState = new EnemyTurnState(currentFaction.entities);
@@ -164,14 +154,6 @@ public class StateMachineComponent {
         else {
             nextState = new NoSelectionState();
         }
-
-        // if (action != null) {
-        //     // remove all instances of parent here
-        //     action.Execute(currentState, parent.tilemap);
-        //     action.DisplayInGrid(parent.tilemap);
-        //     action.DisplayInDialog(parent.dialog);
-        //     nextState = action.Transition(currentState);
-        // }
 
         return nextState;
     }
@@ -198,7 +180,7 @@ public class StateMachineComponent {
 
     // this needs to be pulled out
     public List<IGrouping<GridEntity, Behavior>> DetermineAITurns() {
-        var aiActionsByTarget = currentFaction.entities.Where(entity => !entity.outOfHP).ToList().Select(aiEntity => {
+        var aiActionsByTarget = parent.currentFaction.entities.Where(entity => !entity.outOfHP).ToList().Select(aiEntity => {
             return aiEntity.behaviors
                 .OrderBy(behavior => behavior.FindBestAction(parent.tilemap.grid))
                 .First();

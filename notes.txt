@@ -85,3 +85,5 @@ Noticing some bugs with skill deactivation, but everything is now "functional". 
 of the code to clean it up before the end of the year, so it's unlikely that I'll get many features implemented before 2020. That should be okay.
 
 Gonna make a commit a bit early just to nail down the new structure, and then will fix bugs, and finally will clean everything out.
+
+Now I'm working on picking out some stuff from StateMachineComponent and making sure that Actions don't contain any data that States do not.

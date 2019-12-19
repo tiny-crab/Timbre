@@ -30,6 +30,9 @@ public class GridSystem : MonoBehaviour {
     public StateMachineComponent stateMachine = new StateMachineComponent();
     public TilemapComponent tilemap = new TilemapComponent();
 
+    public Queue<Faction> factions = new Queue<Faction>();
+    public Faction currentFaction;
+
     public List<KeyCode> skillKeys = new List<KeyCode>() { KeyCode.A, KeyCode.S, KeyCode.D };
     public Dictionary<KeyCode, int> keyToSkillIndex = new Dictionary<KeyCode, int>() {
         {KeyCode.A, 0},
@@ -93,7 +96,11 @@ public class GridSystem : MonoBehaviour {
         var enemyFaction = new Faction("Enemy", false, enemies);
         var playerFaction = new Faction("Player", true, party);
 
-        stateMachine.Start(this, playerFaction, enemyFaction);
+        factions.Enqueue(playerFaction);
+        factions.Enqueue(enemyFaction);
+        currentFaction = this.factions.First();
+
+        stateMachine.Start(this);
     }
 
     public void DeactivateGrid () {
@@ -105,7 +112,7 @@ public class GridSystem : MonoBehaviour {
 
         tilemap.ResetTileSelection();
 
-        stateMachine.factions.ToList()
+        factions.ToList()
             .Where(faction => faction.isHostileFaction).ToList()
             .ForEach(faction => {
                 faction.entities
@@ -115,10 +122,10 @@ public class GridSystem : MonoBehaviour {
                     });
             });
 
-        stateMachine.factions.ToList().ForEach(faction => {
+        factions.ToList().ForEach(faction => {
             faction.entities.ForEach(entity => entity.RemoveFromGrid());
         });
-        stateMachine.factions = new Queue<Faction>();
+        factions = new Queue<Faction>();
     }
 
     void Awake () {
@@ -223,8 +230,8 @@ public class GridSystem : MonoBehaviour {
                 if (stateData.aiSteps.Count == 0) {
                     // temporary hack to allow enemies to flee properly
                     // once factions are migrated into states, then the faction can be updated in the ExecuteAIStep action
-                    stateMachine.currentFaction.entities = stateData.enemies;
-                    stateMachine.EndTurn(currentState);
+                    currentFaction.entities = stateData.enemies;
+                    currentState = TransitionOnEndTurn();
                     StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
                 }
             }
@@ -236,7 +243,10 @@ public class GridSystem : MonoBehaviour {
     }
 
     private State TransitionOnEndTurn() {
-        var nextState = stateMachine.EndTurn(currentState);
+        var previousFaction = factions.Dequeue();
+        currentFaction = factions.Peek();
+        factions.Enqueue(previousFaction);
+        var nextState = stateMachine.EndTurn(currentState, currentFaction);
         StartCoroutine(WaitAMoment(turnGapTime, "Ending Player Turn"));
         return nextState;
     }
