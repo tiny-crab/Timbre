@@ -41,11 +41,6 @@ public class TilemapComponent {
         public bool Contains(Tile element) { return tiles.Contains(element); }
     }
 
-    // not a fan of using Tile.HighlightTypes here... seems a little tangential
-    // but it does confirm the dependency between SelectedTiles and Tiles
-    // these should also move into StateData
-    public SelectedTiles teleportRange = new SelectedTiles(Tile.HighlightTypes.Teleport);
-
     public SelectedTiles skillSelected = new SelectedTiles(Tile.HighlightTypes.SkillSelect);
 
     public SelectedTiles testTiles = new SelectedTiles(Tile.HighlightTypes.Test);
@@ -58,7 +53,7 @@ public class TilemapComponent {
     public void ResetTileSelection (params SelectedTiles[] targets) {
         if (targets.Count() == 0) {
             targets = new SelectedTiles[] {
-                testTiles, skillSelected, teleportRange
+                testTiles, skillSelected
             };
         }
         targets.ToList().ForEach( selectedTiles => {
@@ -136,19 +131,6 @@ public class TilemapComponent {
     public static void RefreshGridHighlights(GameObject[,] grid, List<Tile> toHighlight, string highlightType) {
         ClearHighlightFromGrid(grid, highlightType);
         toHighlight.ForEach(x => x.HighlightAs(highlightType));
-    }
-
-    public List<Tile> ActivateTeleport(GridEntity activeEntity) {
-        teleportRange.tiles = GridUtils.FlattenGridTiles(grid, true).Where(tile => tile.occupier == null).ToList();
-        teleportRange.Highlight();
-        teleportCompleted = false;
-        return teleportRange.tiles;
-    }
-
-    public void DeactivateTeleport(GridEntity activeEntity) {
-        teleportRange.Clear(grid);
-        GenerateAttackRange(grid, activeEntity);
-        GenerateMoveRange(grid, activeEntity);
     }
 
     public bool TeleportEntity(Tile origin, Tile dest) {
