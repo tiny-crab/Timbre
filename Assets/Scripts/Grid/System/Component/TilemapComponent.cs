@@ -41,8 +41,6 @@ public class TilemapComponent {
         public bool Contains(Tile element) { return tiles.Contains(element); }
     }
 
-    public SelectedTiles skillSelected = new SelectedTiles(Tile.HighlightTypes.SkillSelect);
-
     public SelectedTiles testTiles = new SelectedTiles(Tile.HighlightTypes.Test);
 
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
@@ -53,7 +51,7 @@ public class TilemapComponent {
     public void ResetTileSelection (params SelectedTiles[] targets) {
         if (targets.Count() == 0) {
             targets = new SelectedTiles[] {
-                testTiles, skillSelected
+                testTiles
             };
         }
         targets.ToList().ForEach( selectedTiles => {
