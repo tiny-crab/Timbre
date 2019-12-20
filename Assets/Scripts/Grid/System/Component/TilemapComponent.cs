@@ -8,12 +8,7 @@ public class TilemapComponent {
     private GridSystem parent;
 
     public GameObject[,] grid;
-    public GameObject tile;
 
-    public SelectTilesSkill activatedSkill;
-    public bool selectTilesSkillCompleted = true;
-
-    public bool teleportCompleted = true;
 
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
         parent = gridSystem;
@@ -39,33 +34,10 @@ public class TilemapComponent {
         GridUtils.FlattenGridTiles(grid).ForEach(tile => tile.currentHighlights.Remove(highlightType));
     }
 
-    // public void SelectTile(Tile tile) {
-    //     // if (tile.occupier != null && !tile.occupier.outOfHP) {
-    //     //     GenerateAttackRange(tile.occupier);
-    //     //     GenerateMoveRange(tile.occupier);
-    //     // }
-    //     if (skillRange.Contains(tile) && skillSelected.tiles.Count < activatedSkill.targets) {
-    //         if (tile.currentHighlights.Contains(Tile.HighlightTypes.SkillSelect)) {
-    //             tile.RemoveHighlight(Tile.HighlightTypes.SkillSelect);
-    //             skillSelected.tiles.Remove(tile);
-    //         } else {
-    //             tile.HighlightAs(Tile.HighlightTypes.SkillSelect);
-    //             skillSelected.tiles.Add(tile);
-    //         }
-
-    //         // select tiles skill completed!
-    //         if (skillSelected.tiles.Count == activatedSkill.targets) {
-    //             skillSelected.tiles.ForEach(x => activatedSkill.ResolveEffect(parent.stateMachine.selectedEntity, x));
-    //             skillSelected.Clear(grid);
-    //             selectTilesSkillCompleted = true;
-    //         }
-    //     }
-    //     if (teleportRange.Contains(tile)) {
-    //         teleportRange.Clear(grid);
-    //         TeleportEntity(parent.stateMachine.selectedEntity.tile, tile);
-    //         teleportCompleted = true;
-    //     }
-    // }
+    public static void RefreshGridHighlights(GameObject[,] grid, List<Tile> toHighlight, string highlightType) {
+        ClearHighlightFromGrid(grid, highlightType);
+        toHighlight.ForEach(x => x.HighlightAs(highlightType));
+    }
 
     public static List<Tile> GenerateAttackRange(GameObject[,] grid, GridEntity entity) {
         var tiles = new List<Tile>();
@@ -84,11 +56,6 @@ public class TilemapComponent {
             .Where(tile => tile.occupier == null)
             .ToList();
         return tiles;
-    }
-
-    public static void RefreshGridHighlights(GameObject[,] grid, List<Tile> toHighlight, string highlightType) {
-        ClearHighlightFromGrid(grid, highlightType);
-        toHighlight.ForEach(x => x.HighlightAs(highlightType));
     }
 
     public bool TeleportEntity(Tile origin, Tile dest) {
