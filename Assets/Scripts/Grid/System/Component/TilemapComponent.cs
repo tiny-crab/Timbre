@@ -9,7 +9,6 @@ public class TilemapComponent {
 
     public GameObject[,] grid;
 
-
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
         parent = gridSystem;
         grid = initTileMap;
