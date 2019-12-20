@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour {
 
+    // should refactor this into enum
     public static class HighlightTypes {
         // range
         public const string Attack = "attack";
@@ -66,6 +67,11 @@ public class Tile : MonoBehaviour {
         if (currentHighlights.Count == 0) {
             selected = false;
         }
+    }
+
+    public void RemoveHighlights() {
+        selected = false;
+        currentHighlights.Clear();
     }
 
     Color DetermineColor () {

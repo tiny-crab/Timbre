@@ -89,6 +89,29 @@ Gonna make a commit a bit early just to nail down the new structure, and then wi
 Now I'm working on picking out some stuff from StateMachineComponent and making sure that Actions don't contain any data that States do not.
 
 Just realized that logging the actions taken (along with saving AI choices), I can create an event log to replay encounters. Creating a headless
-encounter replayer would be a fabulous way to unit test TBH. That could be very very helpful.
+encounter replayer would be a fabulous way to write integration tests TBH. That could be very very helpful.
 
 Bug: Deactivating a select tiles skill still uses the SP needed for the skill.
+
+## 2019.12.19
+
+I'm working on removing the SelectedTile class from TilemapComponent and making functions static where possible. This means that the Action
+and State classes may change a bit to store the data that is being extracted from the Tilemap singleton.
+
+Creating that headless encounter replayer sounds like a really helpful and interesting tool, but I'll do my best to save that work until
+after the initial prototype is done.
+
+This whole refactor project is teaching me that I should attempt to limit the number of singleton objects as much as possible. Initially,
+creating a state machine that had objects representing the state's data and FSM's edges seemed like a lot of work. But it is a lot cleaner
+to write it out that way than to modularize the "model" and "view" aspects into their own singletons. Not sure if this could be applied
+to non-tactics / turn-based games, but I do think this has proved valuable right now.
+
+I'm finding that I want to put single objects like the grid or factions into states. I'm wondering what kind of computation it would take to
+constantly transfer this info from state to state. I don't think it would recreate the objects over and over, so it'd be just passing it via reference.
+Would the old states that still refer to that data be garbage collected? I'm really not sure.
+
+There's a lot of duplicate code across Actions right now... especially when it comes to displaying tile ranges for characters.
+That being said, I feel like it's better to minify it as much as possible without extracting these calls into a "common flow" like an inherited
+before/after method for different skills. It would only stand to make it more confusing, I think. Actions shouldn't be chained or extended IMO.
+
+Going to make a commit tonight for removing the moveRange and attackRange lists from TilemapComponent, will remove the others later.

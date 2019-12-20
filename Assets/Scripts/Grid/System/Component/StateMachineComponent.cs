@@ -39,12 +39,12 @@ public class StateMachineComponent {
                     var target = targetTile.occupier;
                     // clicking on another entity
                     // if entity is enemy: Attack
-                    if (target.isHostile && parent.tilemap.attackRange.Contains(targetTile)) {
+                    if (target.isHostile && stateData.attackRange.Contains(targetTile)) {
                         action = new Attack(stateData.source, target);
                     }
                     // if entity is ally: interact (to be implemented later)
                 }
-                else if (parent.tilemap.moveRange.Contains(targetTile)) {
+                else if (stateData.moveRange.Contains(targetTile)) {
                     // if space is empty: move there (if possible)
                     // parent.tilemap.MoveEntity(selectedEntity.tile, targetTile);
                     action = new Move(stateData.source, targetTile);
