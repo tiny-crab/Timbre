@@ -44,7 +44,6 @@ public class TilemapComponent {
     // not a fan of using Tile.HighlightTypes here... seems a little tangential
     // but it does confirm the dependency between SelectedTiles and Tiles
     // these should also move into StateData
-    public SelectedTiles skillRange = new SelectedTiles(Tile.HighlightTypes.Skill);
     public SelectedTiles teleportRange = new SelectedTiles(Tile.HighlightTypes.Teleport);
 
     public SelectedTiles skillSelected = new SelectedTiles(Tile.HighlightTypes.SkillSelect);
@@ -59,7 +58,7 @@ public class TilemapComponent {
     public void ResetTileSelection (params SelectedTiles[] targets) {
         if (targets.Count() == 0) {
             targets = new SelectedTiles[] {
-                testTiles, skillRange, skillSelected, teleportRange
+                testTiles, skillSelected, teleportRange
             };
         }
         targets.ToList().ForEach( selectedTiles => {

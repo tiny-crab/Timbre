@@ -163,7 +163,7 @@ public class ActivateSkill : Action {
         }
         else if (skillToActivate is SelectTilesSkill) {
             skillRange = ((SelectTilesSkill) skillToActivate).GetValidTiles(tilemap.grid, source.tile);//tilemap.ActivateSelectTilesSkill(source, (SelectTilesSkill) skillToActivate);
-            if (tilemap.skillRange.tiles.Count() != 0) {
+            if (skillRange.Count() != 0) {
                 // dialog.PostToDialog("Activated " + skillToActivate.GetType().Name, dialogNoise, false);
             } else {
                 // dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but there were no valid tiles", dialogNoise, false);
