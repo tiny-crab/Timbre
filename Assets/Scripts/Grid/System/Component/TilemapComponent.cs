@@ -15,49 +15,9 @@ public class TilemapComponent {
 
     public bool teleportCompleted = true;
 
-    public class SelectedTiles {
-        public List<Tile> tiles;
-        public string name;
-
-        public SelectedTiles(string name) {
-            tiles = new List<Tile>();
-            this.name = name;
-        }
-
-        public void Highlight() {
-            tiles.ForEach(t => t.HighlightAs(name));
-        }
-
-        // this is... a little weird but it fixes a lingering highlight bug with tiles
-        public void Clear(GameObject[,] grid) {
-            for (var i = 0; i < grid.GetLength(0); i++) {
-                for (var j = 0; j < grid.GetLength(1); j++) {
-                    grid[i,j].GetComponent<Tile>().RemoveHighlight(name);
-                }
-            }
-            tiles.Clear();
-        }
-
-        public bool Contains(Tile element) { return tiles.Contains(element); }
-    }
-
-    public SelectedTiles testTiles = new SelectedTiles(Tile.HighlightTypes.Test);
-
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
         parent = gridSystem;
         grid = initTileMap;
-    }
-
-    public void ResetTileSelection (params SelectedTiles[] targets) {
-        if (targets.Count() == 0) {
-            targets = new SelectedTiles[] {
-                testTiles
-            };
-        }
-        targets.ToList().ForEach( selectedTiles => {
-            selectedTiles.tiles.ForEach(t => t.RemoveHighlight(selectedTiles.name));
-            selectedTiles.Clear(grid);
-        });
     }
 
     public static void ResetTileSelection (List<Tile> tiles) {

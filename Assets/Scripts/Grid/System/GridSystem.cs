@@ -110,7 +110,7 @@ public class GridSystem : MonoBehaviour {
             .Where(tile => !tile.disabled).ToList()
             .ForEach(tile => tile.gameObject.SetActive(false));
 
-        tilemap.ResetTileSelection();
+        TilemapComponent.ClearAllHighlightsFromGrid(tilemap.grid);
 
         factions.ToList()
             .Where(faction => faction.isHostileFaction).ToList()
