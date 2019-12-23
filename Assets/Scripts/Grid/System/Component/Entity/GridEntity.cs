@@ -82,6 +82,7 @@ public class GridEntity : MonoBehaviour {
     public int fearThreshold;
     public List<string> afraidBehaviorNames;
     public List<Behavior> afraidBehaviors = new List<Behavior>();
+    public GameObject fearIcon;
 
 
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
@@ -116,6 +117,8 @@ public class GridEntity : MonoBehaviour {
         afraidBehaviors = afraidBehaviorNames.ToBehaviors(this);
         healthBar = GenerateHealthBar();
         UpdateHealthBar();
+        fearIcon = gameObject.transform.Find("FearIcon").gameObject;
+        fearIcon.SetActive(false);
     }
 
     void Update() {
@@ -266,6 +269,7 @@ public class GridEntity : MonoBehaviour {
         // once an enemy becomes afraid, they will stay afraid
         if (behaviors.Count > 0 && totalFearValue >= fearThreshold) {
             behaviors = afraidBehaviors;
+            fearIcon.SetActive(true);
         }
     }
 
