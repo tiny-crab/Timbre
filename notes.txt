@@ -115,3 +115,50 @@ That being said, I feel like it's better to minify it as much as possible withou
 before/after method for different skills. It would only stand to make it more confusing, I think. Actions shouldn't be chained or extended IMO.
 
 Going to make a commit tonight for removing the moveRange and attackRange lists from TilemapComponent, will remove the others later.
+
+## 2019.12.28
+
+Working on the Teleportation behavior and I need to make sure that enemies can "delay" a turn, or kind of "queue" up multiple turns in a row. As in,
+
+Player Turn 1: Player does something, then ends turn
+Enemy Turn 1: Enemy begins teleportation phase
+Player Turn 2: Player does something, then ends turn
+Enemy Turn 2: Enemy teleports, then does something else
+
+I guess in a sense, the "teleport" could be considered a "pre-turn", as the enemies will still need to determine what to do *after*
+they've teleported. Or, better yet, can they react to what the player has done on Turn 2?
+
+I think that a fleeing teleport would be better to allow the player to "outsmart" the enemy by predicting where they go.
+So the enemy should determine the area they want to teleport in Enemy Turn 1, then re-calculate their next move in Enemy Turn 2.
+
+On the other hand, an offensive teleport would be better to calculate the teleporting place in Enemy Turn 2. Allowing both would be a good design
+pattern, and perhaps some enemies pre-calculate or post-calculate teleports depending on their canonical way of teleporting.
+
+Right now, I want to be able to pass an AIStep, whether pre-calculate or post-calculate, into the next EnemyTurn state data. And since I designed state data
+to not be saved after a state transition... there may be a problem there.
+
+Working through the possible options of where to store the "rolled over" behavior for an AI:
+
+### 1. GridSystem
+Probably not a good idea, as I don't feel this should store anything beyond the currentState for a given AI entity or turn
+
+### 2. GridEntity
+Could be a possibility, but how to store it?
+
+#### A. Behavior (member variable "state")
+I want behaviors to be something like Actions for the StateMachine, where they are purely functional and don't carry their own state.
+That being said, each AI has a specific Behavior object, so it's possible this state could be stored in a behavior. Since each behavior is
+"evaluated" when iterating through each one to determine a score, it's possible to score this one extremely high if it was already "queued" for the next turn.
+On top of that, it would allow a player's actions in a specific turn to "break" an enemy's "queued" up turn.
+
+Imagine a duo boss fight where there is one "strong" enemy and one "healer" enemy. Perhaps the strong enemy will queue up a powerful attack
+that is unblockable by common means. However, if the player attacks the healer enemy during the strong enemy's "windup", the strong enemy will
+cancel the move to come to the healer's rescue. This could be a very interesting tactic... so maybe force a score somehow.
+
+even something as simple as `if (lastTurnBehavior == this), boost final score` would work here.
+
+Now the question becomes: where should the lastTurnBehavior be stored?
+
+I decided that GridEntity would be the best place for it because:
+* It's very easy to store there from the actual DoBestAction method
+* It's not "acted" on but merely kept for reference (for now at least...)

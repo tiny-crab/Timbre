@@ -73,6 +73,7 @@ public class GridEntity : MonoBehaviour {
     // AI
     public List<string> behaviorNames;
     public List<Behavior> behaviors = new List<Behavior>();
+    public Behavior lastSelectedBehavior;
 
     // Fear
     public int baseFearValue;
