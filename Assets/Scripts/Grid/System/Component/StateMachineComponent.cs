@@ -27,7 +27,11 @@ public class StateMachineComponent {
         if (!(currentState is EnemyTurnState)) {
             if (currentState is NoSelectionState) {
                 if (targetTile.occupier != null) {
-                    action = new SelectEntity(targetTile.occupier);
+                    if (targetTile.occupier.isAllied) {
+                        action = new SelectAlly(targetTile.occupier);
+                    } else {
+                        action = new SelectEnemy(targetTile.occupier);
+                    }
                 } else {
                     action = new Unselect();
                 }
@@ -50,6 +54,11 @@ public class StateMachineComponent {
                     action = new Move(stateData.source, targetTile);
                 }
                 else {
+                    action = new Unselect();
+                }
+            }
+            if (currentState is EnemySelectedState) {
+                if (targetTile.occupier == null) {
                     action = new Unselect();
                 }
             }

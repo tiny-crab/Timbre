@@ -27,15 +27,15 @@ public class Tile : MonoBehaviour {
     public GridEntity occupier = null;
     public List<Hazard> hazards = new List<Hazard>();
     private bool selected = false;
-    private string highlightType;
     public List<string> currentHighlights = new List<string>();
+    private float intensity = 0f;
     public Color currentColor = Color.grey;
     private Color unselectedColor = Color.grey;
 
     // Update is called once per frame
     void Update () {
         if (occupier != null) { UpdateOccupier(); }
-        currentColor = DetermineColor();
+        currentColor = DetermineColor(intensity);
         this.GetComponent<SpriteRenderer>().color = currentColor;
     }
 
@@ -57,8 +57,9 @@ public class Tile : MonoBehaviour {
         occupier.tile = this;
     }
 
-    public void HighlightAs(string highlightType) {
+    public void HighlightAs(string highlightType, float intensity = 0) {
         currentHighlights.Add(highlightType);
+        this.intensity = intensity;
         selected = true;
     }
 
@@ -74,7 +75,7 @@ public class Tile : MonoBehaviour {
         currentHighlights.Clear();
     }
 
-    Color DetermineColor () {
+    Color DetermineColor(float intensity = 0) {
         Color tileColor = new Color();
 
         if (selected) {
@@ -96,7 +97,7 @@ public class Tile : MonoBehaviour {
                 tileColor = Color.cyan;
             }
             if (currentHighlights.Contains(HighlightTypes.Test)) {
-                tileColor = Color.white;
+                tileColor = Color.Lerp(Color.green, Color.red, intensity);
             }
             if (currentHighlights.Count == 0) {
                 tileColor = unselectedColor;

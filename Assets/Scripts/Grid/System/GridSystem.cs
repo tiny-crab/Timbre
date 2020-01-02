@@ -151,7 +151,7 @@ public class GridSystem : MonoBehaviour {
 
         if (currentState is NoSelectionState) {
             if (mouseTile == null) { return; }
-            else if (Input.GetMouseButtonDown(0) && mouseTile.occupier.isAllied) {
+            else if (Input.GetMouseButtonDown(0) && mouseTile.occupier != null) {
                 currentState = TransitionOnClick(currentState, mouseTile);
             }
             // this needs to be able to be triggered in any state
@@ -175,6 +175,13 @@ public class GridSystem : MonoBehaviour {
             }
             else if (Input.GetKeyDown(KeyCode.T)) {
                 currentState = TransitionOnTeleportKeyPress(currentState);
+            }
+        }
+
+        else if (currentState is EnemySelectedState) {
+            if (mouseTile == null) { return; }
+            else if (Input.GetMouseButtonDown(0)) {
+                currentState = TransitionOnClick(currentState, mouseTile);
             }
         }
 

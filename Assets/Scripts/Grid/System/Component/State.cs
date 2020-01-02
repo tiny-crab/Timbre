@@ -19,6 +19,15 @@ public class AllySelectedState : State {
     }
 }
 
+public class EnemySelectedState : State {
+    public Dictionary<Tile, double> tileScoreMap;
+    public Behavior bestBehavior;
+
+    public EnemySelectedState(GridEntity selectedEntity) {
+        source = selectedEntity;
+    }
+}
+
 public class SelectSkillActivatedState : State {
     public SelectTilesSkill activeSkill;
     public List<Tile> validTiles = new List<Tile>();

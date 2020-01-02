@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public abstract class Action {
     public abstract State Transition(State currentState, TilemapComponent tilemap, Dialog dialog);
@@ -36,10 +37,10 @@ public class Unselect : Action {
     protected override void DisplayInDialog(Dialog dialog) {}
 }
 
-public class SelectEntity : Action {
+public class SelectAlly : Action {
     public GridEntity source;
 
-    public SelectEntity(GridEntity selected) {
+    public SelectAlly(GridEntity selected) {
         source = selected;
     }
 
@@ -60,6 +61,37 @@ public class SelectEntity : Action {
         var stateData = (AllySelectedState) currentState;
         stateData.attackRange.ForEach(x => x.HighlightAs(Tile.HighlightTypes.Attack));
         stateData.moveRange.ForEach(x => x.HighlightAs(Tile.HighlightTypes.Move));
+    }
+    protected override void DisplayInDialog(Dialog dialog) {
+        dialog.PostToDialog("Selected " + source.entityName, null, false);
+    }
+}
+
+public class SelectEnemy : Action {
+    public GridEntity source;
+
+    public SelectEnemy(GridEntity selected) {
+        source = selected;
+    }
+
+    public override State Transition(State currentState, TilemapComponent tilemap, Dialog dialog) {
+        var nextState = new EnemySelectedState(source);
+        Execute(nextState, tilemap);
+        DisplayInGrid(nextState, tilemap);
+        DisplayInDialog(dialog);
+        return nextState;
+    }
+
+    protected override void Execute(State currentState, TilemapComponent tilemap) {
+        var stateData = (EnemySelectedState) currentState;
+        stateData.tileScoreMap = source.afraidBehaviors.First().ScoreGrid(tilemap.grid);
+    }
+    protected override void DisplayInGrid(State currentState, TilemapComponent tilemap) {
+        var stateData = (EnemySelectedState) currentState;
+        var normalizedData = Utils.NormalizeDict(stateData.tileScoreMap);
+
+        normalizedData.Keys.ToList().ForEach(x => x.HighlightAs(Tile.HighlightTypes.Test, (float) normalizedData[x]));
+        normalizedData.Keys.OrderBy(x => normalizedData[x]).First().HighlightAs(Tile.HighlightTypes.Move);
     }
     protected override void DisplayInDialog(Dialog dialog) {
         dialog.PostToDialog("Selected " + source.entityName, null, false);

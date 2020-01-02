@@ -162,3 +162,14 @@ Now the question becomes: where should the lastTurnBehavior be stored?
 I decided that GridEntity would be the best place for it because:
 * It's very easy to store there from the actual DoBestAction method
 * It's not "acted" on but merely kept for reference (for now at least...)
+
+## 2020.01.01
+
+Working on the EvasiveTeleport behavior. I decided that it should only work as a "spacing" behavior, not as a "fleeing" one.
+
+In essence, the "higher up" elk cultists might use EvasiveTeleport to get away from the party and heal.
+The minions may use a different Behavior like FleeingTeleport where they immediately disappear after a single turn of teleport queueing.
+
+However, right now, the EvasiveTeleport will outweigh the MeleeAttackV1 (in the current ShamblingCorpse enemy) whenever the party is not within "range".
+So MeleeAttackV1 will need some tweaks, but not in this commit. Only thing I'll do is bump up the health boosting, or add another section to quash
+the total score when the enemy is at full health.
