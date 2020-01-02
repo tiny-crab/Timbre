@@ -25,7 +25,8 @@ public class TilemapComponent {
             Tile.HighlightTypes.Skill,
             Tile.HighlightTypes.SkillSelect,
             Tile.HighlightTypes.Teleport,
-            Tile.HighlightTypes.Test
+            Tile.HighlightTypes.Test,
+            Tile.HighlightTypes.SelectedEntity
         }.ForEach(type => ClearHighlightFromGrid(grid, type));
     }
 

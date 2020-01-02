@@ -8,6 +8,8 @@ public class Tile : MonoBehaviour {
 
     // should refactor this into enum
     public static class HighlightTypes {
+        public const string SelectedEntity = "selected_entity";
+
         // range
         public const string Attack = "attack";
         public const string Move = "move";
@@ -98,6 +100,9 @@ public class Tile : MonoBehaviour {
             }
             if (currentHighlights.Contains(HighlightTypes.Test)) {
                 tileColor = Color.Lerp(Color.green, Color.red, intensity);
+            }
+            if (currentHighlights.Contains(HighlightTypes.SelectedEntity)) {
+                tileColor = Color.white;
             }
             if (currentHighlights.Count == 0) {
                 tileColor = unselectedColor;

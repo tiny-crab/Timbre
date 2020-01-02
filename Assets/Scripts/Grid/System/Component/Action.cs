@@ -59,6 +59,7 @@ public class SelectAlly : Action {
     }
     protected override void DisplayInGrid(State currentState, TilemapComponent tilemap) {
         var stateData = (AllySelectedState) currentState;
+        source.tile.HighlightAs(Tile.HighlightTypes.SelectedEntity);
         stateData.attackRange.ForEach(x => x.HighlightAs(Tile.HighlightTypes.Attack));
         stateData.moveRange.ForEach(x => x.HighlightAs(Tile.HighlightTypes.Move));
     }
@@ -90,6 +91,7 @@ public class SelectEnemy : Action {
         var stateData = (EnemySelectedState) currentState;
         var normalizedData = Utils.NormalizeDict(stateData.tileScoreMap);
 
+        source.tile.HighlightAs(Tile.HighlightTypes.SelectedEntity);
         normalizedData.Keys.ToList().ForEach(x => x.HighlightAs(Tile.HighlightTypes.Test, (float) normalizedData[x]));
         normalizedData.Keys.OrderBy(x => normalizedData[x]).First().HighlightAs(Tile.HighlightTypes.Move);
     }
@@ -120,6 +122,9 @@ public class Move : Action {
     }
     protected override void DisplayInGrid(State currentState, TilemapComponent tilemap) {
         var stateData = (AllySelectedState) currentState;
+
+        TilemapComponent.ClearHighlightFromGrid(tilemap.grid, Tile.HighlightTypes.SelectedEntity);
+        source.tile.HighlightAs(Tile.HighlightTypes.SelectedEntity);
 
         stateData.attackRange = TilemapComponent.GenerateAttackRange(tilemap.grid, source);
         stateData.moveRange = TilemapComponent.GenerateMoveRange(tilemap.grid, source);
