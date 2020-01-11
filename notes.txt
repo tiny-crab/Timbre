@@ -173,3 +173,13 @@ The minions may use a different Behavior like FleeingTeleport where they immedia
 However, right now, the EvasiveTeleport will outweigh the MeleeAttackV1 (in the current ShamblingCorpse enemy) whenever the party is not within "range".
 So MeleeAttackV1 will need some tweaks, but not in this commit. Only thing I'll do is bump up the health boosting, or add another section to quash
 the total score when the enemy is at full health.
+
+## 2020.01.07
+
+Going to quickly work on animating moving an entity along a "path" between tiles.
+
+Just realized that the AI Behaviors don't take path length into account... they just take "crow flies" distance. This is not good.
+
+## 2020.01.10
+
+Bug in move + attack in same AI turn, as two sequences instantiated in the same frame do not run sequentially.

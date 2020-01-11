@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 public class TilemapComponent {
 
@@ -71,8 +72,7 @@ public class TilemapComponent {
 
     public void MoveEntity (Tile origin, Tile dest) {
         if (TeleportEntity(origin, dest)) {
-            var distance = GridUtils.GetPathBetweenTiles(grid, origin, dest).Count;
-            dest.occupier.Move(distance);
+            dest.occupier.Move(GridUtils.GetPathBetweenTiles(grid, origin, dest));
         }
     }
 

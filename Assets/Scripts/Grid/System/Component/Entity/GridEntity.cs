@@ -85,7 +85,6 @@ public class GridEntity : MonoBehaviour {
     public List<Behavior> afraidBehaviors = new List<Behavior>();
     public GameObject fearIcon;
 
-
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
     public Color attackRangeColor;
@@ -105,6 +104,8 @@ public class GridEntity : MonoBehaviour {
     private float healthBarYDelta = 0.5f;
     private HealthBar healthBar;
 
+    public Sequence turnAnimSequence;
+
     void Start () {
         currentMoves = maxMoves;
         currentAttacks = maxAttacks;
@@ -120,6 +121,7 @@ public class GridEntity : MonoBehaviour {
         UpdateHealthBar();
         fearIcon = gameObject.transform.Find("FearIcon").gameObject;
         fearIcon.SetActive(false);
+        turnAnimSequence = DOTween.Sequence();
     }
 
     void Update() {
@@ -179,9 +181,14 @@ public class GridEntity : MonoBehaviour {
         Destroy(this.gameObject);
     }
 
-    public void Move(int spaces) {
-        currentMoves -= spaces;
+    public void Move(List<Tile> path) {
+        currentMoves -= path.Count;
         if (currentMoves <= 0) { outOfMoves = true; }
+        var moveAnim = DOTween.Sequence();
+        path.ForEach(tile => {
+            moveAnim.Append(this.transform.DOMove(tile.transform.position, .1f));
+        });
+        turnAnimSequence.Prepend(moveAnim);
     }
 
     public void MakeAttack(GridEntity target) {
@@ -213,7 +220,15 @@ public class GridEntity : MonoBehaviour {
         if (currentAttacks <= 0) { outOfAttacks = true; }
         if (currentAttackSkill != null) { UseSkill(currentAttackSkill); }
 
-        transform.DOMove(target.gameObject.transform.position, .3f);
+        var attackAnim = DOTween.Sequence();
+        attackAnim.Append(transform.DOMove(target.transform.position, .2f));
+        // this uses the tile.transform, because the actual entity's position has not been updated at the time of this reference
+        attackAnim.Append(transform.DOMove(this.tile.transform.position, .2f));
+        turnAnimSequence.Append(attackAnim);
+
+        DOTween.Sequence()
+            .PrependInterval(attackAnim.Duration())
+            .Append(target.transform.DOShakePosition(duration: .3f, strength: (calculatedDamage * .25f)));
     }
 
     private List<AttackReaction> TriggerAttackReaction(GridEntity attacker) {

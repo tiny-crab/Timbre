@@ -75,7 +75,7 @@ public class MeleeAttackV1 : Behavior {
         var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileCircle(grid, 1, target.tile)).ToList();
 
         // get tiles that are valid to move to in this turn
-        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile);
+        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile, movement:true);
         nextTurnRange.Add(entity.tile);
 
         // score each tile in valid move range with distance to be in range of target

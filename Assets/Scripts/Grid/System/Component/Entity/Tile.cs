@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 
 public class Tile : MonoBehaviour {
@@ -44,6 +45,10 @@ public class Tile : MonoBehaviour {
     // use this return value to determine whether or not to "roll-back" a move
     public bool TryOccupy (GridEntity entity) {
         if (occupier == null) {
+            // on grid-startup, all entities will have no tile
+            if (entity.tile == null) {
+                entity.transform.position = new Vector2(this.transform.position.x, this.transform.position.y);
+            }
             occupier = entity;
             entity.tile = this;
             hazards.ForEach(hazard => hazard.OnEntityContact(entity));
@@ -55,7 +60,6 @@ public class Tile : MonoBehaviour {
     }
 
     void UpdateOccupier () {
-        occupier.transform.position = new Vector2(this.transform.position.x, this.transform.position.y);
         occupier.tile = this;
     }
 
