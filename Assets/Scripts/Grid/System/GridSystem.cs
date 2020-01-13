@@ -126,6 +126,8 @@ public class GridSystem : MonoBehaviour {
             faction.entities.ForEach(entity => entity.RemoveFromGrid());
         });
         factions = new Queue<Faction>();
+
+        skillMenu.SetActive(false);
     }
 
     void Awake () {

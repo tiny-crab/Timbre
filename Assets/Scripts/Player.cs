@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,6 +10,8 @@ public class Player : ControllerInteractable {
     private GridSystem grid;
 
     private List<GameObject> partyPrefabs;
+
+    public GameObject ethreadMenu;
 
     private bool waiting = false;
 
@@ -45,10 +46,13 @@ public class Player : ControllerInteractable {
 
         partyPrefabs = new List<GameObject>() {
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/GridPlayer"),
-            // Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight"),
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight"),
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Dog"),
-            // Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Woodsman")
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Woodsman"),
         };
+
+        ethreadMenu = GameObject.Find("EthreadMenu");
+        ethreadMenu.SetActive(false);
     }
 
     void Update () {
@@ -59,6 +63,12 @@ public class Player : ControllerInteractable {
                                     });
         if ((allEnemiesDefeated || keyPressed(DEACTIVATE_GRID)) && grid.activated) { DeactivateGrid(); }
         if (waiting) { return; }
+
+        // take note - this is the first place where the term "Ethread" is coming up
+        // a truncation of the codename "Ethereal Thread" to represent the lifeforce items of monsters
+        // and to reduce confusion with "thread" terms in the code
+        // I will most likely regret this term and hate having it everywhere in my code because it looks ugly
+        if (Input.GetKeyDown(KeyCode.Tab)) { ToggleEthreadMenu(); }
 
         Vector3 previousPos = transform.position;
         Vector3 movePos = transform.position;
@@ -131,8 +141,14 @@ public class Player : ControllerInteractable {
             partyPrefabs,
             encounteredEnemies ?? GenerateRandomEnemies()
         );
+        ethreadMenu.SetActive(false);
         waiting = true;
         return;
+    }
+
+    private void ToggleEthreadMenu() {
+        ethreadMenu.SetActive(!ethreadMenu.activeInHierarchy);
+        ethreadMenu.GetComponent<EthreadMenu>().PopulateParty(partyPrefabs);
     }
 
     private List<KeyValuePair<GameObject, Vector2>> GenerateRandomEnemies() {
