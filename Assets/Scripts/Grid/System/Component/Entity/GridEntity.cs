@@ -85,6 +85,9 @@ public class GridEntity : MonoBehaviour {
     public List<Behavior> afraidBehaviors = new List<Behavior>();
     public GameObject fearIcon;
 
+    //Threas
+    public List<Ethread> equippedThreads = new List<Ethread>();
+
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
     public Color moveRangeColor;
     public Color attackRangeColor;
@@ -122,6 +125,8 @@ public class GridEntity : MonoBehaviour {
         fearIcon = gameObject.transform.Find("FearIcon").gameObject;
         fearIcon.SetActive(false);
         turnAnimSequence = DOTween.Sequence();
+
+        equippedThreads.ForEach(thread => thread.effect.ApplyEffect(this));
     }
 
     void Update() {

@@ -193,3 +193,14 @@ Working on the EthreadMenu, still need to figure out how to:
 Other slightly "tricky" is keeping party member and total party inventories consistent.
 
 Need to allow RedThread prefab access to determine effect to apply on grid entities using it (in UnityEditor)
+
+## 2020.01.17
+
+Okay, I'll admit it, the ApplyEffect() and RemoveEffect() methods are probably the dumbest thing I've ever conceived.
+
+I think the most troublesome part of the thread menu right now is:
+* overriding core prefab variables like damage or maxMoves
+* overriding them without providing a source for the override
+
+I don't want to bloat the GridEntity class any more than it already is, but perhaps including the threads in a player's "bracelet",
+and applying the effects in the GridEntity class will be a better-tracked move.
