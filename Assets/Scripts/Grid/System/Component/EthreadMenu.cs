@@ -9,7 +9,7 @@ public class EthreadMenu : MonoBehaviour {
     private GameObject redThreadPrefab;
     private Button plus;
     private Button minus;
-    private int quantity = 3;
+    public int quantity = 0;
     private Text quantityText;
 
     private AllyInfo selectedAlly;

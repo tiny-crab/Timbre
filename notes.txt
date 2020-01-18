@@ -204,3 +204,11 @@ I think the most troublesome part of the thread menu right now is:
 
 I don't want to bloat the GridEntity class any more than it already is, but perhaps including the threads in a player's "bracelet",
 and applying the effects in the GridEntity class will be a better-tracked move.
+
+Just noticed that I have several different ways of determining collisions in the Player code. Albeit a cool exercise, I'll take some time soon to
+reduce the amount of options there. Most likely will use the encounterColliders method and filter down all the colliders into their
+specified needs. The Ethread collection in the overworld works now! All that's left is to drop them by enemies when they're killed while fleeing.
+
+I'll also to quickly make a better way of adding things to the inventory. Perhaps a string -> int map isn't the best bet right now. TBH, an enum
+could potentially work in order to keep things neat in the code. That just sounds so strange though.... to create an enum member for every item
+in the game. But what other options are there?

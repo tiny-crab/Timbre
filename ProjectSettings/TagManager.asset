@@ -10,6 +10,7 @@ TagManager:
   - EnableGrid
   - Encounter
   - TriggeredEncounter
+  - Pickup
   layers:
   - Default
   - TransparentFX

@@ -134,6 +134,15 @@ public class Player : ControllerInteractable {
                 collider.gameObject.tag = "TriggeredEncounter";
             }
         });
+
+        var pickupColliders = encounterColliders.Where(collider => collider.gameObject.tag == "Pickup").ToList();
+        pickupColliders.ForEach(collider => {
+            var pickup = collider.gameObject.GetComponent<Pickup>();
+            if (pickup.pickupType == "Ethread") {
+                ethreadMenu.GetComponent<EthreadMenu>().quantity++;
+                Destroy(collider.gameObject);
+            }
+        });
     }
 
     private void ActivateGrid(List<KeyValuePair<GameObject, Vector2>> encounteredEnemies = null) {
