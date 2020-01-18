@@ -78,6 +78,7 @@ public class EthreadMenu : MonoBehaviour {
             newEthread.transform.SetParent(selectedAlly.threadCapacityGroup);
             selectedAlly.capacity.Add(newEthread);
             newEthread.transform.position = selectedAlly.capacitySlots[selectedAlly.capacity.Count - 1].transform.position;
+            newEthread.GetComponent<Ethread>().effect.ApplyEffect(partyInfoDict[selectedAlly].GetComponent<GridEntity>());
         }
 
     }
@@ -87,6 +88,7 @@ public class EthreadMenu : MonoBehaviour {
         if (selectedAlly.capacity.Count > 0) {
             var ethreadToRemove = selectedAlly.capacity.Last();
             selectedAlly.capacity.Remove(ethreadToRemove);
+            ethreadToRemove.GetComponent<Ethread>().effect.RemoveEffect(partyInfoDict[selectedAlly].GetComponent<GridEntity>());
             Destroy(ethreadToRemove);
         }
     }

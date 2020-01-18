@@ -9,6 +9,8 @@ public class Player : ControllerInteractable {
     private ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
     private GridSystem grid;
 
+    private Dictionary<string, int> inventory = new Dictionary<string, int>();
+
     private List<GameObject> partyPrefabs;
 
     public GameObject ethreadMenu;

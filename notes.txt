@@ -183,3 +183,13 @@ Just realized that the AI Behaviors don't take path length into account... they 
 ## 2020.01.10
 
 Bug in move + attack in same AI turn, as two sequences instantiated in the same frame do not run sequentially.
+
+## 2020.01.13
+
+Working on the EthreadMenu, still need to figure out how to:
+    * keep inventory accessible between menu, Player class, and GridSystem class
+    * transmute RedThread prefabs -> "redThread" string -> +1 dmg on GridEntities.
+
+Other slightly "tricky" is keeping party member and total party inventories consistent.
+
+Need to allow RedThread prefab access to determine effect to apply on grid entities using it (in UnityEditor)
