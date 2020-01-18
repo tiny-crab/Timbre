@@ -98,8 +98,6 @@ public class EthreadMenu : MonoBehaviour {
 
     private void OnSlotClick (AllyInfo parent, int index) {
         selectedAlly = parent;
-
-        Debug.Log("Clicked Slot " + index.ToString());
         if (index + 1 <= parent.capacity.Count) {
             quantity++;
             var ethreadToRemove = selectedAlly.capacity[index];
