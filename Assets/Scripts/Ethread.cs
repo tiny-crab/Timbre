@@ -10,6 +10,12 @@ public class Ethread : MonoBehaviour {
         if (effectName == "RedThread") {
             effect = new RedEthreadEffect();
         }
+        else if (effectName == "BlueThread") {
+            effect = new BlueEthreadEffect();
+        }
+        else if (effectName == "GreenThread") {
+            effect = new GreenEthreadEffect();
+        }
     }
 
 }
