@@ -9,7 +9,7 @@ public class EthreadMenu : MonoBehaviour {
     private GameObject redThreadPrefab;
     private Button plus;
     private Button minus;
-    private int quantity = 0;
+    private int quantity = 3;
     private Text quantityText;
 
     private AllyInfo selectedAlly;
@@ -59,6 +59,9 @@ public class EthreadMenu : MonoBehaviour {
                 var allyInfo = new AllyInfo(group);
                 allyInfo.image.sprite = partyPrefabs[i].GetComponent<SpriteRenderer>().sprite;
                 allyInfo.selectionButton.onClick.AddListener(delegate{OnSelectionClick(allyInfo);});
+                allyInfo.capacitySlots.Each((slot, index) => {
+                    slot.GetComponent<Button>().onClick.AddListener(delegate{OnSlotClick(allyInfo, index);});
+                });
                 partyInfoDict.Add(allyInfo, partyPrefabs[i]);
             }
             selectedAlly = partyInfoDict.Keys.First();
@@ -72,8 +75,8 @@ public class EthreadMenu : MonoBehaviour {
     }
 
     private void OnPlusClick () {
-        quantity++;
-        if (selectedAlly.capacity.Count < selectedAlly.maxCapacity) {
+        if (selectedAlly.capacity.Count < selectedAlly.maxCapacity && quantity > 0) {
+            quantity--;
             var newEthread = Instantiate(redThreadPrefab, new Vector2(0,0), Quaternion.identity);
             newEthread.transform.SetParent(selectedAlly.threadCapacityGroup);
             selectedAlly.capacity.Add(newEthread);
@@ -84,10 +87,28 @@ public class EthreadMenu : MonoBehaviour {
     }
 
     private void OnMinusClick () {
-        quantity--;
         if (selectedAlly.capacity.Count > 0) {
+            quantity++;
             var ethreadToRemove = selectedAlly.capacity.Last();
             selectedAlly.capacity.Remove(ethreadToRemove);
+            partyInfoDict[selectedAlly].GetComponent<GridEntity>().equippedThreads.Remove(ethreadToRemove.GetComponent<Ethread>());
+            Destroy(ethreadToRemove);
+        }
+    }
+
+    private void OnSlotClick (AllyInfo parent, int index) {
+        selectedAlly = parent;
+
+        Debug.Log("Clicked Slot " + index.ToString());
+        if (index + 1 <= parent.capacity.Count) {
+            quantity++;
+            var ethreadToRemove = selectedAlly.capacity[index];
+            selectedAlly.capacity.Remove(ethreadToRemove);
+
+            selectedAlly.capacity.Each((ethread, i) => {
+                ethread.transform.position = selectedAlly.capacitySlots[i].transform.position;
+            });
+
             partyInfoDict[selectedAlly].GetComponent<GridEntity>().equippedThreads.Remove(ethreadToRemove.GetComponent<Ethread>());
             Destroy(ethreadToRemove);
         }
