@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Player : ControllerInteractable {
 
     public float speed = 5f;
-    private BoxCollider2D boxCollider;
-    private ContactFilter2D contactFilter = new ContactFilter2D().NoFilter();
     private GridSystem grid;
 
     private Dictionary<string, int> inventory = new Dictionary<string, int>();
@@ -43,7 +42,6 @@ public class Player : ControllerInteractable {
     private bool keyPressed(List<KeyCode> input) { return input.Any(key => Input.GetKey(key)); }
 
     void Awake () {
-        boxCollider = GetComponent<BoxCollider2D>();
         grid = (GridSystem) GameObject.Find("GridSystem").GetComponent<GridSystem>();
 
         partyPrefabs = new List<GameObject>() {
@@ -72,7 +70,6 @@ public class Player : ControllerInteractable {
         // I will most likely regret this term and hate having it everywhere in my code because it looks ugly
         if (Input.GetKeyDown(KeyCode.Tab)) { ToggleEthreadMenu(); }
 
-        Vector3 previousPos = transform.position;
         Vector3 movePos = transform.position;
 
         // TODO: Use UniRX if the project gets bigger
@@ -83,59 +80,70 @@ public class Player : ControllerInteractable {
 
         if (keyPressed(ACTIVATE_GRID)) { ActivateGrid(); }
 
-        transform.position = movePos;
-
-        int numColliders = 10;
-        Collider2D[] colliders = new Collider2D[numColliders];
-        int colliderCount = boxCollider.OverlapCollider(contactFilter, colliders);
-
-        // do this in both x and y axes, only one is working right now (can't "slide" along walls)
-        if (colliderCount > 0) {
-            for (int i = 0; i < colliderCount; i++) {
-                // this might be a poor and non-performant solution
-                if (colliders[i].gameObject.GetComponent<Rigidbody2D>() != null) {
-                    transform.position = previousPos;
-                }
-            }
-        }
-
-        RaycastHit2D[] interactables = new RaycastHit2D[10];
-
-        int interactColliderCount = Physics2D.CircleCast(
-            origin: transform.position,
-            radius: 0.7f,
-            direction: new Vector2(0, 0),
-            contactFilter: contactFilter,
-            results: interactables
-        );
-
-        if (interactColliderCount > 0) {
-            var results = new List<RaycastHit2D>(interactables)
-                .Where(entity => entity.collider != null)
-                .Where(entity => entity.collider.gameObject.name != "Player");
-            if (keyPressed(INTERACT)) { results.First().collider.gameObject.BroadcastMessage("PlayerInteract"); }
-        }
-
-        var encounterColliders = Physics2D.BoxCastAll(
-            origin: transform.position,
+        var colliders = Physics2D.BoxCastAll(
+            origin: movePos,
             size: new Vector2(0.5f, 0.5f),
             angle: 0,
             direction: Vector2.zero
         ).Select(hit => hit.collider).ToList();
 
+        var physicsColliders = colliders.Where(collider => collider.gameObject.GetComponent<Rigidbody2D>() != null);
+        if (physicsColliders.Count() > 0) {
+
+                void revertCollisionFor(Vector2 offset, bool vertical, System.Action revertPosition) {
+                        var collisions = Physics2D.BoxCastAll(
+                        origin: offset,
+                        size: vertical ? new Vector2(0.1f, 0.5f) : new Vector2(0.5f, 0.1f),
+                        angle: 0,
+                        direction: Vector2.zero
+                    )
+                    .Select(hit => hit.collider)
+                    .Where(collider => collider.gameObject.GetComponent<Rigidbody2D>() != null)
+                    .ToList();
+                    if (collisions.Count() > 0) { revertPosition(); }
+                }
+
+                // colliding to north
+                revertCollisionFor(
+                    offset: new Vector2(movePos.x, movePos.y + .5f),
+                    vertical: true,
+                    revertPosition: () => { movePos.y -= speed * Time.deltaTime; }
+                );
+                // colliding to south
+                revertCollisionFor(
+                    offset: new Vector2(movePos.x, movePos.y - .5f),
+                    vertical: true,
+                    revertPosition: () => { movePos.y += speed * Time.deltaTime; }
+                );
+
+                // colliding to east
+                revertCollisionFor(
+                    offset: new Vector2(movePos.x - .5f, movePos.y),
+                    vertical: false,
+                    revertPosition: () => { movePos.x += speed * Time.deltaTime; }
+                );
+                // colliding to west
+                revertCollisionFor(
+                    offset: new Vector2(movePos.x + .5f, movePos.y),
+                    vertical: false,
+                    revertPosition: () => { movePos.x -= speed * Time.deltaTime; }
+                );
+        }
+
+        transform.position = movePos;
+
+        var encounterColliders = colliders.Where(collider => collider.gameObject.tag == "Encounter").ToList();
         encounterColliders.ForEach(collider => {
-            if (collider.gameObject.tag == "Encounter") {
-                var encounterObj = collider.GetComponent<Encounter>();
+            var encounterObj = collider.GetComponent<Encounter>();
                 if (encounterObj != null) {
                     encounterObj.Trigger();
                     ActivateGrid(encounterObj.enemyPrefabs);
                 }
                 else { ActivateGrid(); }
                 collider.gameObject.tag = "TriggeredEncounter";
-            }
         });
 
-        var pickupColliders = encounterColliders.Where(collider => collider.gameObject.tag == "Pickup").ToList();
+        var pickupColliders = colliders.Where(collider => collider.gameObject.tag == "Pickup").ToList();
         pickupColliders.ForEach(collider => {
             var pickup = collider.gameObject.GetComponent<Pickup>();
             if (pickup.pickupType == "Ethread") {
@@ -143,6 +151,20 @@ public class Player : ControllerInteractable {
                 Destroy(collider.gameObject);
             }
         });
+
+        var interactColliders = Physics2D.CircleCastAll(
+            origin: transform.position,
+            radius: 1f,
+            direction: Vector2.zero
+        )
+        .Select(hit => hit.collider)
+        .Where(collider => collider.gameObject.tag == "Interaction")
+        .OrderBy(collider => Vector2.Distance(collider.transform.position, transform.position))
+        .ToList();
+
+        if (keyPressed(INTERACT) && interactColliders.Count() > 0) {
+            interactColliders.First().gameObject.BroadcastMessage("PlayerInteract");
+        }
     }
 
     private void ActivateGrid(List<KeyValuePair<GameObject, Vector2>> encounteredEnemies = null) {

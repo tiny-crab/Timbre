@@ -11,6 +11,7 @@ TagManager:
   - Encounter
   - TriggeredEncounter
   - Pickup
+  - Interaction
   layers:
   - Default
   - TransparentFX
