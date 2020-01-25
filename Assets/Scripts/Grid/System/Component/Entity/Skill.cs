@@ -4,12 +4,18 @@ using System.Linq;
 using UnityEngine;
 
 public interface Skill {
+    int level {get; set;}
     string name {get;}
     string desc {get;}
     int cost {get;}
 }
 
 public abstract class SelectTilesSkill : Skill {
+    protected int levelVal;
+    public int level {
+        get { return levelVal; }
+        set { levelVal = value; }
+    }
     public abstract string name {get;}
     public abstract string desc {get;}
 
@@ -42,6 +48,11 @@ public abstract class SelectAlliesSkill : SelectTilesSkill {
 }
 
 public abstract class BuffSkill : Skill {
+    protected int levelVal;
+    public int level {
+        get { return levelVal; }
+        set { levelVal = value; }
+    }
     public abstract string name {get;}
     public abstract string desc {get;}
 
@@ -50,6 +61,11 @@ public abstract class BuffSkill : Skill {
 }
 
 public abstract class AttackSkill : Skill {
+    protected int levelVal;
+    public int level {
+        get { return levelVal; }
+        set { levelVal = value; }
+    }
     public abstract string name {get;}
     public abstract string desc {get;}
 
@@ -71,8 +87,15 @@ public static class SkillUtils {
             {"Revive", new Revive()}
         };
 
-    public static List<Skill> ToSkills(this List<string> skillNames)
-        { return skillNames.Select(name => skillNameToSkill[name]).ToList(); }
+    public static List<Skill> ToSkills(this List<string> skillNames) {
+        return skillNames.Select(name => skillNameToSkill[name]).ToList();
+    }
+
+    public static List<Skill> PopulateSkills(List<string> skillNames, List<int> levels) {
+        var skills = skillNames.ToSkills();
+        skills.Each((skill, index) => skill.level = levels[index]);
+        return skills.Where(skill => skill.level != 0).ToList();
+    }
 
     public enum GambleOdds {
         COIN,

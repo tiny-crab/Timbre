@@ -65,6 +65,7 @@ public class GridEntity : MonoBehaviour {
 
     // skills
     public List<string> skillNames;
+    public List<int> skillLevels = new List<int> { 0, 0, 0 };
     public List<Skill> skills;
 
     // reactions
@@ -116,7 +117,7 @@ public class GridEntity : MonoBehaviour {
         damageReceiver = this;
         currentSkillUses = maxSkillUses;
         currentSP = maxSP;
-        skills = skillNames.ToSkills();
+        skills = SkillUtils.PopulateSkills(skillNames, skillLevels);
         behaviors = behaviorNames.ToBehaviors(this);
         fears = fearNames.ToFears();
         afraidBehaviors = afraidBehaviorNames.ToBehaviors(this);

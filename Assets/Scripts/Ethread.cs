@@ -8,13 +8,22 @@ public class Ethread : MonoBehaviour {
 
     public void Awake () {
         if (effectName == "RedThread") {
-            effect = new RedEthreadEffect();
+            effect = new DamageEthreadEffect();
         }
         else if (effectName == "BlueThread") {
-            effect = new BlueEthreadEffect();
+            effect = new MoveEthreadEffect();
         }
         else if (effectName == "GreenThread") {
-            effect = new GreenEthreadEffect();
+            effect = new SPEthreadEffect();
+        }
+        else if (effectName == "PurpleThread") {
+            effect = new PrimarySkillEthreadEffect();
+        }
+        else if (effectName == "YellowThread") {
+            effect = new SecondarySkillEthreadEffect();
+        }
+        else if (effectName == "PinkThread") {
+            effect = new TertiarySkillEthreadEffect();
         }
     }
 
