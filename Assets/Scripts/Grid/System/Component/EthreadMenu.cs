@@ -5,14 +5,29 @@ using UnityEngine.UI;
 
 public class EthreadMenu : MonoBehaviour {
 
-    private GameObject redThread;
-    private GameObject redThreadPrefab;
-    private Button plus;
-    private Button minus;
-    public int quantity = 0;
-    private Text quantityText;
-
     private AllyInfo selectedAlly;
+    public List<ThreadButtonGroup> threadButtonGroups = new List<ThreadButtonGroup>();
+
+    public class ThreadButtonGroup {
+        public string prefabName;
+        public GameObject threadPrefab;
+
+        public Button plus;
+        public Button minus;
+
+        public int quantity;
+        public Text quantityText;
+
+        public ThreadButtonGroup (Transform parentTransform, string prefabName) {
+            this.prefabName = prefabName;
+            var threadButtons = parentTransform.Find(prefabName).gameObject;
+            plus = (Button) threadButtons.transform.Find("Plus").gameObject.GetComponent<Button>();
+            minus = (Button) threadButtons.transform.Find("Minus").gameObject.GetComponent<Button>();
+            quantityText = (Text) threadButtons.transform.Find("Quantity").gameObject.GetComponent<Text>();
+
+            threadPrefab = Resources.Load<GameObject>("Prefabs/UI/ThreadIndicators/" + prefabName);
+        }
+    }
 
     private class AllyInfo {
         public GameObject group;
@@ -41,15 +56,19 @@ public class EthreadMenu : MonoBehaviour {
     private Dictionary<AllyInfo, GameObject> partyInfoDict = new Dictionary<AllyInfo, GameObject>();
 
     public void Awake () {
-        redThread = this.transform.Find("RedThread").gameObject;
-        plus = (Button) redThread.transform.Find("Plus").gameObject.GetComponent<Button>();
-        minus = (Button) redThread.transform.Find("Minus").gameObject.GetComponent<Button>();
-        quantityText = (Text) redThread.transform.Find("Quantity").gameObject.GetComponent<Text>();
+        threadButtonGroups = new List<ThreadButtonGroup> {
+            new ThreadButtonGroup(this.transform, "RedThread"),
+            new ThreadButtonGroup(this.transform, "BlueThread"),
+            new ThreadButtonGroup(this.transform, "GreenThread"),
+            new ThreadButtonGroup(this.transform, "PurpleThread"),
+            new ThreadButtonGroup(this.transform, "YellowThread"),
+            new ThreadButtonGroup(this.transform, "PinkThread"),
+        };
 
-        plus.onClick.AddListener(OnPlusClick);
-        minus.onClick.AddListener(OnMinusClick);
-
-        redThreadPrefab = Resources.Load<GameObject>("Prefabs/UI/RedThread");
+        threadButtonGroups.ForEach(group => {
+            group.plus.onClick.AddListener(delegate{OnPlusClick(group);});
+            group.minus.onClick.AddListener(delegate{OnMinusClick(group);});
+        });
     }
 
     public void PopulateParty(List<GameObject> partyPrefabs) {
@@ -59,9 +78,6 @@ public class EthreadMenu : MonoBehaviour {
                 var allyInfo = new AllyInfo(group);
                 allyInfo.image.sprite = partyPrefabs[i].GetComponent<SpriteRenderer>().sprite;
                 allyInfo.selectionButton.onClick.AddListener(delegate{OnSelectionClick(allyInfo);});
-                allyInfo.capacitySlots.Each((slot, index) => {
-                    slot.GetComponent<Button>().onClick.AddListener(delegate{OnSlotClick(allyInfo, index);});
-                });
                 partyInfoDict.Add(allyInfo, partyPrefabs[i]);
             }
             selectedAlly = partyInfoDict.Keys.First();
@@ -70,49 +86,68 @@ public class EthreadMenu : MonoBehaviour {
     }
 
     public void Update () {
-        quantityText.text = "x" + quantity.ToString();
+        threadButtonGroups.ForEach(group => group.quantityText.text = "x" + group.quantity.ToString());
         partyInfoDict.Keys.ToList().ForEach(allyInfo => allyInfo.selectionBox.enabled = selectedAlly == allyInfo);
     }
 
-    private void OnPlusClick () {
-        if (selectedAlly.capacity.Count < selectedAlly.maxCapacity && quantity > 0) {
-            quantity--;
-            var newEthread = Instantiate(redThreadPrefab, new Vector2(0,0), Quaternion.identity);
-            newEthread.transform.SetParent(selectedAlly.threadCapacityGroup);
-            selectedAlly.capacity.Add(newEthread);
-            newEthread.transform.position = selectedAlly.capacitySlots[selectedAlly.capacity.Count - 1].transform.position;
-            partyInfoDict[selectedAlly].GetComponent<GridEntity>().equippedThreads.Add(newEthread.GetComponent<Ethread>());
-        }
-
-    }
-
-    private void OnMinusClick () {
-        if (selectedAlly.capacity.Count > 0) {
-            quantity++;
-            var ethreadToRemove = selectedAlly.capacity.Last();
-            selectedAlly.capacity.Remove(ethreadToRemove);
-            partyInfoDict[selectedAlly].GetComponent<GridEntity>().equippedThreads.Remove(ethreadToRemove.GetComponent<Ethread>());
-            Destroy(ethreadToRemove);
+    private void OnPlusClick (ThreadButtonGroup group) {
+        if (selectedAlly.capacity.Count < selectedAlly.maxCapacity && group.quantity > 0) {
+            AddThreadToSlots(selectedAlly, group);
         }
     }
 
-    private void OnSlotClick (AllyInfo parent, int index) {
+    private void OnMinusClick (ThreadButtonGroup group) {
+        var ethreadToRemove = selectedAlly.capacity.Find(thread => group.prefabName == thread.GetComponent<Ethread>().effectName);
+        if (selectedAlly.capacity.Count > 0 && ethreadToRemove != null) {
+            var slotIndex = selectedAlly.capacity.IndexOf(ethreadToRemove);
+            RemoveThreadFromSlot(slotIndex, selectedAlly, group);
+        }
+    }
+
+    private void OnSlotClick (AllyInfo parent, int index, ThreadButtonGroup group) {
         selectedAlly = parent;
         if (index + 1 <= parent.capacity.Count) {
-            quantity++;
-            var ethreadToRemove = selectedAlly.capacity[index];
-            selectedAlly.capacity.Remove(ethreadToRemove);
-
-            selectedAlly.capacity.Each((ethread, i) => {
-                ethread.transform.position = selectedAlly.capacitySlots[i].transform.position;
-            });
-
-            partyInfoDict[selectedAlly].GetComponent<GridEntity>().equippedThreads.Remove(ethreadToRemove.GetComponent<Ethread>());
-            Destroy(ethreadToRemove);
+            RemoveThreadFromSlot(index, selectedAlly, group);
         }
     }
 
     private void OnSelectionClick(AllyInfo parent) {
         selectedAlly = parent;
+    }
+
+    private void AddThreadToSlots(AllyInfo parent, ThreadButtonGroup group) {
+        group.quantity--;
+
+        var newEthread = Instantiate(group.threadPrefab, new Vector2(0,0), Quaternion.identity);
+        newEthread.transform.SetParent(parent.threadCapacityGroup);
+        parent.capacity.Add(newEthread);
+
+        RefreshSlots(parent);
+
+        partyInfoDict[parent].GetComponent<GridEntity>().equippedThreads.Add(newEthread.GetComponent<Ethread>());
+    }
+
+    private void RemoveThreadFromSlot(int index, AllyInfo parent, ThreadButtonGroup group) {
+        group.quantity++;
+
+        var ethreadToRemove = parent.capacity[index];
+        parent.capacity.Remove(ethreadToRemove);
+
+        RefreshSlots(parent);
+
+        partyInfoDict[parent].GetComponent<GridEntity>().equippedThreads.Remove(ethreadToRemove.GetComponent<Ethread>());
+        Destroy(ethreadToRemove);
+    }
+
+    private void RefreshSlots(AllyInfo parent) {
+        var slotButtons = parent.capacitySlots.Select(slot => slot.GetComponent<Button>()).ToList();
+        slotButtons.ForEach(button => button.onClick.RemoveAllListeners());
+
+        parent.capacity.Each((thread, i) => {
+            var slot = parent.capacitySlots[i];
+            thread.transform.position = slot.transform.position;
+            var newThreadGroup = threadButtonGroups.Find(x => x.prefabName == thread.GetComponent<Ethread>().effectName);
+            slotButtons[i].onClick.AddListener(delegate{OnSlotClick(parent, i, newThreadGroup);});
+        });
     }
 }

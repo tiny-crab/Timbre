@@ -52,6 +52,9 @@ public class Player : ControllerInteractable {
         };
 
         ethreadMenu = GameObject.Find("EthreadMenu");
+    }
+
+    void Start () {
         ethreadMenu.SetActive(false);
     }
 
@@ -147,7 +150,12 @@ public class Player : ControllerInteractable {
         pickupColliders.ForEach(collider => {
             var pickup = collider.gameObject.GetComponent<Pickup>();
             if (pickup.pickupType == "Ethread") {
-                ethreadMenu.GetComponent<EthreadMenu>().quantity++;
+                var matchingInventory = ethreadMenu.GetComponent<EthreadMenu>()
+                    .threadButtonGroups
+                    .Find(group => group.prefabName == pickup.pickupName);
+                if (matchingInventory != null) {
+                    matchingInventory.quantity++;
+                }
                 Destroy(collider.gameObject);
             }
         });

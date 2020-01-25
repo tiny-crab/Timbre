@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &2167578081358805700
+--- !u!1001 &7804014537759893079
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 337292312628719969, guid: 13d81e3a55ff04a21819c0211e8d37f7,
         type: 3}
       propertyPath: m_Name
-      value: RedThreadPickup
+      value: BlueThreadPickup
       objectReference: {fileID: 0}
     - target: {fileID: 8860297659574873664, guid: 13d81e3a55ff04a21819c0211e8d37f7,
         type: 3}
@@ -70,22 +70,22 @@ PrefabInstance:
     - target: {fileID: 9014922681320483281, guid: 13d81e3a55ff04a21819c0211e8d37f7,
         type: 3}
       propertyPath: m_Color.r
-      value: 0.8018868
+      value: 0.13665895
       objectReference: {fileID: 0}
     - target: {fileID: 9014922681320483281, guid: 13d81e3a55ff04a21819c0211e8d37f7,
         type: 3}
       propertyPath: m_Color.g
-      value: 0.20803669
+      value: 0.30061382
       objectReference: {fileID: 0}
     - target: {fileID: 9014922681320483281, guid: 13d81e3a55ff04a21819c0211e8d37f7,
         type: 3}
       propertyPath: m_Color.b
-      value: 0.20803669
+      value: 0.7830189
       objectReference: {fileID: 0}
     - target: {fileID: 5998781958322652661, guid: 13d81e3a55ff04a21819c0211e8d37f7,
         type: 3}
       propertyPath: pickupName
-      value: RedThreadPickup
+      value: BlueThreadPickup
       objectReference: {fileID: 0}
     - target: {fileID: 5998781958322652661, guid: 13d81e3a55ff04a21819c0211e8d37f7,
         type: 3}

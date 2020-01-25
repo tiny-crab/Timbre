@@ -219,3 +219,12 @@ Testing the thread drops from fearful enemies has proved two things:
 
 It's actually pretty fun trying to strategize how to kill them best and prevent them from running away.
 There are still bugs with the skills (at least Brambles) and how they work with SP limits. Maybe the new state machine doesn't properly handle empty SP problems.
+
+## 2020.01.25
+
+Here's a dilemma:
+Threads should be displayed in both the overworld as pickups, and in the UI menu
+
+Should I have a variable that stores what image to use in both places? or should I manually update it?
+For the sake of speed right now, I'm going to manually choose the color. I'll most likely not be manipulating sprite colors in the Unity Editor
+anyway once I have real sprites for the threads.
