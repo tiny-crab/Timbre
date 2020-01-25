@@ -48,6 +48,8 @@ public class GridSystem : MonoBehaviour {
 
     public GameObject skillMenu;
 
+    public GameObject redThreadPrefab;
+
     public void ActivateGrid (
         Vector2 playerLocation,
         List<GameObject> activeParty,
@@ -118,7 +120,18 @@ public class GridSystem : MonoBehaviour {
                 faction.entities
                     .Where(entity => entity.outOfHP).ToList()
                     .ForEach(entity => {
-                        Instantiate(entity.corpse, entity.transform.position, Quaternion.identity);
+                        GameObject onDeathPrefab = null;
+                        if (entity.totalFearValue >= entity.fearThreshold) {
+                            var rand = new System.Random();
+                            if (rand.Next(2) == 0) {
+                                onDeathPrefab = entity.corpse;
+                            } else {
+                                onDeathPrefab = redThreadPrefab;
+                            }
+                        } else {
+                            onDeathPrefab = entity.corpse;
+                        }
+                        Instantiate(onDeathPrefab, entity.transform.position, Quaternion.identity);
                     });
             });
 
@@ -132,6 +145,7 @@ public class GridSystem : MonoBehaviour {
 
     void Awake () {
         initTileMap = new GameObject[tileMapSize, tileMapSize];
+        redThreadPrefab = Resources.Load<GameObject>("Prefabs/Overworld/Pickups/RedThreadPickup");
     }
 
     void Start () {

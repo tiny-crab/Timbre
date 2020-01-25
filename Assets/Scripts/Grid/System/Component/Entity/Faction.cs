@@ -27,6 +27,6 @@ public class Faction {
     }
 
     public void RefreshTurnResources() {
-        foreach (var entity in entities) { entity.RefreshTurnResources(); };
+        entities.Where(entity => !entity.outOfHP).ToList().ForEach(entity => entity.RefreshTurnResources());
     }
 }
