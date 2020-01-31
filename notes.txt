@@ -228,3 +228,5 @@ Threads should be displayed in both the overworld as pickups, and in the UI menu
 Should I have a variable that stores what image to use in both places? or should I manually update it?
 For the sake of speed right now, I'm going to manually choose the color. I'll most likely not be manipulating sprite colors in the Unity Editor
 anyway once I have real sprites for the threads.
+
+I need to also fix the AI to ignore downed allies when targeting. It doesn't take into account downed allies with movement, so that is glitchy at times too.

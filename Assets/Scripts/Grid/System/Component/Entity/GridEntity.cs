@@ -111,6 +111,8 @@ public class GridEntity : MonoBehaviour {
     public Sequence turnAnimSequence;
 
     void Start () {
+        equippedThreads.ForEach(thread => thread.effect.ApplyEffect(this));
+
         currentMoves = maxMoves;
         currentAttacks = maxAttacks;
         currentHP = maxHP;
@@ -126,8 +128,6 @@ public class GridEntity : MonoBehaviour {
         fearIcon = gameObject.transform.Find("FearIcon").gameObject;
         fearIcon.SetActive(false);
         turnAnimSequence = DOTween.Sequence();
-
-        equippedThreads.ForEach(thread => thread.effect.ApplyEffect(this));
     }
 
     void Update() {

@@ -48,7 +48,7 @@ public class GridSystem : MonoBehaviour {
 
     public GameObject skillMenu;
 
-    public GameObject redThreadPrefab;
+    public List<GameObject> threadPrefabs;
 
     public void ActivateGrid (
         Vector2 playerLocation,
@@ -120,16 +120,12 @@ public class GridSystem : MonoBehaviour {
                 faction.entities
                     .Where(entity => entity.outOfHP).ToList()
                     .ForEach(entity => {
+                        var rand = new System.Random();
                         GameObject onDeathPrefab = null;
-                        if (entity.totalFearValue >= entity.fearThreshold) {
-                            var rand = new System.Random();
-                            if (rand.Next(2) == 0) {
-                                onDeathPrefab = entity.corpse;
-                            } else {
-                                onDeathPrefab = redThreadPrefab;
-                            }
-                        } else {
+                        if (rand.Next(2) == 0) {
                             onDeathPrefab = entity.corpse;
+                        } else {
+                            onDeathPrefab = threadPrefabs.OrderBy(_ => rand.Next()).First();
                         }
                         Instantiate(onDeathPrefab, entity.transform.position, Quaternion.identity);
                     });
@@ -145,7 +141,14 @@ public class GridSystem : MonoBehaviour {
 
     void Awake () {
         initTileMap = new GameObject[tileMapSize, tileMapSize];
-        redThreadPrefab = Resources.Load<GameObject>("Prefabs/Overworld/Pickups/RedThreadPickup");
+        threadPrefabs = new List<GameObject>() {
+            Resources.Load<GameObject>("Prefabs/Overworld/Pickups/RedThreadPickup"),
+            Resources.Load<GameObject>("Prefabs/Overworld/Pickups/BlueThreadPickup"),
+            Resources.Load<GameObject>("Prefabs/Overworld/Pickups/GreenThreadPickup"),
+            Resources.Load<GameObject>("Prefabs/Overworld/Pickups/PurpleThreadPickup"),
+            Resources.Load<GameObject>("Prefabs/Overworld/Pickups/YellowThreadPickup"),
+            Resources.Load<GameObject>("Prefabs/Overworld/Pickups/PinkThreadPickup"),
+        };
     }
 
     void Start () {

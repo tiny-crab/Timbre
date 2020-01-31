@@ -194,16 +194,17 @@ public class Player : ControllerInteractable {
 
     private List<KeyValuePair<GameObject, Vector2>> GenerateRandomEnemies() {
         var pair = new KeyValuePair<GameObject, Vector2>(
-            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
+            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/ElkCult/ElkCultist"),
+            // Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
             new Vector2(int.MaxValue, int.MaxValue)
         );
         return new List<KeyValuePair<GameObject, Vector2>>() {
             pair,
-            pair,
-            pair,
-            pair,
-            pair,
-            pair,
+            // pair,
+            // pair,
+            // pair,
+            // pair,
+            // pair,
         };
     }
 
