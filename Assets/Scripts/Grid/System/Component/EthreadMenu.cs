@@ -36,7 +36,8 @@ public class EthreadMenu : MonoBehaviour {
         public Image selectionBox;
         public Button selectionButton;
 
-        public int maxCapacity = 5;
+        public int numSlots = 2;
+        public int maxNumSlots = 5;
         public Transform threadCapacityGroup;
         public List<GameObject> capacitySlots = new List<GameObject>();
         public List<GameObject> capacity = new List<GameObject>();
@@ -47,9 +48,12 @@ public class EthreadMenu : MonoBehaviour {
             selectionBox = group.transform.Find("SelectionBox").GetComponent<Image>();
             selectionButton = group.transform.Find("SelectionButton").GetComponent<Button>();
             threadCapacityGroup = group.transform.Find("ThreadCapacity");
-            for (var i = 0; i < maxCapacity; i++) {
+            for (var i = 0; i < maxNumSlots; i++) {
                 capacitySlots.Add(threadCapacityGroup.Find("Slot" + i.ToString()).gameObject);
             }
+            capacitySlots.Skip(numSlots).ToList().ForEach(slot => slot.SetActive(false));
+
+            capacitySlots = capacitySlots.Take(numSlots).ToList();
         }
     }
 
@@ -91,7 +95,7 @@ public class EthreadMenu : MonoBehaviour {
     }
 
     private void OnPlusClick (ThreadButtonGroup group) {
-        if (selectedAlly.capacity.Count < selectedAlly.maxCapacity && group.quantity > 0) {
+        if (selectedAlly.capacity.Count < selectedAlly.numSlots && group.quantity > 0) {
             AddThreadToSlots(selectedAlly, group);
         }
     }
@@ -116,8 +120,6 @@ public class EthreadMenu : MonoBehaviour {
     }
 
     private void AddThreadToSlots(AllyInfo parent, ThreadButtonGroup group) {
-        group.quantity--;
-
         var newEthread = Instantiate(group.threadPrefab, new Vector2(0,0), Quaternion.identity);
         newEthread.transform.SetParent(parent.threadCapacityGroup);
         parent.capacity.Add(newEthread);
@@ -125,11 +127,11 @@ public class EthreadMenu : MonoBehaviour {
         RefreshSlots(parent);
 
         partyInfoDict[parent].GetComponent<GridEntity>().equippedThreads.Add(newEthread.GetComponent<Ethread>());
+
+        group.quantity--;
     }
 
     private void RemoveThreadFromSlot(int index, AllyInfo parent, ThreadButtonGroup group) {
-        group.quantity++;
-
         var ethreadToRemove = parent.capacity[index];
         parent.capacity.Remove(ethreadToRemove);
 
@@ -137,6 +139,8 @@ public class EthreadMenu : MonoBehaviour {
 
         partyInfoDict[parent].GetComponent<GridEntity>().equippedThreads.Remove(ethreadToRemove.GetComponent<Ethread>());
         Destroy(ethreadToRemove);
+
+        group.quantity++;
     }
 
     private void RefreshSlots(AllyInfo parent) {
