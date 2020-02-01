@@ -18,11 +18,21 @@ using UnityEngine;
 public abstract class Behavior {
     public GridEntity entity;
     public List<Tile> tiles;
-    public KeyValuePair<Tile, double> bestAction;
+    public KeyValuePair<TileAction, double> bestAction;
     public GridEntity bestTarget;
-    public abstract Dictionary<Tile, double> ScoreGrid(GameObject[,] grid);
+    public abstract Dictionary<TileAction, double> ScoreGrid(GameObject[,] grid);
     public abstract double FindBestAction(GameObject[,] grid);
     public abstract bool DoBestAction(TilemapComponent tilemap, State currentState);
+}
+
+public class TileAction {
+    public Tile tile;
+    public GridEntity target;
+
+    public TileAction(Tile tile, GridEntity target) {
+        this.tile = tile;
+        this.target = target;
+    }
 }
 
 public static class BehaviorUtils {
@@ -49,7 +59,7 @@ public static class BehaviorUtils {
         FRIENDLY
     }
 
-    public static List<GridEntity> GetAllEntitiesFromGrid(List<Tile> activeTiles, Hostility hostility) {
+    public static List<GridEntity> GetAllEntitiesInTileList(List<Tile> activeTiles, Hostility hostility) {
         return activeTiles
             .Where(tile => tile.occupier != null)
             .Where(tile => {
@@ -65,40 +75,57 @@ public static class BehaviorUtils {
 // BASIC SKILLS
 
 public class MeleeAttackV1 : Behavior {
-    public override Dictionary<Tile, double> ScoreGrid(GameObject[,] grid) {
+    public override Dictionary<TileAction, double> ScoreGrid(GameObject[,] grid) {
         tiles = GridUtils.FlattenGridTiles(grid);
 
         // find all valid targets for a melee attack
-        var targets = BehaviorUtils.GetAllEntitiesFromGrid(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
+        var targets = BehaviorUtils.GetAllEntitiesInTileList(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
 
         // get all the tiles that the aiEntity can use to attack each target
-        var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileCircle(grid, 1, target.tile)).ToList();
+        var targetRanges = targets.ToDictionary(target => target, target => {
+            return GridUtils.GenerateTileCircle(grid, 1, target.tile, movement:true)
+            // this filters out any tiles that are occupied by anything other than the entity calculating this move
+            .Where(tile => {
+                if (tile.occupier != null)
+                    return tile.occupier == entity;
+                else
+                    return true;
+            });
+        });
 
         // get tiles that are valid to move to in this turn
-        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile, movement:true);
+        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile, movement:true).Where(tile => tile.occupier == null).ToList();
         nextTurnRange.Add(entity.tile);
 
         // score each tile in valid move range with distance to be in range of target
-        var nextMoveMap = new Dictionary<Tile, double>();
+        var nextMoveMap = new Dictionary<TileAction, double>();
         nextTurnRange.ForEach(tile => {
-            var score = targetRanges.Select(attackTile =>
-                Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)
-            ).Min();
-            nextMoveMap[tile] = score;
+            targetRanges.ToList().ForEach(x => {
+                var target = x.Key;
+                var targetRange = x.Value;
+
+                if (targetRange.Count() > 0) {
+                    var positioningScore = targetRange.Select(attackTile => Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)).Min();
+                    var damageScore = 1 / ((float) entity.damage / (float) target.currentHP);
+
+                    nextMoveMap[new TileAction(tile, target)] = positioningScore + damageScore;
+                }
+            });
         });
         return nextMoveMap;
     }
 
     public override double FindBestAction(GameObject[,] grid) {
         bestAction = ScoreGrid(grid).OrderBy(element => element.Value).First();
-        bestTarget = bestAction.Key.occupier;
+        bestTarget = bestAction.Key.target;
         return bestAction.Value;
     }
     public override bool DoBestAction(TilemapComponent tilemap, State currentState) {
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "MeleeAttackV1", bestAction.Value));
 
-        var nextTile = bestAction.Key;
-        tilemap.MoveEntity(entity.tile, nextTile);
+        if (bestAction.Key.tile != entity.tile) {
+            tilemap.MoveEntity(entity.tile, bestAction.Key.tile);
+        }
 
         var tileWithTarget = GridUtils.GenerateTileCircle(tilemap.grid, 1, entity.tile)
                             .ToList()
@@ -113,65 +140,87 @@ public class MeleeAttackV1 : Behavior {
 }
 
 public class RangedAttackV1 : Behavior {
-    public override Dictionary<Tile, double> ScoreGrid(GameObject[,] grid) {
+    public override Dictionary<TileAction, double> ScoreGrid(GameObject[,] grid) {
         tiles = GridUtils.FlattenGridTiles(grid);
         // find all valid targets for an attack
-        var targets = BehaviorUtils.GetAllEntitiesFromGrid(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
+        var targets = BehaviorUtils.GetAllEntitiesInTileList(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
 
         // get all the tiles that the aiEntity can use to attack each target
-        var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileRing(grid, entity.range, target.tile)).ToList();
+        // var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileRing(grid, entity.range, target.tile, movement: true)).ToList();
+        var targetRanges = targets.ToDictionary(target => target, target => GridUtils.GenerateTileCircle(grid, entity.range, target.tile));
 
         // get tiles that are valid to move to in this turn
-        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile);
+        var nextTurnRange = GridUtils.GenerateTileCircle(grid, entity.maxMoves, entity.tile).Where(tile => tile.occupier == null).ToList();
         nextTurnRange.Add(entity.tile);
 
         // score each tile in valid move range with distance to be in range of target
-        var nextMoveMap = new Dictionary<Tile, double>();
+        var nextMoveMap = new Dictionary<TileAction, double>();
         nextTurnRange.ForEach(tile => {
             // TODO: score tiles inversely proportional to distance once in range
             // i.e. if a unit can attack from 3 tiles away,
             //      a tile that is 1 tile away will be ranked lowest, 2 tiles away will be ranked in the middle,
             //      and 3 tiles away will be highest ranked
-            var score = targetRanges.Select(attackTile =>
-                Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)
-            ).Sum();
-            nextMoveMap[tile] = score;
+
+            targetRanges.ToList().ForEach(x => {
+                var target = x.Key;
+                var targetRange = x.Value;
+
+                var positioningScore = targetRange.Select(attackTile => Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)).Sum();
+                var damageScore = 1 / ((float) entity.damage / (float) target.currentHP);
+
+                nextMoveMap[new TileAction(tile, target)] = positioningScore + damageScore;
+            });
         });
         return nextMoveMap;
     }
 
     public override double FindBestAction(GameObject[,] grid) {
         bestAction = ScoreGrid(grid).OrderBy(element => element.Value).First();
-        bestTarget = bestAction.Key.occupier;
+        bestTarget = bestAction.Key.target;
         return bestAction.Value;
     }
 
     public override bool DoBestAction(TilemapComponent tilemap, State currentState) {
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "RangedAttackV1", bestAction.Value));
 
-        var nextTile = bestAction.Key;
-        tilemap.MoveEntity(entity.tile, nextTile);
+        if (bestAction.Key.tile != entity.tile) {
+            tilemap.MoveEntity(entity.tile, bestAction.Key.tile);
+        }
 
-        var tileWithTarget = GridUtils.GenerateTileRing(tilemap.grid, entity.range, entity.tile)
-                            .ToList()
-                            .FirstOrDefault(tile =>
-                                tile.occupier != null &&
-                                (tile.occupier.isAllied || tile.occupier.isFriendly) &&
-                                !tile.occupier.outOfHP
-                            );
-        if (tileWithTarget != null) { entity.MakeAttack(tileWithTarget.occupier); }
+        var attackRange = GridUtils.GenerateTileCircle(tilemap.grid, entity.range, entity.tile).ToList();
+
+        var tilesWithEntities = attackRange.Where(tile => tile.occupier != null).ToList();
+
+        var tilesWithTargets = attackRange
+            .Where(tile => tile.occupier != null && (tile.occupier.isAllied || tile.occupier.isFriendly) && !tile.occupier.outOfHP).ToList();
+
+        // sorts targets in attack range by "weakest" unit
+        var tileActions = tilesWithTargets.Select(tile => new TileAction(tile, tile.occupier));
+        var sortedTileActions = tileActions.OrderBy(tileAction => {
+            var score = 1 / ((float) entity.damage / (float) tileAction.target.currentHP);
+            return score;
+        }).ToList();
+
+        if (tileActions != null && tileActions.Count() > 0) {
+            var bestestAction = sortedTileActions.First();
+            if (bestestAction != null) {
+                entity.MakeAttack(bestestAction.target);
+            }
+            Debug.Log(String.Format("{0} chose to do {1} with score of {2} against {3}", entity, "RangedAttackV1", bestAction.Value, bestestAction.target));
+        }
+
         return true;
     }
 }
 
 public class Flee : Behavior {
-    public override Dictionary<Tile, double> ScoreGrid(GameObject[,] grid) {
+    public override Dictionary<TileAction, double> ScoreGrid(GameObject[,] grid) {
         tiles = GridUtils.FlattenGridTiles(grid);
 
         var edges = GridUtils.GetEdgesOfEnabledGrid(grid);
 
         // find all valid targets that could do damage to this entity
-        var targets = BehaviorUtils.GetAllEntitiesFromGrid(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
+        var targets = BehaviorUtils.GetAllEntitiesInTileList(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
 
         // get all the tiles that the targets can move to attack the aiEntity
         var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileRing(grid, target.range + target.maxMoves, target.tile)).ToList();
@@ -181,7 +230,7 @@ public class Flee : Behavior {
         nextTurnRange.Add(entity.tile);
 
         // score each tile in valid move range with distance to be in range of target
-        var nextMoveMap = new Dictionary<Tile, double>();
+        var nextMoveMap = new Dictionary<TileAction, double>();
         nextTurnRange.ForEach(tile => {
             var score = targetRanges.Select(attackTile =>
                 (Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)) * -1
@@ -190,7 +239,7 @@ public class Flee : Behavior {
             if (edges.Contains(tile)) {
                 score *= 2;
             }
-            nextMoveMap[tile] = score;
+            nextMoveMap[new TileAction(tile, entity)] = score;
         });
         return nextMoveMap;
     }
@@ -205,10 +254,9 @@ public class Flee : Behavior {
         var stateData = (EnemyTurnState) currentState;
         Debug.Log(String.Format("{0} chose to do {1} with score of {2}", entity, "Flee", bestAction.Value));
 
-        var nextTile = bestAction.Key;
-        tilemap.MoveEntity(entity.tile, nextTile);
+        tilemap.MoveEntity(entity.tile, bestAction.Key.tile);
 
-        if (GridUtils.GetEdgesOfEnabledGrid(tilemap.grid).Contains(nextTile)) {
+        if (GridUtils.GetEdgesOfEnabledGrid(tilemap.grid).Contains(bestAction.Key.tile)) {
             this.entity.RemoveFromGrid();
             stateData.enemies.Remove(this.entity);
         }
@@ -221,11 +269,11 @@ public class EvasiveTeleport : Behavior {
     // when this behavior is used, enemies will queue a teleport on Turn 1, then teleport to a tile as far away from allies as possible.
     // this will not trigger in fear, and thus the edges of the grid will not enable the enemy to escape
 
-    public override Dictionary<Tile, double> ScoreGrid(GameObject[,] grid) {
+    public override Dictionary<TileAction, double> ScoreGrid(GameObject[,] grid) {
         tiles = GridUtils.FlattenGridTiles(grid, true).Where(tile => tile.gameObject.activeInHierarchy).ToList();
 
         // find all valid targets that could do damage to this entity
-        var targets = BehaviorUtils.GetAllEntitiesFromGrid(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
+        var targets = BehaviorUtils.GetAllEntitiesInTileList(tiles, BehaviorUtils.Hostility.FRIENDLY).Where(target => target.currentHP > 0);
 
         // get all the tiles that the targets can move to attack the aiEntity
         var targetRanges = targets.SelectMany(target => GridUtils.GenerateTileRing(grid, target.range + target.maxMoves, target.tile)).ToList();
@@ -236,7 +284,7 @@ public class EvasiveTeleport : Behavior {
         var edgeTiles = GridUtils.GetEdgesOfEnabledGrid(grid);
 
         // score each tile in valid teleport range to avoid range of targets
-        var nextMoveMap = new Dictionary<Tile, double>();
+        var nextMoveMap = new Dictionary<TileAction, double>();
         nextTurnRange.ForEach(tile => {
             double score = targetRanges.Select(attackTile => {
                 // score is first determined as inversely related to the distance to the attack range of allies
@@ -258,7 +306,7 @@ public class EvasiveTeleport : Behavior {
                 // improve chance this behavior is picked. uses - instead of * in order to keep order of scoring per tile
                 score -= 1;
             }
-            nextMoveMap[tile] = score;
+            nextMoveMap[new TileAction(tile, entity)] = score;
         });
         return nextMoveMap;
     }
@@ -276,7 +324,7 @@ public class EvasiveTeleport : Behavior {
         } else {
             // turn 2 of evasive teleport
             Debug.Log(String.Format("{0} chose to do {1} turn 2 with score of {2}", entity, "EvasiveTeleport", bestAction.Value));
-            tilemap.TeleportEntity(entity.tile, bestAction.Key);
+            tilemap.TeleportEntity(entity.tile, bestAction.Key.tile);
             entity.lastSelectedBehavior = null;
         }
         return true;

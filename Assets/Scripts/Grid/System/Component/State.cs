@@ -20,7 +20,7 @@ public class AllySelectedState : State {
 }
 
 public class EnemySelectedState : State {
-    public Dictionary<Tile, double> tileScoreMap;
+    public Dictionary<TileAction, double> tileScoreMap;
     public Behavior bestBehavior;
 
     public EnemySelectedState(GridEntity selectedEntity) {

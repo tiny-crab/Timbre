@@ -230,3 +230,10 @@ For the sake of speed right now, I'm going to manually choose the color. I'll mo
 anyway once I have real sprites for the threads.
 
 I need to also fix the AI to ignore downed allies when targeting. It doesn't take into account downed allies with movement, so that is glitchy at times too.
+
+## 2020.01.31
+
+I am working on improving the RangedAttackV1 AI so that it strafes around groups of allies, but also fix the bugs
+where the enemy entity doesn't move properly (it will collide with allied entities somehow)
+
+Just found out it actually collides with itself.

@@ -102,8 +102,8 @@ public static class GridUtils {
         return tiles;
     }
 
-    public static List<Tile> GenerateTileRing(GameObject[,] grid, int radius, Tile sourceTile) {
-        return GenerateTileCircle(grid, radius, sourceTile)
+    public static List<Tile> GenerateTileRing(GameObject[,] grid, int radius, Tile sourceTile, bool movement = false) {
+        return GenerateTileCircle(grid, radius, sourceTile, movement)
             .Where(tile => GetDistanceBetweenTiles(sourceTile, tile) == radius)
             .ToList();
     }

@@ -90,8 +90,8 @@ public class SelectEnemy : Action {
         var normalizedData = Utils.NormalizeDict(stateData.tileScoreMap);
 
         source.tile.HighlightAs(Tile.HighlightTypes.SelectedEntity);
-        normalizedData.Keys.ToList().ForEach(x => x.HighlightAs(Tile.HighlightTypes.Test, (float) normalizedData[x]));
-        normalizedData.Keys.OrderBy(x => normalizedData[x]).First().HighlightAs(Tile.HighlightTypes.Move);
+        normalizedData.Keys.ToList().ForEach(x => x.tile.HighlightAs(Tile.HighlightTypes.Test, (float) normalizedData[x]));
+        normalizedData.Keys.OrderBy(x => normalizedData[x]).First().tile.HighlightAs(Tile.HighlightTypes.Move);
     }
     protected override void DisplayInDialog(Dialog dialog) {
         dialog.PostToDialog("Selected " + source.entityName, null, false);
