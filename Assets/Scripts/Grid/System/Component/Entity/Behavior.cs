@@ -105,6 +105,9 @@ public class MeleeAttackV1 : Behavior {
                 var targetRange = x.Value;
 
                 if (targetRange.Count() > 0) {
+                    // using Min() means that the positionScore will focus on getting circles as close to overlapping, but not score higher than that
+                    // using Sum() means that the positionScore will focus on getting circle centers to overlap, as the dead center of the circle has
+                    //    the shortest distance to all tiles in the circle.
                     var positioningScore = targetRange.Select(attackTile => Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)).Min();
                     var damageScore = 1 / ((float) entity.damage / (float) target.currentHP);
 
@@ -154,24 +157,42 @@ public class RangedAttackV1 : Behavior {
         nextTurnRange.Add(entity.tile);
 
         // score each tile in valid move range with distance to be in range of target
-        var nextMoveMap = new Dictionary<TileAction, double>();
-        nextTurnRange.ForEach(tile => {
-            // TODO: score tiles inversely proportional to distance once in range
-            // i.e. if a unit can attack from 3 tiles away,
-            //      a tile that is 1 tile away will be ranked lowest, 2 tiles away will be ranked in the middle,
-            //      and 3 tiles away will be highest ranked
+        var totalScoreMap = new Dictionary<TileAction, double>();
 
+        var positionScoreMap = new Dictionary<TileAction, double>();
+        var damageScoreMap = new Dictionary<TileAction, double>();
+        var skirtScoreMap = new Dictionary<TileAction, double>();
+
+        nextTurnRange.ForEach(tile => {
             targetRanges.ToList().ForEach(x => {
                 var target = x.Key;
                 var targetRange = x.Value;
 
-                var positioningScore = targetRange.Select(attackTile => Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)).Sum();
-                var damageScore = 1 / ((float) entity.damage / (float) target.currentHP);
+                var tileAction = new TileAction(tile, target);
 
-                nextMoveMap[new TileAction(tile, target)] = positioningScore + damageScore;
+                // boost score by closest tile to range in which AI can attack target
+                positionScoreMap[tileAction] = targetRange.Select(attackTile => Mathf.Abs(tile.x-attackTile.x) + Mathf.Abs(tile.y-attackTile.y)).Min();
+
+                // boost score against "weak" targets
+                damageScoreMap[tileAction] = (double)1 / ((double)entity.damage / (double)target.currentHP);
+
+                // boost score that maximizes distance between AI and target
+                var distance = GridUtils.GetDistanceBetweenTiles(tile, target.tile);
+                if (distance <= entity.range) { skirtScoreMap[tileAction] = distance * -1; }
+                else { skirtScoreMap[tileAction] = int.MaxValue; }
             });
         });
-        return nextMoveMap;
+
+        positionScoreMap = Utils.NormalizeDict(positionScoreMap);
+        damageScoreMap = Utils.NormalizeDict(damageScoreMap);
+        skirtScoreMap = Utils.NormalizeDict(skirtScoreMap);
+
+        positionScoreMap.Keys.ToList().ForEach(tileAction => {
+            // TODO implement factors that can be tuned for these scores
+            totalScoreMap[tileAction] = positionScoreMap[tileAction] + damageScoreMap[tileAction] + skirtScoreMap[tileAction];
+        });
+
+        return totalScoreMap;
     }
 
     public override double FindBestAction(GameObject[,] grid) {
@@ -189,24 +210,9 @@ public class RangedAttackV1 : Behavior {
 
         var attackRange = GridUtils.GenerateTileCircle(tilemap.grid, entity.range, entity.tile).ToList();
 
-        var tilesWithEntities = attackRange.Where(tile => tile.occupier != null).ToList();
-
-        var tilesWithTargets = attackRange
-            .Where(tile => tile.occupier != null && (tile.occupier.isAllied || tile.occupier.isFriendly) && !tile.occupier.outOfHP).ToList();
-
-        // sorts targets in attack range by "weakest" unit
-        var tileActions = tilesWithTargets.Select(tile => new TileAction(tile, tile.occupier));
-        var sortedTileActions = tileActions.OrderBy(tileAction => {
-            var score = 1 / ((float) entity.damage / (float) tileAction.target.currentHP);
-            return score;
-        }).ToList();
-
-        if (tileActions != null && tileActions.Count() > 0) {
-            var bestestAction = sortedTileActions.First();
-            if (bestestAction != null) {
-                entity.MakeAttack(bestestAction.target);
-            }
-            Debug.Log(String.Format("{0} chose to do {1} with score of {2} against {3}", entity, "RangedAttackV1", bestAction.Value, bestestAction.target));
+        if (attackRange.Contains(bestTarget.tile)) {
+            entity.MakeAttack(bestTarget);
+            Debug.Log(String.Format("{0} chose to do {1} with score of {2} against {3}", entity, "RangedAttackV1", bestAction.Value, bestTarget));
         }
 
         return true;

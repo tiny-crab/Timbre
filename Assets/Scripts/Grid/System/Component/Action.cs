@@ -83,7 +83,7 @@ public class SelectEnemy : Action {
 
     protected override void Execute(State currentState, TilemapComponent tilemap) {
         var stateData = (EnemySelectedState) currentState;
-        stateData.tileScoreMap = source.afraidBehaviors.First().ScoreGrid(tilemap.grid);
+        stateData.tileScoreMap = source.behaviors.First().ScoreGrid(tilemap.grid);
     }
     protected override void DisplayInGrid(State currentState, TilemapComponent tilemap) {
         var stateData = (EnemySelectedState) currentState;

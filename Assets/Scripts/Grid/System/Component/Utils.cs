@@ -15,7 +15,7 @@ public static class Utils {
         var buffer = dict.Values.Min();
         var ratio = 1f / dict.Values.Max();
         dict.Keys.ToList().ForEach(key => {
-            var normalizedValue = ((scaleRange * (dict[key] - valueMin)) / valueRange) + scaleMin;
+            var normalizedValue = valueRange != 0 ? ((scaleRange * (dict[key] - valueMin)) / valueRange) + scaleMin : scaleMax;
             normalizedData[key] = normalizedValue;
         });
         return normalizedData;

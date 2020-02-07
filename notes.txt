@@ -237,3 +237,26 @@ I am working on improving the RangedAttackV1 AI so that it strafes around groups
 where the enemy entity doesn't move properly (it will collide with allied entities somehow)
 
 Just found out it actually collides with itself.
+
+## 2020.02.05
+
+Later, should create static score maps that are created (and normalized) at the beginning of the enemy turn so that all enemies can use it
+without having to compute (optimization). Not super high priority, but I was seeing some lag when doing dumb n^5 algorithms while testing the RangedAttackV1
+behavior.
+
+I also want to refactor the grid scoring to work more intuitively - choose large scores instead of small scores.
+
+Interestingly, a non-working RangedAttackV1 implementation has the AI "running away" from targets that it deems too healthy - the damageScore (which
+calculates "vulnerable" targets) begins to outweigh the position score, as the damageScore becomes
+
+## 2020.02.07
+
+Next thing that will be helpful for AI stuff is a debugging tool. I underestimated how valuable it would be. I think something simple like:
+
+* check if game running in editor
+* if enemy selected, display menu of behaviors attached to this enemy
+* click on behaviors to highlight tiles
+* if hovering over highlighted tile, show score components that make up scores
+
+Some reason NaN keeps showing up in damageScore and skirtScore. Not sure what exactly is causing it, but these two are dependent on targets, so it must
+be something to do with targets not existing?
