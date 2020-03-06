@@ -211,10 +211,14 @@ public class Brambles : SelectEnemiesSkill {
     override public void ResolveEffect(GridEntity source, Tile tile) {
         var maxMoves = tile.occupier.maxMoves;
         tile.occupier.maxMoves = 0;
-        tile.occupier.overrides.Add(new GridEntity.Override(1, () => {
-            tile.occupier.maxMoves = maxMoves;
-            return true;
-        }));
+        tile.occupier.overrides.Add(new GridEntity.Override(
+            "Brambles",
+            1,
+            () => {
+                tile.occupier.maxMoves = maxMoves;
+                return true;
+            }
+        ));
     }
 
     override public List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {
@@ -273,10 +277,14 @@ public class ProtectAlly : SelectAlliesSkill {
         entity.currentMoves = 0;
         entity.outOfMoves = true;
 
-        entity.overrides.Add(new GridEntity.Override(0, () => {
-            entity.damageReceiver = entity;
-            return true;
-        }));
+        entity.overrides.Add(new GridEntity.Override(
+            "Protect Ally",
+            0,
+            () => {
+                entity.damageReceiver = entity;
+                return true;
+            }
+        ));
     }
 }
 

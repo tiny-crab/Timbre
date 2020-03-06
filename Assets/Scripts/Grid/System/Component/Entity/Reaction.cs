@@ -58,7 +58,7 @@ public class RetaliateReaction : AttackReaction {
             return true;
         }
 
-        target.overrides.Add(new GridEntity.Override(1, RetaliateOverride));
+        target.overrides.Add(new GridEntity.Override("Retaliate", 1, RetaliateOverride));
         return true;
     }
 }
