@@ -76,6 +76,7 @@ public abstract class AttackSkill : Skill {
 
 public static class SkillUtils {
     public static Dictionary<string, Skill> skillNameToSkill = new Dictionary<string, Skill>() {
+            {"BearTrap", new BearTrapSkill()},
             {"Brambles", new Brambles()},
             {"Caltrops", new CaltropsSkill()},
             {"Defend Self", new DefendSelf()},
@@ -127,6 +128,28 @@ public static class SkillUtils {
 }
 
 // TILE SELECT SKILLS
+
+public class BearTrapSkill : SelectTilesSkill {
+    public override string name { get {
+        return "BearTrap";
+    } }
+    public override string desc { get {
+        return "Target: Spaces within 2 tiles" +
+        "\n\tDrop a bear trap on the ground nearby. Does 1 damage and immobilizes enemy when stepped on.";
+    } }
+
+    public override int cost { get { return 1; } }
+    public override int radius { get { return 2; } }
+    public override int targets { get { return 1; } }
+
+    override public void ResolveEffect(GridEntity source, Tile tile) {
+        tile.hazards.Add(new BearTrap());
+    }
+
+    override public List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {
+        return base.GetValidTiles(grid, sourceTile).Where(tile => tile.occupier == null).ToList();
+    }
+}
 
 public class CaltropsSkill : SelectTilesSkill {
     public override string name { get {
@@ -282,13 +305,13 @@ public class Headshot : AttackSkill {
     } }
     public override string desc { get {
         return "Target: Enemy in attack range" +
-        "\n\t25% chance to do triple damage.";
+        "\n\t25% chance to do triple damage. 100% if enemy is immobilized.";
     } }
 
     public override int cost { get { return 2; } }
 
     override public void BeforeAttack(GridEntity attacker, GridEntity target) {
-        if (SkillUtils.Gamble(SkillUtils.GambleOdds.D4)) {
+        if (target.maxMoves == 0 || SkillUtils.Gamble(SkillUtils.GambleOdds.D4)) {
             attacker.damageMult = 3;
         }
     }
