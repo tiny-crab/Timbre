@@ -52,12 +52,14 @@ public class GridEntity : MonoBehaviour {
     //      When an effect needs to last through the next player's turn, duration is 1
     //      When an effect needs to last throughout the rest of the battle, duration is int.MaxValue
     public class Override {
+        public string source;
         public int turnDuration = 0;
-        public Func<bool> overrideFunction;
+        public Func<bool> revertFunction;
 
-        public Override(int turnDuration, Func<bool> overrideFunction) {
+        public Override(string source, int turnDuration, Func<bool> revertFunction) {
+            this.source = source;
             this.turnDuration = turnDuration;
-            this.overrideFunction = overrideFunction;
+            this.revertFunction = revertFunction;
         }
     }
 
@@ -282,7 +284,7 @@ public class GridEntity : MonoBehaviour {
 
         overrides.ForEach(x => {
             x.turnDuration--;
-            if (x.turnDuration < 0) { x.overrideFunction(); }
+            if (x.turnDuration < 0) { x.revertFunction(); }
         });
         overrides = overrides.Where(x => x.turnDuration >= 0).ToList();
 
