@@ -143,7 +143,7 @@ public class BearTrapSkill : SelectTilesSkill {
     public override int targets { get { return 1; } }
 
     override public void ResolveEffect(GridEntity source, Tile tile) {
-        tile.hazards.Add(new BearTrap());
+        tile.PutHazard(new BearTrap());
     }
 
     override public List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {
@@ -165,7 +165,7 @@ public class CaltropsSkill : SelectTilesSkill {
     public override int targets { get { return 2; } }
 
     override public void ResolveEffect(GridEntity source, Tile tile) {
-        tile.hazards.Add(new Caltrops());
+        tile.PutHazard(new Caltrops());
     }
 
     override public List<Tile> GetValidTiles(GameObject[,] grid, Tile sourceTile) {

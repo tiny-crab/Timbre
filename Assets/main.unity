@@ -1209,6 +1209,13 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 0.16237983
       objectReference: {fileID: 0}
+    - target: {fileID: 3316787823198874542, guid: e570343f5d9df4db28a07daf83429286,
+        type: 3}
+      propertyPath: m_Text
+      value: 'Use Secondary
+
+        Skill'
+      objectReference: {fileID: 0}
     - target: {fileID: 398844208808015411, guid: e570343f5d9df4db28a07daf83429286,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1228,13 +1235,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: 98.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3316787823198874542, guid: e570343f5d9df4db28a07daf83429286,
-        type: 3}
-      propertyPath: m_Text
-      value: 'Use Secondary
-
-        Skill'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e570343f5d9df4db28a07daf83429286, type: 3}
@@ -2875,6 +2875,11 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 0.7169812
       objectReference: {fileID: 0}
+    - target: {fileID: 3316787823198874542, guid: e570343f5d9df4db28a07daf83429286,
+        type: 3}
+      propertyPath: m_Text
+      value: "Use Primary \nSkill"
+      objectReference: {fileID: 0}
     - target: {fileID: 398844208808015411, guid: e570343f5d9df4db28a07daf83429286,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -2889,11 +2894,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 28
-      objectReference: {fileID: 0}
-    - target: {fileID: 3316787823198874542, guid: e570343f5d9df4db28a07daf83429286,
-        type: 3}
-      propertyPath: m_Text
-      value: "Use Primary \nSkill"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e570343f5d9df4db28a07daf83429286, type: 3}
@@ -5243,6 +5243,13 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 0.90058047
       objectReference: {fileID: 0}
+    - target: {fileID: 3316787823198874542, guid: e570343f5d9df4db28a07daf83429286,
+        type: 3}
+      propertyPath: m_Text
+      value: 'Use Tertiary
+
+        Skill'
+      objectReference: {fileID: 0}
     - target: {fileID: 398844208808015411, guid: e570343f5d9df4db28a07daf83429286,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -5257,13 +5264,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 32.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3316787823198874542, guid: e570343f5d9df4db28a07daf83429286,
-        type: 3}
-      propertyPath: m_Text
-      value: 'Use Tertiary
-
-        Skill'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e570343f5d9df4db28a07daf83429286, type: 3}

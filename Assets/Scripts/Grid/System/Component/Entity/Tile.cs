@@ -28,7 +28,7 @@ public class Tile : MonoBehaviour {
     public int y = 0;
     public bool disabled = false;
     public GridEntity occupier = null;
-    public List<Hazard> hazards = new List<Hazard>();
+    public List<KeyValuePair<GameObject, Hazard>> hazards = new List<KeyValuePair<GameObject, Hazard>>();
     private bool selected = false;
     public List<string> currentHighlights = new List<string>();
     private float intensity = 0f;
@@ -38,6 +38,7 @@ public class Tile : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         if (occupier != null) { UpdateOccupier(); }
+        UpdateHazards();
         currentColor = DetermineColor(intensity);
         this.GetComponent<SpriteRenderer>().color = currentColor;
     }
@@ -51,7 +52,7 @@ public class Tile : MonoBehaviour {
             }
             occupier = entity;
             entity.tile = this;
-            hazards.ForEach(hazard => hazard.OnEntityContact(entity));
+            hazards.ForEach(hazard => hazard.Value.OnEntityContact(entity));
             return true;
         }
         else {
@@ -59,8 +60,27 @@ public class Tile : MonoBehaviour {
         }
     }
 
+    public void PutHazard(Hazard hazard) {
+        hazard.deployed = true;
+        var hazardPrefab = Resources.Load<GameObject>("Prefabs/Grid/Hazards/" + hazard.name);
+        var hazardInstance = Instantiate(hazardPrefab, this.transform.position, Quaternion.identity);
+        hazardInstance.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        this.hazards.Add(new KeyValuePair<GameObject, Hazard>(hazardInstance, hazard));
+        hazardInstance.transform.parent = this.transform;
+    }
+
     void UpdateOccupier () {
         occupier.tile = this;
+    }
+
+    void UpdateHazards () {
+        if (hazards.Count() > 0) {
+            var hazardsToDestroy = hazards.Where(hazard => hazard.Value.triggered >= hazard.Value.uses).ToList();
+            hazardsToDestroy.ForEach(hazard => {
+                hazards.Remove(hazard);
+                Destroy(hazard.Key);
+            });
+        }
     }
 
     public void HighlightAs(string highlightType, float intensity = 0) {

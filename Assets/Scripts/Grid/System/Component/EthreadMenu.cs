@@ -15,7 +15,7 @@ public class EthreadMenu : MonoBehaviour {
         public Button plus;
         public Button minus;
 
-        public int quantity;
+        public int quantity = 3;
         public Text quantityText;
 
         public ThreadButtonGroup (Transform parentTransform, string prefabName) {

@@ -1,9 +1,26 @@
 public abstract class Hazard {
+    public abstract string name {get;}
+    protected bool deployedVal;
+    public bool deployed {
+        get { return deployedVal; }
+        set { deployedVal = value;}
+    }
+    public abstract int uses {get;}
+    protected int triggeredVal;
+    public int triggered {
+        get { return triggeredVal; }
+        set { triggeredVal = value; }
+    }
     abstract public void OnEntityContact(GridEntity entity);
 }
 
 public class Caltrops : Hazard {
-    public Caltrops () {}
+    public override string name { get {
+        return "Caltrops";
+    } }
+    public override int uses { get {
+        return 1;
+    } }
 
     override public void OnEntityContact(GridEntity entity) {
         entity.TakeDamage(1);
@@ -11,12 +28,17 @@ public class Caltrops : Hazard {
 }
 
 public class BearTrap : Hazard {
-    public BearTrap () {}
+    public override string name { get {
+        return "BearTrap";
+    } }
+    public override int uses { get {
+        return 1;
+    } }
 
     override public void OnEntityContact(GridEntity entity) {
         if (entity.isFriendly || entity.isAllied) {
             // disappear if ally touches it
-
+            triggered++;
         }
         else {
             // damage and immobilize an enemy
@@ -31,6 +53,7 @@ public class BearTrap : Hazard {
                     return true;
                 }
             ));
+            triggered++;
         }
     }
 }

@@ -260,3 +260,14 @@ Next thing that will be helpful for AI stuff is a debugging tool. I underestimat
 
 Some reason NaN keeps showing up in damageScore and skirtScore. Not sure what exactly is causing it, but these two are dependent on targets, so it must
 be something to do with targets not existing?
+
+## 2020.03.29
+
+Whee back to working on this game.
+
+Going to add sprites finally for hazards.
+
+## 2020.04.05
+
+ I just realized it may be important to implement OnTurnEnd() for hazards, as some hazards maybe should be modified / destroyed after a number of turns.
+ Haven't designed that part yet.
