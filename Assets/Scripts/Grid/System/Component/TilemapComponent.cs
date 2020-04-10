@@ -9,6 +9,7 @@ public class TilemapComponent {
     private GridSystem parent;
 
     public GameObject[,] grid;
+    public Dictionary<Vector2, List<Tile>> tileLookup = new Dictionary<Vector2, List<Tile>>();
 
     public void Start (GridSystem gridSystem, GameObject[,] initTileMap) {
         parent = gridSystem;

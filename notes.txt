@@ -271,3 +271,6 @@ Going to add sprites finally for hazards.
 
  I just realized it may be important to implement OnTurnEnd() for hazards, as some hazards maybe should be modified / destroyed after a number of turns.
  Haven't designed that part yet.
+
+ I also am very fortunate to have a huge grid overlaid across the overworld for proper pathfinding for everything... however I may need to change the
+ "active" property of tiles in order to allow lookups.

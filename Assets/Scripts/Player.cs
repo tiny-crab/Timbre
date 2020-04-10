@@ -59,6 +59,15 @@ public class Player : ControllerInteractable {
     }
 
     void Update () {
+        var mask = LayerMask.GetMask("HiddenTile");
+        var tileCollision = Physics2D.RaycastAll(
+            origin: this.transform.position,
+            direction: Vector2.zero,
+            distance: 0.0f,
+            layerMask: mask
+        ).ToList().Select(tileObj => tileObj.collider.gameObject.name).First();
+        Debug.Log("Player is standing on tile index: " + tileCollision);
+
         var allEnemiesDefeated = grid.factions
                                     .Where(faction => faction.isHostileFaction)
                                     .All(faction => {

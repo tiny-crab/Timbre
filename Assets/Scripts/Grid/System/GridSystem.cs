@@ -68,7 +68,7 @@ public class GridSystem : MonoBehaviour {
                     screenPoint.x > 0 + leftRightMargin && screenPoint.x < 1 - leftRightMargin &&
                     screenPoint.y > 0 + topBottomMargin && screenPoint.y < 1 - topBottomMargin;
             }).ToList()
-            .ForEach(tile => tile.gameObject.SetActive(true));
+            .ForEach(tile => ActivateTile(tile));
 
         // snap player into Grid
         var playerPrefab = activeParty.Find(obj => obj.name == "GridPlayer");
@@ -110,7 +110,7 @@ public class GridSystem : MonoBehaviour {
         waiting = true;
         GridUtils.FlattenGridTiles(tilemap.grid)
             .Where(tile => !tile.disabled).ToList()
-            .ForEach(tile => tile.gameObject.SetActive(false));
+            .ForEach(tile => DeactivateTile(tile));
 
         TilemapComponent.ClearAllHighlightsFromGrid(tilemap.grid);
 
@@ -137,6 +137,16 @@ public class GridSystem : MonoBehaviour {
         factions = new Queue<Faction>();
 
         skillMenu.SetActive(false);
+    }
+
+    void ActivateTile(Tile tile) {
+        tile.GetComponent<SpriteRenderer>().enabled = true;
+        tile.gameObject.layer = LayerMask.NameToLayer("DisplayedTile");
+    }
+
+    void DeactivateTile(Tile tile) {
+        tile.GetComponent<SpriteRenderer>().enabled = false;
+        tile.gameObject.layer = LayerMask.NameToLayer("HiddenTile");
     }
 
     void Awake () {
