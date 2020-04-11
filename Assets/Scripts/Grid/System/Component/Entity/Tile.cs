@@ -37,10 +37,12 @@ public class Tile : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (occupier != null) { UpdateOccupier(); }
-        UpdateHazards();
-        currentColor = DetermineColor(intensity);
-        this.GetComponent<SpriteRenderer>().color = currentColor;
+        if (this.GetComponent<SpriteRenderer>().color.a == 1f) {
+            if (occupier != null) { UpdateOccupier(); }
+            UpdateHazards();
+            currentColor = DetermineColor(intensity);
+            this.GetComponent<SpriteRenderer>().color = currentColor;
+        }
     }
 
     // use this return value to determine whether or not to "roll-back" a move

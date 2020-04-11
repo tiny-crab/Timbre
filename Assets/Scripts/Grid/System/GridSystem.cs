@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GridSystem : MonoBehaviour {
 
@@ -101,6 +102,24 @@ public class GridSystem : MonoBehaviour {
         factions.Enqueue(playerFaction);
         factions.Enqueue(enemyFaction);
         currentFaction = this.factions.First();
+
+        GridUtils.FlattenGridTiles(tilemap.grid, onlyEnabled: true).ForEach(tile => {
+            var animateConstant = 0.05f;
+
+            var renderer = tile.gameObject.GetComponent<SpriteRenderer>();
+            renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0f);
+            renderer.DOFade(1f, animateConstant * GridUtils.GetDistanceBetweenTiles(closestTile, tile));
+
+            var endPosition = tile.transform.position;
+            tile.transform.position = tile.transform.position + new Vector3(0f, 1f, 0f);
+            tile.transform.DOMove(endPosition, animateConstant * GridUtils.GetDistanceBetweenTiles(closestTile, tile)).OnComplete(
+                () => {
+                    // clamp final position to initial position,
+                    // as tiles can sometimes be slightly off (due to float truncation most likely)
+                    tile.transform.position = endPosition;
+                }
+            );
+        });
 
         stateMachine.Start(this);
     }
