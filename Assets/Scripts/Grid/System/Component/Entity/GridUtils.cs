@@ -168,7 +168,7 @@ public static class GridUtils {
     public static Tile GetRandomEnabledTile(GameObject[,] grid) {
         var rnd = new System.Random();
         var randomTileOrder = GridUtils.FlattenGridTiles(grid, onlyEnabled: true)
-                                .Where(tile => tile.gameObject.activeInHierarchy)
+                                .Where(tile => tile.enabled == true)
                                 .OrderBy(x => rnd.Next());
         return randomTileOrder.First();
     }

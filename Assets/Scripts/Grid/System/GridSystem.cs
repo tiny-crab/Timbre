@@ -161,11 +161,13 @@ public class GridSystem : MonoBehaviour {
     void ActivateTile(Tile tile) {
         tile.GetComponent<SpriteRenderer>().enabled = true;
         tile.gameObject.layer = LayerMask.NameToLayer("DisplayedTile");
+        tile.enabled = true;
     }
 
     void DeactivateTile(Tile tile) {
         tile.GetComponent<SpriteRenderer>().enabled = false;
         tile.gameObject.layer = LayerMask.NameToLayer("HiddenTile");
+        tile.enabled = false;
     }
 
     void Awake () {
