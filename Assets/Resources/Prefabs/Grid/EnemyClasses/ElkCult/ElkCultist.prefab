@@ -11,6 +11,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: ElkCultist
       objectReference: {fileID: 0}
+    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -3276629640199220857, guid: 1b1dfa793069749fab2c75043d065661,
+        type: 3}
     - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -143,6 +149,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: ba200a1639ef04400a8432dbfa2ced4e, type: 2}
+      objectReference: {fileID: 9100000, guid: c240585d1126349489c7644047c2fcde, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
