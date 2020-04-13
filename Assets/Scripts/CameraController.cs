@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     private float smoothTime = 0.3f;
 
-    private float targetOrtho = 5f;
+    private float targetOrtho = 4f;
     private float smoothZoomSpeed = 4f;
     private Vector3 zoomVelocity = Vector3.zero;
 
@@ -33,8 +33,8 @@ public class CameraController : MonoBehaviour
     }
 
     void Update() {
-        if (gridSystem.activated) { targetOrtho = 4.5f; }
-        else { targetOrtho = 5f; }
+        if (gridSystem.activated) { targetOrtho = 3.5f; }
+        else { targetOrtho = 4f; }
     }
 
     void LateUpdate()
