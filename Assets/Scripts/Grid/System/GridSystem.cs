@@ -107,7 +107,7 @@ public class GridSystem : MonoBehaviour {
             var animateConstant = 0.05f;
 
             var renderer = tile.gameObject.GetComponent<SpriteRenderer>();
-            renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0f);
+            renderer.color = new Color(1f, 1f, 1f, 0f);
             renderer.DOFade(1f, animateConstant * GridUtils.GetDistanceBetweenTiles(closestTile, tile));
 
             var endPosition = tile.transform.position;
