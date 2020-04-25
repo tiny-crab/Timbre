@@ -11,8 +11,6 @@ using UnityEngine;
 // the enemies themselves have rules of how they "would" move if they were capable of doing it
 //
 // Enemies themselves won't have skills defined, but behaviors that determine how those skills are used
-// if an enemy runs out of SP, then their skill behaviors are scored lower
-//
 //
 
 public abstract class Behavior {

@@ -59,13 +59,21 @@ public class Player : ControllerInteractable {
     }
 
     void Update () {
-        var mask = LayerMask.GetMask("HiddenTile");
-        var tileColliderNames = Physics2D.RaycastAll(
-            origin: this.transform.position,
-            direction: Vector2.zero,
-            distance: 0.0f,
-            layerMask: mask
-        ).ToList().Select(tileObj => tileObj.collider.gameObject.name);
+        // -----
+        // Grid CAN BE ENABLED while the following code is executed
+        // -----
+
+        // commented block will be used for ally-follow in overworld
+
+        // var mask = LayerMask.GetMask("HiddenTile");
+        // var tileColliderNames = Physics2D.RaycastAll(
+        //     origin: this.transform.position,
+        //     direction: Vector2.zero,
+        //     distance: 0.0f,
+        //     layerMask: mask
+        // ).ToList().Select(tileObj => tileObj.collider.gameObject.name);
+
+        // here i can add a "continue" dialog input that will be enabled in both overworld and grid combat
 
         var allEnemiesDefeated = grid.factions
                                     .Where(faction => faction.isHostileFaction)
@@ -74,6 +82,12 @@ public class Player : ControllerInteractable {
                                     });
         if ((allEnemiesDefeated || keyPressed(DEACTIVATE_GRID)) && grid.activated) { DeactivateGrid(); }
         if (waiting) { return; }
+
+
+        // -----
+        // Grid is DISABLED beyond this point.
+        // -----
+
 
         // take note - this is the first place where the term "Ethread" is coming up
         // a truncation of the codename "Ethereal Thread" to represent the lifeforce items of monsters

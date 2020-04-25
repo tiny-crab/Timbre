@@ -849,7 +849,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1244924596586862, guid: b3b74d9e4f2fb45a89785a6f904d5f73, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1244924596586862, guid: b3b74d9e4f2fb45a89785a6f904d5f73, type: 3}
       propertyPath: m_TagString
@@ -897,7 +897,7 @@ PrefabInstance:
         type: 3}
       propertyPath: dialogNoise
       value: 
-      objectReference: {fileID: 8300000, guid: 205a2f1d792af456a9f1a2608d1648d8, type: 3}
+      objectReference: {fileID: 8300000, guid: 04e30f66b261e47778a8b29c30b176f3, type: 3}
     m_RemovedComponents:
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: b3b74d9e4f2fb45a89785a6f904d5f73, type: 3}
