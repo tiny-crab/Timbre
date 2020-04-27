@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class NPC : MonoBehaviour {
 
-    public string message;
+    public string dialoguePrefabString;
+    public NPCDialoguePrefab dialoguePrefab;
+    public List<string> messageChunks;
     public Dialog dialog;
     public AudioClip dialogNoise;
 
@@ -13,6 +15,8 @@ public class NPC : MonoBehaviour {
 
     void Awake () {
         dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
+        dialoguePrefab = NPCDialoguePrefabUtils.ToDialoguePrefab(dialoguePrefabString);
+        messageChunks = dialoguePrefab.getNextMessage();
     }
 
     void Update () {
@@ -20,6 +24,11 @@ public class NPC : MonoBehaviour {
     }
 
     void PlayerInteract() {
-        dialog.PostToDialog(message, dialogNoise);
+        if (dialog.complete) {
+            dialog.PostToDialog(messageChunks, dialogNoise);
+            messageChunks = dialoguePrefab.getNextMessage();
+        } else {
+            dialog.AdvanceDialog();
+        }
     }
 }

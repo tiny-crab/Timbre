@@ -40,6 +40,7 @@ public class Player : ControllerInteractable {
         KeyCode.M
     };
     private bool keyPressed(List<KeyCode> input) { return input.Any(key => Input.GetKey(key)); }
+    private bool keyDown(List<KeyCode> input) { return input.Any(key => Input.GetKeyDown(key)); }
 
     void Awake () {
         grid = (GridSystem) GameObject.Find("GridSystem").GetComponent<GridSystem>();
@@ -192,7 +193,7 @@ public class Player : ControllerInteractable {
         .OrderBy(collider => Vector2.Distance(collider.transform.position, transform.position))
         .ToList();
 
-        if (keyPressed(INTERACT) && interactColliders.Count() > 0) {
+        if (keyDown(INTERACT) && interactColliders.Count() > 0) {
             interactColliders.First().gameObject.BroadcastMessage("PlayerInteract");
         }
     }
