@@ -11,7 +11,6 @@ public class Dialog : ControllerInteractable {
     private bool pitched = false;
     private List<string> messageChunks;
     private int messageChunkCounter;
-
     public bool complete = true;
 
     // Use this for initialization
@@ -19,14 +18,14 @@ public class Dialog : ControllerInteractable {
         textBlob = this.transform.GetChild(0).gameObject.GetComponent<Text>();
         dialogSound = this.GetComponent<AudioSource>();
         continuationArrow = this.transform.Find("ContinueArrow").GetComponent<Image>();
+        HideDialog();
     }
 
     // Update is called once per frame
     void Update () {
-        continuationArrow.enabled = !complete;
-        if (!complete && messageChunkCounter == this.messageChunks.Count) {
-            complete = true;
-            messageChunkCounter = 0;
+        // show the continuation arrow until the final message chunk
+        if (messageChunks != null) {
+            continuationArrow.enabled = messageChunkCounter == messageChunks.Count - 1;
         }
     }
 
@@ -36,6 +35,8 @@ public class Dialog : ControllerInteractable {
 
     // set up dialogue
     public void PostToDialog (List<string> messageChunks, AudioClip dialogNoise=null, bool pitched=true) {
+        ShowDialog();
+
         StopAllCoroutines();
         this.messageChunks = messageChunks;
         messageChunkCounter = 0;
@@ -53,10 +54,22 @@ public class Dialog : ControllerInteractable {
 
     // player continues dialogue
     public void AdvanceDialog() {
-        if (complete) { return; }
+        complete = messageChunkCounter == messageChunks.Count;
+        if (complete) {
+            HideDialog();
+            return;
+        }
 
         StartCoroutine(TypeOut(this.messageChunks[messageChunkCounter], dialogSound.clip, pitched));
         messageChunkCounter++;
+    }
+
+    private void ShowDialog() {
+        this.gameObject.SetActive(true);
+    }
+
+    private void HideDialog() {
+        this.gameObject.SetActive(false);
     }
 
     IEnumerator TypeOut (string message, AudioClip dialogNoise, bool pitched) {
