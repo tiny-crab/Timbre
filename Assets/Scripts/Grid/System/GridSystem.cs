@@ -184,7 +184,7 @@ public class GridSystem : MonoBehaviour {
 
     void Start () {
         CreateTilemapComponent();
-        dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
+        dialog = (Dialog) GameObject.Find("DialogueDialog").GetComponent<Dialog>();
         skillMenu = GameObject.Find("SkillMenu");
         skillMenu.SetActive(false);
         DeactivateGrid();

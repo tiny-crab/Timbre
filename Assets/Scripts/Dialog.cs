@@ -12,6 +12,7 @@ public class Dialog : ControllerInteractable {
     private List<string> messageChunks;
     private int messageChunkCounter;
     public bool complete = true;
+    public bool timedOut = false;
 
     // Use this for initialization
     void Start () {
@@ -46,6 +47,12 @@ public class Dialog : ControllerInteractable {
 
         StartCoroutine(TypeOut(this.messageChunks[messageChunkCounter], dialogSound.clip, pitched));
         messageChunkCounter++;
+
+        complete = messageChunkCounter == messageChunks.Count;
+        if (complete) {
+            StartCoroutine(HideOnTimeout());
+            return;
+        }
     }
 
     public void PostToDialog (string message, AudioClip dialogNoise=null, bool pitched=true) {
@@ -62,6 +69,12 @@ public class Dialog : ControllerInteractable {
 
         StartCoroutine(TypeOut(this.messageChunks[messageChunkCounter], dialogSound.clip, pitched));
         messageChunkCounter++;
+
+        complete = messageChunkCounter == messageChunks.Count;
+        if (complete) {
+            StartCoroutine(HideOnTimeout());
+            return;
+        }
     }
 
     private void ShowDialog() {
@@ -77,6 +90,8 @@ public class Dialog : ControllerInteractable {
         var punctuationWait = 0.1f;
         var otherWait = .025f;
 
+        timedOut = false;
+
         foreach (char letter in message.ToCharArray()) {
             this.textBlob.text += letter;
             if (pitched) { dialogSound.pitch = (float) Mathf.Sqrt(((int) letter * .03f)); }
@@ -89,5 +104,11 @@ public class Dialog : ControllerInteractable {
             }
 
         }
+    }
+
+    IEnumerator HideOnTimeout() {
+        yield return new WaitForSeconds(5);
+        timedOut = true;
+        HideDialog();
     }
 }

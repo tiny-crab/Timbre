@@ -12,6 +12,8 @@ TagManager:
   - TriggeredEncounter
   - Pickup
   - Interaction
+  - Environment
+  - TriggeredEnvironment
   layers:
   - Default
   - TransparentFX

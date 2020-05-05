@@ -14,9 +14,11 @@ public class NPC : MonoBehaviour {
     public GameObject gridPrefab;
 
     void Awake () {
-        dialog = (Dialog) GameObject.Find("Dialog").GetComponent<Dialog>();
-        dialoguePrefab = NPCDialoguePrefabUtils.ToDialoguePrefab(dialoguePrefabString);
-        messageChunks = dialoguePrefab.getNextMessage();
+        dialog = (Dialog) GameObject.Find("DialogueDialog").GetComponent<Dialog>();
+        if (dialoguePrefabString != "") {
+            dialoguePrefab = NPCDialoguePrefabUtils.ToDialoguePrefab(dialoguePrefabString);
+            messageChunks = dialoguePrefab.getNextMessage();
+        }
     }
 
     void Update () {

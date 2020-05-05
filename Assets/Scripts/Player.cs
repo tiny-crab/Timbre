@@ -169,6 +169,15 @@ public class Player : ControllerInteractable {
                 collider.gameObject.tag = "TriggeredEncounter";
         });
 
+        var environmentColliders = colliders.Where(collider => collider.gameObject.tag == "Environment").ToList();
+        environmentColliders.ForEach(collider => {
+            var environmentObj = collider.GetComponent<Environment>();
+                if (environmentObj != null) {
+                    environmentObj.Trigger();
+                }
+                collider.gameObject.tag = "TriggeredEnvironment";
+        });
+
         var pickupColliders = colliders.Where(collider => collider.gameObject.tag == "Pickup").ToList();
         pickupColliders.ForEach(collider => {
             var pickup = collider.gameObject.GetComponent<Pickup>();
