@@ -107,7 +107,7 @@ public class Dialog : ControllerInteractable {
     }
 
     IEnumerator HideOnTimeout() {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
         timedOut = true;
         HideDialog();
     }
