@@ -184,7 +184,7 @@ public class GridSystem : MonoBehaviour {
 
     void Start () {
         CreateTilemapComponent();
-        dialog = (Dialog) GameObject.Find("DialogueDialog").GetComponent<Dialog>();
+        dialog = (Dialog) GameObject.Find("NarrativeDialog").GetComponent<Dialog>();
         skillMenu = GameObject.Find("SkillMenu");
         skillMenu.SetActive(false);
         DeactivateGrid();
@@ -265,13 +265,13 @@ public class GridSystem : MonoBehaviour {
                 // stateData.aiSteps = aiComponent.DetermineAITurns(faction, grid);
                 stateData.aiSteps = stateMachine.DetermineAITurns();
             } else {
-                var outputString = String.Format("Finishing actions on target {0}", stateData.aiSteps.First().Key);
                 currentState = stateMachine.ExecuteAITurn(currentState);
                 if (stateData.aiSteps.Count == 0) {
                     currentFaction.entities = stateData.enemies;
                     currentState = TransitionOnEndTurn();
                     StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
                 } else {
+                    var outputString = String.Format("Finishing actions on target {0}", stateData.aiSteps.First().Key);
                     StartCoroutine(WaitAMoment(aiStepTime, outputString));
                 }
             }

@@ -52,6 +52,7 @@ public class TeleportActivatedState : State {
 public class EnemyTurnState : State {
     public List<GridEntity> enemies;
     public List<IGrouping<GridEntity, Behavior>> aiSteps;
+    public IGrouping<GridEntity, Behavior> stepTaken;
 
     public EnemyTurnState(List<GridEntity> enemies) {
         this.enemies = enemies;

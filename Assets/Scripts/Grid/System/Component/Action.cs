@@ -7,7 +7,7 @@ public abstract class Action {
     protected abstract void Execute(State currentState, TilemapComponent tilemap);
     // This is the "View"
     protected abstract void DisplayInGrid(State currentState, TilemapComponent tilemap);
-    protected abstract void DisplayInDialog(Dialog dialog);
+    protected abstract void DisplayInDialog(State currentState, Dialog dialog);
 }
 
 public class KeepState : Action {
@@ -16,14 +16,14 @@ public class KeepState : Action {
     }
     protected override void Execute(State currentState, TilemapComponent tilemap) {}
     protected override void DisplayInGrid(State currentState, TilemapComponent tilemap) {}
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class Unselect : Action {
     public override State Transition(State currentState, TilemapComponent tilemap, Dialog dialog) {
         Execute(currentState, tilemap);
         DisplayInGrid(currentState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(currentState,dialog);
         return new NoSelectionState();
     }
     protected override void Execute(State currentState, TilemapComponent tilemap) {
@@ -32,7 +32,7 @@ public class Unselect : Action {
     protected override void DisplayInGrid(State currentState, TilemapComponent tilemap) {
         TilemapComponent.ClearAllHighlightsFromGrid(tilemap.grid);
     }
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class SelectAlly : Action {
@@ -46,7 +46,7 @@ public class SelectAlly : Action {
         var nextState = new AllySelectedState(source);
         Execute(nextState, tilemap);
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -61,7 +61,7 @@ public class SelectAlly : Action {
         stateData.attackRange.ForEach(x => x.HighlightAs(Tile.HighlightTypes.Attack));
         stateData.moveRange.ForEach(x => x.HighlightAs(Tile.HighlightTypes.Move));
     }
-    protected override void DisplayInDialog(Dialog dialog) {
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {
         dialog.PostToDialog("Selected " + source.entityName, null, false);
     }
 }
@@ -77,7 +77,7 @@ public class SelectEnemy : Action {
         var nextState = new EnemySelectedState(source);
         Execute(nextState, tilemap);
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -93,7 +93,7 @@ public class SelectEnemy : Action {
         normalizedData.Keys.ToList().ForEach(x => x.tile.HighlightAs(Tile.HighlightTypes.Test, (float) normalizedData[x]));
         normalizedData.Keys.OrderBy(x => normalizedData[x]).First().tile.HighlightAs(Tile.HighlightTypes.Move);
     }
-    protected override void DisplayInDialog(Dialog dialog) {
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {
         dialog.PostToDialog("Selected " + source.entityName, null, false);
     }
 }
@@ -111,7 +111,7 @@ public class Move : Action {
         var nextState = currentState is AllySelectedState ? currentState : new AllySelectedState(source);
         Execute(nextState, tilemap);
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -130,7 +130,7 @@ public class Move : Action {
         TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.attackRange, Tile.HighlightTypes.Attack);
         TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.moveRange, Tile.HighlightTypes.Move);
     }
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class Attack : Action {
@@ -146,7 +146,7 @@ public class Attack : Action {
         var nextState = new AllySelectedState(source);
         Execute(nextState, tilemap);
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -167,7 +167,7 @@ public class Attack : Action {
         TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.attackRange, Tile.HighlightTypes.Attack);
         TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.moveRange, Tile.HighlightTypes.Move);
     }
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class ActivateSkill : Action {
@@ -183,7 +183,7 @@ public class ActivateSkill : Action {
     public override State Transition(State currentState, TilemapComponent tilemap, Dialog dialog) {
         Execute(currentState, tilemap);
         DisplayInGrid(currentState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(currentState, dialog);
         if (skillToActivate is SelectTilesSkill) {
             return new SelectSkillActivatedState(source, (SelectTilesSkill) skillToActivate, skillRange);
         } else {
@@ -225,7 +225,7 @@ public class ActivateSkill : Action {
         }
 
     }
-    protected override void DisplayInDialog(Dialog dialog) {
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {
         if (skillToActivate.cost > source.currentSP) {
             // dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but not enough SP", dialogNoise, false);
             dialog.PostToDialog("Tried to activate " + skillToActivate.GetType().Name + " but not enough SP");
@@ -253,7 +253,7 @@ public class DeactivateSkill : Action {
         var nextState = new AllySelectedState(source);
         Execute(nextState, tilemap);
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -287,7 +287,7 @@ public class DeactivateSkill : Action {
             TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.moveRange, Tile.HighlightTypes.Move);
         }
     }
-    protected override void DisplayInDialog(Dialog dialog) {
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {
         dialog.PostToDialog("Deactivated " + skillToDeactivate.GetType().Name + ".");
     }
 }
@@ -307,7 +307,7 @@ public class SelectSkillTile : Action {
         Execute(nextState, tilemap);
         if (completed) { nextState = new AllySelectedState(source); }
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -353,7 +353,7 @@ public class SelectSkillTile : Action {
             }
         }
     }
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class ActivateTeleport : Action {
@@ -367,7 +367,7 @@ public class ActivateTeleport : Action {
     public override State Transition(State currentState, TilemapComponent tilemap, Dialog dialog) {
         Execute(currentState, tilemap);
         DisplayInGrid(currentState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(currentState, dialog);
         return new TeleportActivatedState(source, validTiles);
     }
 
@@ -383,7 +383,7 @@ public class ActivateTeleport : Action {
         TilemapComponent.ClearAllHighlightsFromGrid(tilemap.grid);
         TilemapComponent.RefreshGridHighlights(tilemap.grid, validTiles, Tile.HighlightTypes.Teleport);
     }
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class DeactivateTeleport : Action {
@@ -397,7 +397,7 @@ public class DeactivateTeleport : Action {
         var nextState = new AllySelectedState(currentState.source);
         Execute(nextState, tilemap);
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -416,7 +416,7 @@ public class DeactivateTeleport : Action {
         TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.moveRange, Tile.HighlightTypes.Move);
 
     }
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class SelectTeleportTile : Action {
@@ -432,7 +432,7 @@ public class SelectTeleportTile : Action {
         var nextState = new AllySelectedState(currentState.source);
         Execute(nextState, tilemap);
         DisplayInGrid(nextState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(nextState, dialog);
         return nextState;
     }
 
@@ -451,15 +451,15 @@ public class SelectTeleportTile : Action {
         TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.attackRange, Tile.HighlightTypes.Attack);
         TilemapComponent.RefreshGridHighlights(tilemap.grid, stateData.moveRange, Tile.HighlightTypes.Move);
     }
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {}
 }
 
 public class ExecuteAIStep : Action {
-
     public override State Transition(State currentState, TilemapComponent tilemap, Dialog dialog) {
         Execute(currentState, tilemap);
         DisplayInGrid(currentState, tilemap);
-        DisplayInDialog(dialog);
+        DisplayInDialog(currentState, dialog);
+
         var stateData = (EnemyTurnState) currentState;
         if (stateData.aiSteps.Count == 0) {
             return new NoSelectionState();
@@ -475,9 +475,16 @@ public class ExecuteAIStep : Action {
             if (nextStep != null) {
                 stateData.aiSteps.RemoveAt(0);
                 nextStep.ToList().ForEach(behavior => behavior.DoBestAction(tilemap, currentState));
+                stateData.stepTaken = nextStep;
             }
         }
     }
     protected override void DisplayInGrid(State currentState, TilemapComponent tilemap) {}
-    protected override void DisplayInDialog(Dialog dialog) {}
+    protected override void DisplayInDialog(State currentState, Dialog dialog) {
+        var stateData = (EnemyTurnState) currentState;
+
+        // can add some more advanced dialog decisions here
+        var behavior = stateData.stepTaken.ToList().First();
+        dialog.PostToDialog(behavior.entity.enemyConfig.flavorText[behavior.GetType().Name]);
+    }
 }

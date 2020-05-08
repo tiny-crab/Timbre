@@ -74,6 +74,8 @@ public class GridEntity : MonoBehaviour {
     public List<Reaction> currentReactions = new List<Reaction>();
 
     // AI
+    public EnemyConfig enemyConfig;
+    public string enemyConfigName;
     public List<string> behaviorNames;
     public List<Behavior> behaviors = new List<Behavior>();
     public Behavior lastSelectedBehavior;
@@ -121,6 +123,9 @@ public class GridEntity : MonoBehaviour {
         damageReceiver = this;
         currentSkillUses = maxSkillUses;
         currentSP = maxSP;
+        if (isHostile) {
+            enemyConfig = enemyConfigName.ToEnemyConfig();
+        }
         skills = SkillUtils.PopulateSkills(skillNames, skillLevels);
         behaviors = behaviorNames.ToBehaviors(this);
         fears = fearNames.ToFears();

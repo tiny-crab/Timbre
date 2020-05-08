@@ -274,3 +274,13 @@ Going to add sprites finally for hazards.
 
  I also am very fortunate to have a huge grid overlaid across the overworld for proper pathfinding for everything... however I may need to change the
  "active" property of tiles in order to allow lookups.
+
+ ## 2020.05.08
+
+ Working on implementing narrative for enemy actions is tough. I want to combine meaningful data about enemies, their targets, and their actions. However, the actions
+ don't have that sort of granularity - i.e. the EvasiveTeleport behavior doesn't have any way of determining which state it's in: prepping or teleporting. Boss phases need
+ this sort of granularity, and I'm sure I'll implement more two-turn Behaviors for enemies. So I'll need to either split the Behaviors (which seems prone to bugs in Behavior calculation)
+ or provide information in the Behavior classes about what "stage" they're in. That also includes fantastic metadata like whether a MeleeAttack Behavior struck a target,
+ or just moved toward one. There's a lot to unpack there that I didn't consider.
+
+ I'm also uncovering some bugs with fleeing mechanics too, but need to dig into that more later.

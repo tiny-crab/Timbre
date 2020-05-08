@@ -72,7 +72,7 @@ PrefabInstance:
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: behaviorNames.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -145,6 +145,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9170540517610406404, guid: d2b1cb4d9d31246c0bf88df08950996e,
         type: 3}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: enemyConfigName
+      value: ElkCultCaster
+      objectReference: {fileID: 0}
     - target: {fileID: -8292581000985229284, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Controller
