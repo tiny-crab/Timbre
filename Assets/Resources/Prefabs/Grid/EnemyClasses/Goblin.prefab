@@ -260,6 +260,11 @@ PrefabInstance:
       propertyPath: enemyConfigName
       value: ShamblingCorpse
       objectReference: {fileID: 0}
+    - target: {fileID: 2385061500681452608, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
 --- !u!1 &6365471537866192612 stripped
