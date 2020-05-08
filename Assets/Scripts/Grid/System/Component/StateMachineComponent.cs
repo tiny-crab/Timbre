@@ -182,7 +182,7 @@ public class StateMachineComponent {
                 .OrderBy(behavior => behavior.FindBestAction(parent.tilemap.grid))
                 .First();
         })
-        .GroupBy(behavior => behavior.bestTarget)
+        .GroupBy(behavior => behavior.entity)
         .ToList();
 
         return aiActionsByTarget;
