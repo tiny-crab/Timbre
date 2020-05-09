@@ -462,6 +462,7 @@ public class ExecuteAIStep : Action {
 
         var stateData = (EnemyTurnState) currentState;
         if (stateData.aiSteps.Count == 0) {
+            // can add new reinforcement / summoning state
             return new NoSelectionState();
         } else {
             return currentState;

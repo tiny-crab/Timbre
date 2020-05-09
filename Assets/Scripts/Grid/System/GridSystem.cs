@@ -376,7 +376,6 @@ public class GridSystem : MonoBehaviour {
         var atkRange = (Image) title.transform.Find("AtkRange").GetComponent<Image>();
         var atkRangeChips = GetChipsForSkillMenu(atkRange.transform);
 
-
         nameText.text = lastSelectedAlly.entityName;
         subnameText.text = lastSelectedAlly.entitySubname;
         SetChips(damageChips, lastSelectedAlly.damage);
