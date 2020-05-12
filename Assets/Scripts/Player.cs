@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : ControllerInteractable {
 
@@ -13,6 +14,8 @@ public class Player : ControllerInteractable {
     private List<GameObject> partyPrefabs;
 
     public GameObject ethreadMenu;
+    public GameObject consoleCommandTool;
+    public InputField consoleCommandToolInput;
 
     private bool waiting = false;
 
@@ -53,10 +56,13 @@ public class Player : ControllerInteractable {
         };
 
         ethreadMenu = GameObject.Find("EthreadMenu");
+        consoleCommandTool = GameObject.Find("ConsoleCommandTool");
+        consoleCommandToolInput = consoleCommandTool.GetComponent<InputField>();
     }
 
     void Start () {
         ethreadMenu.SetActive(false);
+        consoleCommandTool.SetActive(false);
     }
 
     void Update () {
@@ -82,8 +88,10 @@ public class Player : ControllerInteractable {
                                         return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
                                     });
         if ((allEnemiesDefeated || keyPressed(DEACTIVATE_GRID)) && grid.activated) { DeactivateGrid(); }
-        if (waiting) { return; }
+        if (keyDown(new List<KeyCode>() { KeyCode.BackQuote })) { ToggleConsoleCommandTool(); }
+        if (consoleCommandToolInput.isFocused) { return; }
 
+        if (waiting) { return; }
 
         // -----
         // Grid is DISABLED beyond this point.
@@ -222,6 +230,10 @@ public class Player : ControllerInteractable {
     private void ToggleEthreadMenu() {
         ethreadMenu.SetActive(!ethreadMenu.activeInHierarchy);
         ethreadMenu.GetComponent<EthreadMenu>().PopulateParty(partyPrefabs);
+    }
+
+    private void ToggleConsoleCommandTool() {
+        consoleCommandTool.SetActive(!consoleCommandTool.activeInHierarchy);
     }
 
     private List<KeyValuePair<GameObject, Vector2>> GenerateRandomEnemies() {
