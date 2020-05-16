@@ -244,11 +244,11 @@ public class Player : ControllerInteractable {
         );
         return new List<KeyValuePair<GameObject, Vector2>>() {
             pair,
-            pair,
-            pair,
-            pair,
-            pair,
-            pair,
+            // pair,
+            // pair,
+            // pair,
+            // pair,
+            // pair,
         };
     }
 

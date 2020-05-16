@@ -80,6 +80,10 @@ public class GridEntity : MonoBehaviour {
     public List<Behavior> behaviors = new List<Behavior>();
     public Behavior lastSelectedBehavior;
 
+    // Elite Enemies
+    public bool isElite;
+    public List<GameObject> minionTypesToSpawn;
+
     // Fear
     public int baseFearValue;
     public int totalFearValue;
@@ -90,7 +94,7 @@ public class GridEntity : MonoBehaviour {
     public List<Behavior> afraidBehaviors = new List<Behavior>();
     public GameObject fearIcon;
 
-    //Threas
+    //Threads
     public List<Ethread> equippedThreads = new List<Ethread>();
 
     // TODO UP: this coloring should be determined on a UI basis, not on an entity-level basis
@@ -258,6 +262,13 @@ public class GridEntity : MonoBehaviour {
         if (currentSP <= 0) { outOfSP = true; }
         Debug.Log("<color=blue>" + entityName + "</color> used <color=green>" + skill.GetType().Name + "</color>");
         Debug.Log("<color=blue>" + entityName + "</color> has <color=green>" + currentSP + "</color> SP remaining.");
+    }
+
+    public List<GridEntity> CallReinforcements(GridSystem gridSystem) {
+        var validTiles = GridUtils.FlattenGridTiles(gridSystem.tilemap.grid, onlyEnabled: true).Where(tile => tile.occupier == null && !tile.disabled);
+        var randomMinion = minionTypesToSpawn.RandomElement();
+        var randomTile = validTiles.RandomElement();
+        return new List<GridEntity>() { gridSystem.SpawnEnemy(randomTile.x, randomTile.y, randomMinion) } ;
     }
 
     public void UseTeleport() {

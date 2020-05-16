@@ -140,6 +140,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
+      propertyPath: minionTypesToSpawn.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
       propertyPath: health
       value: 4
       objectReference: {fileID: 0}
@@ -176,7 +181,7 @@ PrefabInstance:
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: maxHP
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -260,6 +265,17 @@ PrefabInstance:
       propertyPath: enemyConfigName
       value: ShamblingCorpse
       objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: isElite
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: minionTypesToSpawn.Array.data[0]
+      value: 
+      objectReference: {fileID: 9095052389684794170, guid: a9293f735ab6947adbf5ca0f71834f74,
+        type: 3}
     - target: {fileID: 2385061500681452608, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_SortingOrder

@@ -159,7 +159,7 @@ public static class GridUtils {
         for (int i = 0; i < grid.GetLength(0); i++) {
             for (int j = 0; j < grid.GetLength(1); j++) {
                 var tile = grid[i,j].GetComponent<Tile>();
-                if (!onlyEnabled || !tile.disabled) { aggregate.Add(tile); }
+                if (!onlyEnabled || (!tile.disabled && tile.isActiveAndEnabled)) { aggregate.Add(tile); }
             }
         }
         return aggregate;

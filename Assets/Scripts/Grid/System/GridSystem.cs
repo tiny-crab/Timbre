@@ -32,7 +32,7 @@ public class GridSystem : MonoBehaviour {
     public TilemapComponent tilemap = new TilemapComponent();
 
     public Queue<Faction> factions = new Queue<Faction>();
-    public Faction currentFaction;
+    public Faction nextFaction;
 
     public List<KeyCode> skillKeys = new List<KeyCode>() { KeyCode.A, KeyCode.S, KeyCode.D };
     public Dictionary<KeyCode, int> keyToSkillIndex = new Dictionary<KeyCode, int>() {
@@ -101,7 +101,7 @@ public class GridSystem : MonoBehaviour {
 
         factions.Enqueue(playerFaction);
         factions.Enqueue(enemyFaction);
-        currentFaction = this.factions.First();
+        nextFaction = this.factions.First();
 
         GridUtils.FlattenGridTiles(tilemap.grid, onlyEnabled: true).ForEach(tile => {
             var animateConstant = 0.05f;
@@ -267,7 +267,12 @@ public class GridSystem : MonoBehaviour {
             } else {
                 currentState = stateMachine.ExecuteAITurn(currentState);
                 if (stateData.aiSteps.Count == 0) {
-                    currentFaction.entities = stateData.enemies;
+                    // all AI entities have completed their actions
+                    var newEnemies = stateData.enemies
+                        .Where(entity => entity.isElite).ToList()
+                        .SelectMany(elite => elite.CallReinforcements(this));
+                    stateData.enemies.AddRange(newEnemies);
+                    nextFaction.entities = stateData.enemies;
                     currentState = TransitionOnEndTurn();
                     StartCoroutine(WaitAMoment(aiStepTime, "Ending AI Turn"));
                 } else {
@@ -284,9 +289,9 @@ public class GridSystem : MonoBehaviour {
 
     private State TransitionOnEndTurn() {
         var previousFaction = factions.Dequeue();
-        currentFaction = factions.Peek();
+        nextFaction = factions.Peek();
         factions.Enqueue(previousFaction);
-        var nextState = stateMachine.EndTurn(currentState, currentFaction);
+        var nextState = stateMachine.EndTurn(currentState, nextFaction);
         StartCoroutine(WaitAMoment(turnGapTime, "Ending Player Turn"));
         return nextState;
     }
@@ -350,11 +355,17 @@ public class GridSystem : MonoBehaviour {
         else { return null; }
     }
 
-    GridEntity PutEntity (int x, int y, GameObject prefab) {
+    public GridEntity PutEntity (int x, int y, GameObject prefab) {
         var target = tilemap.grid[x,y].GetComponent<Tile>();
         var entity = Instantiate(prefab, new Vector2(0,0), Quaternion.identity).GetComponent<GridEntity>();
         entity.GetComponent<SpriteRenderer>().sortingOrder = 1;
         target.TryOccupy(entity);
+        return entity;
+    }
+
+    public GridEntity SpawnEnemy(int x, int y, GameObject prefab) {
+        var entity = PutEntity(x, y, prefab);
+        entity.isHostile = true;
         return entity;
     }
 

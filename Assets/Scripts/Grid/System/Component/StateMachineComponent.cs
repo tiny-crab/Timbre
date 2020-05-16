@@ -143,13 +143,13 @@ public class StateMachineComponent {
         return nextState;
     }
 
-    public State EndTurn(State currentState, Faction currentFaction) {
+    public State EndTurn(State currentState, Faction nextFaction) {
         var nextState = currentState;
 
-        currentFaction.RefreshTurnResources();
+        nextFaction.RefreshTurnResources();
 
-        if (currentFaction.isHostileFaction) {
-            nextState = new EnemyTurnState(currentFaction.entities);
+        if (nextFaction.isHostileFaction) {
+            nextState = new EnemyTurnState(nextFaction.entities);
         }
         else {
             nextState = new NoSelectionState();
@@ -177,7 +177,7 @@ public class StateMachineComponent {
 
     // this needs to be pulled out
     public List<IGrouping<GridEntity, Behavior>> DetermineAITurns() {
-        var aiActionsByTarget = parent.currentFaction.entities.Where(entity => !entity.outOfHP).ToList().Select(aiEntity => {
+        var aiActionsByTarget = parent.nextFaction.entities.Where(entity => !entity.outOfHP).ToList().Select(aiEntity => {
             return aiEntity.behaviors
                 .OrderBy(behavior => behavior.FindBestAction(parent.tilemap.grid))
                 .First();

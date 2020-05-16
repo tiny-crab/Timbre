@@ -4029,6 +4029,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Goblin (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 3517599347464624948, guid: 11007a0f507064694a5f3e22177251bf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3514241130496003868, guid: 11007a0f507064694a5f3e22177251bf,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8436,6 +8441,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Goblin (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3517599347464624948, guid: 11007a0f507064694a5f3e22177251bf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3514241130496003868, guid: 11007a0f507064694a5f3e22177251bf,
         type: 3}
@@ -13510,6 +13520,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Goblin (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3517599347464624948, guid: 11007a0f507064694a5f3e22177251bf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3514241130496003868, guid: 11007a0f507064694a5f3e22177251bf,
         type: 3}

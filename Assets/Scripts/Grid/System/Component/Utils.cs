@@ -27,4 +27,9 @@ public static class Utils {
         foreach (var e in ie) action(e, i++);
     }
 
+    public static T RandomElement<T>(this IEnumerable<T> list) {
+        var rnd = new System.Random();
+        return list.OrderBy(i => rnd.Next()).First();
+    }
+
 }
