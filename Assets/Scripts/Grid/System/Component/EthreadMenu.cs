@@ -210,7 +210,7 @@ public class EthreadMenu : MonoBehaviour {
     public void Update () {
         threadButtonGroups.ForEach(group => group.quantityText.text = "x" + group.quantity.ToString());
         partyInfoDict.Keys.ToList().ForEach(allyInfo => allyInfo.selectionBox.enabled = selectedAlly == allyInfo);
-        selectedAllyDisplay.UpdateDisplay(selectedAlly);
+        // selectedAllyDisplay.UpdateDisplay(selectedAlly);
     }
 
     private void OnPlusClick (ThreadButtonGroup group) {

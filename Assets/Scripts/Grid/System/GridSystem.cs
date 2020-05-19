@@ -43,6 +43,9 @@ public class GridSystem : MonoBehaviour {
 
     public State currentState = new NoSelectionState();
 
+    public bool allEnemiesDefeated;
+    public bool allAlliesDefeated;
+
     // TODO SIDE: Audio + UI should be in a different class
     public Dialog dialog;
     public AudioClip dialogNoise;
@@ -195,6 +198,17 @@ public class GridSystem : MonoBehaviour {
 
         lastSelectedAlly = currentState.source ?? gridPlayer;
         UpdateSkillMenu();
+
+        allEnemiesDefeated = factions
+                                    .Where(faction => faction.isHostileFaction)
+                                    .All(faction => {
+                                        return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
+                                    });
+        allAlliesDefeated = factions
+                                    .Where(faction => faction.isPlayerFaction)
+                                    .All(faction => {
+                                        return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
+                                    });
 
         if (waiting) { return; }
         if (Input.GetKeyDown(KeyCode.Tab)) { ToggleSkillMenu(); }

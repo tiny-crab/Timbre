@@ -91,7 +91,7 @@ public class Player : ControllerInteractable {
         if (keyDown(new List<KeyCode>() { KeyCode.BackQuote })) { ToggleConsoleCommandTool(); }
         if (consoleCommandToolInput.isFocused) { return; }
 
-        if (waiting) { return; }
+        if (waiting || grid.activated) { return; }
 
         // -----
         // Grid is DISABLED beyond this point.
