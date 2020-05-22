@@ -284,3 +284,14 @@ Going to add sprites finally for hazards.
  or just moved toward one. There's a lot to unpack there that I didn't consider.
 
  I'm also uncovering some bugs with fleeing mechanics too, but need to dig into that more later.
+
+ ## 2020.05.22
+
+ As I'm creating the Gauntlet FSM, I'm trying a bit of a different FSM model than I have in the GridSystem.
+
+ The GridSystem one is a bit cumbersome, but I think it makes sense: States are FSM nodes, and Actions are FSM edges.
+ I just wish I had named them a bit better; naming States as nouns (the Actions make sense as verbs).
+
+ This change with the Gauntlet FSM may bite me later, to remember two different models, but if I think of this as a learning
+ experience, I think it makes sense to try out a new idea and see how it works. Next time I create an FSM model from scratch, maybe
+ I can create a batch of scripts that I can import into new projects.
