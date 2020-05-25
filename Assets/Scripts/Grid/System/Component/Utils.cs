@@ -32,4 +32,9 @@ public static class Utils {
         return list.OrderBy(i => rnd.Next()).First();
     }
 
+    public static List<T> ManyRandomElements<T>(this IEnumerable<T> list, int number) {
+        var rnd = new System.Random();
+        return list.OrderBy(i => rnd.Next()).Take(number).ToList();
+    }
+
 }

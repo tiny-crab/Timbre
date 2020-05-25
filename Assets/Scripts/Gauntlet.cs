@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class Gauntlet : MonoBehaviour
 {
+    [SerializeField]
+    Camera mainCam;
+    Vector3 ethreadMenuCamPosition;
+
     GridSystem gridSystem;
     GauntletState currentState;
+
+    List<GameObject> partyMembers;
 
     GameObject ethreadMenu;
 
@@ -15,18 +21,20 @@ public class Gauntlet : MonoBehaviour
     }
 
     void Start () {
-        gridSystem.ActivateGrid(
-            playerLocation: new Vector2(0, 0),
-            activeParty: new List<GameObject>() {
-                Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/GridPlayer"),
-                Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Dog"),
-            },
-            enemiesToSpawn: GenerateRandomEnemies()
-        );
-
         ethreadMenu.SetActive(false);
+        ethreadMenuCamPosition = GameObject.Find("EthreadMenuPosition").transform.position;
+
+        var possiblePartyMembers = new List<GameObject>() {
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/GridPlayer"),
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Dog"),
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight"),
+            Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Woodsman"),
+        };
+
+        partyMembers = possiblePartyMembers.ManyRandomElements(2);
 
         currentState = new Combat(this);
+        currentState.StartState(null);
     }
 
     void Update() {
@@ -71,24 +79,36 @@ public class Gauntlet : MonoBehaviour
     public class Combat : GauntletState {
         public Combat(Gauntlet parent) : base(parent) {}
 
-        public override void StartState(GauntletState lastState) {}
+        public override void StartState(GauntletState lastState) {
+            parent.mainCam.transform.position = new Vector3(0, 0, -10);
+
+            parent.gridSystem.ActivateGrid(
+                playerLocation: new Vector2(0, 0),
+                activeParty: parent.partyMembers,
+                enemiesToSpawn: parent.GenerateRandomEnemies()
+            );
+        }
         public override void UpdateState() {
             if (parent.gridSystem.allAlliesDefeated || parent.gridSystem.allEnemiesDefeated) {
-                parent.ChangeState(typeof(Complete));
+                parent.ChangeState(typeof(ThreadCustomization));
             }
         }
-        public override void EndState(GauntletState nextState) {}
+        public override void EndState(GauntletState nextState) {
+            parent.gridSystem.DeactivateGrid();
+        }
     }
 
     public class ThreadCustomization : GauntletState {
         public ThreadCustomization(Gauntlet parent) : base(parent) {}
 
         public override void StartState(GauntletState lastState) {
+            parent.mainCam.transform.position = parent.ethreadMenuCamPosition;
             parent.ethreadMenu.SetActive(true);
+            parent.ethreadMenu.GetComponent<EthreadMenu>().PopulateParty(parent.partyMembers);
         }
         public override void UpdateState() {
             if (Input.GetKeyDown(KeyCode.Escape)) {
-                parent.ChangeState(typeof(Complete));
+                parent.ChangeState(typeof(Combat));
             }
         }
         public override void EndState(GauntletState nextState) {
