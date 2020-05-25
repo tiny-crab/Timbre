@@ -41,7 +41,7 @@ public class Gauntlet : MonoBehaviour
     private List<KeyValuePair<GameObject, Vector2>> GenerateRandomEnemies() {
         var pair = new KeyValuePair<GameObject, Vector2>(
             // Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/ElkCult/ElkCultist"),
-            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Goblin"),
+            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Undead/Decrepit Corpse"),
             new Vector2(int.MaxValue, int.MaxValue)
         );
         return new List<KeyValuePair<GameObject, Vector2>>() {
@@ -52,9 +52,9 @@ public class Gauntlet : MonoBehaviour
     private void ChangeState(Type newStateType) {
         if (newStateType.IsSubclassOf(typeof(GauntletState))) {
             var oldState = currentState;
-            oldState.EndState();
             var newState = (GauntletState) Activator.CreateInstance(newStateType, new object[] { this });
-            newState.StartState();
+            oldState.EndState(newState);
+            newState.StartState(oldState);
             currentState = newState;
         }
     }
@@ -63,27 +63,27 @@ public class Gauntlet : MonoBehaviour
         public Gauntlet parent;
         public GauntletState(Gauntlet parent) { this.parent = parent; }
 
-        public virtual void StartState() {}
+        public virtual void StartState(GauntletState lastState) {}
         public virtual void UpdateState() {}
-        public virtual void EndState() {}
+        public virtual void EndState(GauntletState nextState) {}
     }
 
     public class Combat : GauntletState {
         public Combat(Gauntlet parent) : base(parent) {}
 
-        public override void StartState() {}
+        public override void StartState(GauntletState lastState) {}
         public override void UpdateState() {
             if (parent.gridSystem.allAlliesDefeated || parent.gridSystem.allEnemiesDefeated) {
-                parent.ChangeState(typeof(ThreadCustomization));
+                parent.ChangeState(typeof(Complete));
             }
         }
-        public override void EndState() {}
+        public override void EndState(GauntletState nextState) {}
     }
 
     public class ThreadCustomization : GauntletState {
         public ThreadCustomization(Gauntlet parent) : base(parent) {}
 
-        public override void StartState() {
+        public override void StartState(GauntletState lastState) {
             parent.ethreadMenu.SetActive(true);
         }
         public override void UpdateState() {
@@ -91,7 +91,7 @@ public class Gauntlet : MonoBehaviour
                 parent.ChangeState(typeof(Complete));
             }
         }
-        public override void EndState() {
+        public override void EndState(GauntletState nextState) {
             parent.ethreadMenu.SetActive(false);
         }
     }
@@ -99,10 +99,10 @@ public class Gauntlet : MonoBehaviour
     public class Complete : GauntletState {
         public Complete(Gauntlet parent) : base(parent) {}
 
-        public override void StartState() {
+        public override void StartState(GauntletState lastState) {
             parent.EndGauntlet();
         }
         public override void UpdateState() {}
-        public override void EndState() {}
+        public override void EndState(GauntletState nextState) {}
     }
 }

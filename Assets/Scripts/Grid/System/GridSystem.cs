@@ -46,6 +46,8 @@ public class GridSystem : MonoBehaviour {
     public bool allEnemiesDefeated;
     public bool allAlliesDefeated;
 
+    public int playerDamageDone = 0;
+
     // TODO SIDE: Audio + UI should be in a different class
     public Dialog dialog;
     public AudioClip dialogNoise;
@@ -275,15 +277,17 @@ public class GridSystem : MonoBehaviour {
         else if (currentState is EnemyTurnState) {
             var stateData = (EnemyTurnState) currentState;
             if (stateData.aiSteps == null) {
-                // should be written something like
-                // stateData.aiSteps = aiComponent.DetermineAITurns(faction, grid);
+                stateData.enemies.ForEach(enemy => {
+                    var afraid = enemy.ChangeFear(CalculateTideOfBattle());
+                    if (afraid) { Debug.Log($"{enemy.gameObject.name} was overwhelmed by the battle!"); }
+                });
                 stateData.aiSteps = stateMachine.DetermineAITurns();
             } else {
                 currentState = stateMachine.ExecuteAITurn(currentState);
                 if (stateData.aiSteps.Count == 0) {
                     // all AI entities have completed their actions
                     var newEnemies = stateData.enemies
-                        .Where(entity => entity.isElite).ToList()
+                        .Where(entity => entity.isElite && entity.currentHP > 0).ToList()
                         .SelectMany(elite => elite.CallReinforcements(this));
                     stateData.enemies.AddRange(newEnemies);
                     nextFaction.entities = stateData.enemies;
@@ -381,6 +385,33 @@ public class GridSystem : MonoBehaviour {
         var entity = PutEntity(x, y, prefab);
         entity.isHostile = true;
         return entity;
+    }
+
+    public int CalculateTideOfBattle() {
+        var enemies = factions
+            .Where(faction => faction.isHostileFaction)
+            .SelectMany(faction => faction.entities);
+
+        var eliteEnemies = enemies.Where(enemy => enemy.isElite);
+
+        var allies = factions
+            .Where(faction => faction.isPlayerFaction)
+            .SelectMany(faction => faction.entities);
+
+        var factionPopDiff = allies.Count() - enemies.Count();
+        var eliteHealthProportion = 1.1f * eliteEnemies.Select(elite => elite.currentHP).Sum() /
+                                    eliteEnemies.Select(elite => elite.maxHP).Sum();
+
+        var calculatedTotal =
+            Mathf.CeilToInt(playerDamageDone * 0.25f) +
+            Mathf.CeilToInt(factionPopDiff * (1/eliteHealthProportion));
+
+        if (eliteHealthProportion == 0) {
+            // make all enemies on the field afraid if all elites are dead
+            return 99;
+        } else {
+            return calculatedTotal;
+        }
     }
 
     void ToggleSkillMenu() {

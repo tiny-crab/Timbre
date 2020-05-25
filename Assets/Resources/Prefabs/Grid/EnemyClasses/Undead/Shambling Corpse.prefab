@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 6365471537866192612, guid: 8e8294a64fed648639d4d55901e5ecdd,
         type: 3}
       propertyPath: m_Name
-      value: Goblin Minion
+      value: Shambling Corpse
       objectReference: {fileID: 0}
     - target: {fileID: 6359631407765627650, guid: 8e8294a64fed648639d4d55901e5ecdd,
         type: 3}
@@ -86,6 +86,21 @@ PrefabInstance:
         type: 3}
       propertyPath: outOfAttacks
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3640043381191348341, guid: 8e8294a64fed648639d4d55901e5ecdd,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3640043381191348341, guid: 8e8294a64fed648639d4d55901e5ecdd,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3640043381191348341, guid: 8e8294a64fed648639d4d55901e5ecdd,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e8294a64fed648639d4d55901e5ecdd, type: 3}

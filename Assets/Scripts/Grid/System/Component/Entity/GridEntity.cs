@@ -211,6 +211,9 @@ public class GridEntity : MonoBehaviour {
     public void MakeAttack(GridEntity target) {
         currentAttacks--;
         var calculatedDamage = (damage + damageModify) * damageMult;
+        if (target.totalFearValue >= target.fearThreshold) {
+            calculatedDamage *= 2;
+        }
         var triggeredReactions = target.TriggerAttackReaction(this);
 
         void ResolveDefaultAttack() {
@@ -303,14 +306,6 @@ public class GridEntity : MonoBehaviour {
             if (x.turnDuration < 0) { x.revertFunction(); }
         });
         overrides = overrides.Where(x => x.turnDuration >= 0).ToList();
-
-        totalFearValue = fears.Select(fear => fear.CalculateFear(this)).Sum() + baseFearValue;
-
-        // once an enemy becomes afraid, they will stay afraid
-        if (behaviors.Count > 0 && totalFearValue >= fearThreshold) {
-            behaviors = afraidBehaviors;
-            fearIcon.SetActive(true);
-        }
     }
 
     public void RefreshEncounterResources() {
@@ -318,5 +313,17 @@ public class GridEntity : MonoBehaviour {
         currentHP = maxHP;
         outOfHP = false;
         currentTeleports = maxTeleports;
+    }
+
+    public bool ChangeFear(int fearValue) {
+        baseFearValue = fearValue;
+        totalFearValue = fears.Select(fear => fear.CalculateFear(this)).Sum() + baseFearValue;
+        // once an enemy becomes afraid, they will stay afraid (unless there's an ability that nullifies fear)
+        if (behaviors.Count > 0 && totalFearValue >= fearThreshold && !isElite) {
+            behaviors = afraidBehaviors;
+            fearIcon.SetActive(true);
+            return true;
+        }
+        return false;
     }
 }
