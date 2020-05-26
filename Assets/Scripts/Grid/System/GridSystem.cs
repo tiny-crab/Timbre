@@ -81,16 +81,15 @@ public class GridSystem : MonoBehaviour {
         var closestTile = tilemap.ClosestTile(playerLocation);
         gridPlayer = PutEntity(closestTile.x, closestTile.y, activeParty.First());
 
-        activeParty.RemoveAt(0);
-
         // snap party into Grid
         var party = new List<GridEntity>() { gridPlayer };
-        activeParty.ForEach(entity => {
-            var adjacentTile = GridUtils.GenerateTileSquare(tilemap.grid, 1, gridPlayer.tile)
-                                    .Where(tile => tile.occupier == null)
-                                    .First();
-            party.Add(PutEntity(adjacentTile.x, adjacentTile.y, entity));
-        });
+        activeParty.Skip(1).ToList()
+            .ForEach(entity => {
+                var adjacentTile = GridUtils.GenerateTileSquare(tilemap.grid, 1, gridPlayer.tile)
+                                        .Where(tile => tile.occupier == null)
+                                        .First();
+                party.Add(PutEntity(adjacentTile.x, adjacentTile.y, entity));
+            });
 
         // put enemies into Grid
         var enemies = enemiesToSpawn.Select(enemyPair => {

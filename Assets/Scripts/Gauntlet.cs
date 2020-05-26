@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ public class Gauntlet : MonoBehaviour
 
     List<GameObject> partyMembers;
 
+    List<GameObject> possibleThreadDrops;
+    int afraidEnemiesDefeated = 0;
     GameObject ethreadMenu;
 
     void Awake () {
@@ -29,6 +32,15 @@ public class Gauntlet : MonoBehaviour
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Dog"),
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Knight"),
             Resources.Load<GameObject>("Prefabs/Grid/AllyClasses/Woodsman"),
+        };
+
+        possibleThreadDrops = new List<GameObject> {
+                Resources.Load<GameObject>("Prefabs/Overworld/Pickups/RedThreadPickup"),
+                Resources.Load<GameObject>("Prefabs/Overworld/Pickups/BlueThreadPickup"),
+                Resources.Load<GameObject>("Prefabs/Overworld/Pickups/GreenThreadPickup"),
+                Resources.Load<GameObject>("Prefabs/Overworld/Pickups/PurpleThreadPickup"),
+                Resources.Load<GameObject>("Prefabs/Overworld/Pickups/YellowThreadPickup"),
+                Resources.Load<GameObject>("Prefabs/Overworld/Pickups/PinkThreadPickup"),
         };
 
         partyMembers = possiblePartyMembers.ManyRandomElements(2);
@@ -89,11 +101,17 @@ public class Gauntlet : MonoBehaviour
             );
         }
         public override void UpdateState() {
-            if (parent.gridSystem.allAlliesDefeated || parent.gridSystem.allEnemiesDefeated) {
+            if (parent.gridSystem.allEnemiesDefeated) {
                 parent.ChangeState(typeof(ThreadCustomization));
+            } else if (parent.gridSystem.allAlliesDefeated) {
+                parent.ChangeState(typeof(Complete));
             }
         }
         public override void EndState(GauntletState nextState) {
+            parent.afraidEnemiesDefeated = parent.gridSystem.factions
+                .Where(faction => faction.isHostileFaction)
+                .SelectMany(faction => faction.entities)
+                .Where(entity => entity.totalFearValue >= entity.fearThreshold).Count();
             parent.gridSystem.DeactivateGrid();
         }
     }
@@ -104,7 +122,15 @@ public class Gauntlet : MonoBehaviour
         public override void StartState(GauntletState lastState) {
             parent.mainCam.transform.position = parent.ethreadMenuCamPosition;
             parent.ethreadMenu.SetActive(true);
+
             parent.ethreadMenu.GetComponent<EthreadMenu>().PopulateParty(parent.partyMembers);
+
+            // reward at the end of battle
+            var possibleRewards = parent.ethreadMenu.GetComponent<EthreadMenu>().threadButtonGroups;
+            possibleRewards.RandomElement().quantity++;
+
+            possibleRewards.ManyRandomElements(parent.afraidEnemiesDefeated).ForEach(i => i.quantity++);
+
         }
         public override void UpdateState() {
             if (Input.GetKeyDown(KeyCode.Escape)) {

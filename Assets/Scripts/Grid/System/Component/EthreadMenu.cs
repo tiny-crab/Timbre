@@ -17,7 +17,7 @@ public class EthreadMenu : MonoBehaviour {
         public Button plus;
         public Button minus;
 
-        public int quantity = 3;
+        public int quantity = 0;
         public Text quantityText;
 
         public ThreadButtonGroup (Transform parentTransform, string prefabName) {
@@ -210,10 +210,10 @@ public class EthreadMenu : MonoBehaviour {
     public void Update () {
         threadButtonGroups.ForEach(group => group.quantityText.text = "x" + group.quantity.ToString());
         partyInfoDict.Keys.ToList().ForEach(allyInfo => allyInfo.selectionBox.enabled = selectedAlly == allyInfo);
-        // selectedAllyDisplay.UpdateDisplay(selectedAlly);
+        selectedAllyDisplay.UpdateDisplay(selectedAlly);
     }
 
-    private void OnPlusClick (ThreadButtonGroup group) {
+    private void OnPlusClick (ThreadButtonGroup group) {;
         if (selectedAlly.capacity.Count < selectedAlly.numSlots && group.quantity > 0) {
             AddThreadToSlots(selectedAlly, group);
         }
