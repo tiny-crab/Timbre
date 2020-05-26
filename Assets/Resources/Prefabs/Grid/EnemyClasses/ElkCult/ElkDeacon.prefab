@@ -1,25 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!95 &-2969897561587092188
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6365471537866192612}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ba200a1639ef04400a8432dbfa2ced4e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!1001 &6363703709926303196
+--- !u!1001 &5075232619974480816
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -28,53 +9,33 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_Name
-      value: Decrepit Corpse
+      value: ElkDeacon
       objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 9102684915260058583, guid: 1b3b9bd3e30f445ee9e4c586ee7352e8,
+      objectReference: {fileID: -3276629640199220857, guid: 1b1dfa793069749fab2c75043d065661,
         type: 3}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.32
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 0.32
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Color.r
-      value: 0.8962264
+      value: 0.7613108
       objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Color.g
-      value: 0.48616055
+      value: 0.8962264
       objectReference: {fileID: 0}
     - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: m_Color.b
-      value: 0.48616055
-      objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 1
+      value: 0.5960751
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: behaviorNames.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -93,53 +54,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
-      propertyPath: health
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: selectedColor.r
-      value: 0.8113208
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: selectedColor.g
-      value: 0.18752226
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: selectedColor.b
-      value: 0.18752226
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: attackRange
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: moveRange
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: attackDamage
-      value: 1
+      propertyPath: entityName
+      value: Elk Cultist
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: maxHP
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: currentHP
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: maxMoves
-      value: 2
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+        type: 3}
+      propertyPath: maxAttacks
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -148,18 +79,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
-      propertyPath: range
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: name
-      value: Evil
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
       propertyPath: behaviorNames.Array.data[0]
-      value: MeleeAttackV1
+      value: RangedAttackV1
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -168,21 +89,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
-      propertyPath: deathSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 11926dfebfa144376b668a01b62d0752,
-        type: 3}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: isAllied
-      value: 0
+      propertyPath: range
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
-      propertyPath: corpse
-      value: 
-      objectReference: {fileID: 9170540517610406404, guid: d2b1cb4d9d31246c0bf88df08950996e,
-        type: 3}
+      propertyPath: fearThreshold
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: fearNames.Array.data[0]
@@ -195,23 +109,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
-      propertyPath: fearThreshold
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+      propertyPath: corpse
+      value: 
+      objectReference: {fileID: 9170540517610406404, guid: d2b1cb4d9d31246c0bf88df08950996e,
         type: 3}
-      propertyPath: entityName
-      value: Decrepit Corpse
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: entitySubname
-      value: Enemy
-      objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
       propertyPath: enemyConfigName
-      value: ShamblingCorpse
+      value: ElkCultCaster
       objectReference: {fileID: 0}
     - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
@@ -222,7 +127,7 @@ PrefabInstance:
         type: 3}
       propertyPath: minionTypesToSpawn.Array.data[0]
       value: 
-      objectReference: {fileID: 9095052389684794170, guid: a9293f735ab6947adbf5ca0f71834f74,
+      objectReference: {fileID: 7479560144381967535, guid: bb3cb3c022947410397515b19c22d5e8,
         type: 3}
     - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -276,16 +181,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 2385061500681452608, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: -8292581000985229284, guid: 1ad0b955529844979ac5416672bba4c7,
         type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c240585d1126349489c7644047c2fcde, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
---- !u!1 &6365471537866192612 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 6363703709926303196}
-  m_PrefabAsset: {fileID: 0}

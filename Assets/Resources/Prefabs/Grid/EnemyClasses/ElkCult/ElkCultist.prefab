@@ -1,159 +1,116 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &5075232619974480816
+--- !u!1001 &2424270387385875495
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1926815201465144, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5073306354717573256, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_Name
       value: ElkCultist
       objectReference: {fileID: 0}
-    - target: {fileID: 7697886401237497257, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: -3276629640199220857, guid: 1b1dfa793069749fab2c75043d065661,
-        type: 3}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+    - target: {fileID: 5079850309698344302, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4954248529282782, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 5185959524656413362, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
-      propertyPath: behaviorNames.Array.size
-      value: 2
+      propertyPath: minionTypesToSpawn.Array.size
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 5185959524656413362, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
-      propertyPath: fearNames.Array.size
-      value: 1
+      propertyPath: minionTypesToSpawn.Array.data[0]
+      value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 5185959524656413362, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
-      propertyPath: afraidBehaviorNames.Array.size
-      value: 1
+      propertyPath: isElite
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: entityName
-      value: Elk Cultist
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 5185959524656413362, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
       propertyPath: maxHP
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 5185959524656413362, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
+        type: 3}
+      propertyPath: damage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5185959524656413362, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
       propertyPath: maxMoves
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 3223094951157949977, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
-      propertyPath: maxAttacks
+      propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 3223094951157949977, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
-      propertyPath: damage
-      value: 2
+      propertyPath: m_Color.g
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
+    - target: {fileID: 3223094951157949977, guid: 9a7d83f38df294073bcc5da2dc7ad11f,
         type: 3}
-      propertyPath: behaviorNames.Array.data[0]
-      value: RangedAttackV1
+      propertyPath: m_Color.b
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: behaviorNames.Array.data[1]
-      value: EvasiveTeleport
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: range
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: fearThreshold
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: fearNames.Array.data[0]
-      value: Damage
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: afraidBehaviorNames.Array.data[0]
-      value: Flee
-      objectReference: {fileID: 0}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: corpse
-      value: 
-      objectReference: {fileID: 9170540517610406404, guid: d2b1cb4d9d31246c0bf88df08950996e,
-        type: 3}
-    - target: {fileID: 114529097765300482, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: enemyConfigName
-      value: ElkCultCaster
-      objectReference: {fileID: 0}
-    - target: {fileID: -8292581000985229284, guid: 1ad0b955529844979ac5416672bba4c7,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: c240585d1126349489c7644047c2fcde, type: 2}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1ad0b955529844979ac5416672bba4c7, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 9a7d83f38df294073bcc5da2dc7ad11f, type: 3}

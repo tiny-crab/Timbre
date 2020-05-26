@@ -59,9 +59,12 @@ public class Gauntlet : MonoBehaviour
     }
 
     private List<KeyValuePair<GameObject, Vector2>> GenerateRandomEnemies() {
-        var pair = new KeyValuePair<GameObject, Vector2>(
-            // Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/ElkCult/ElkCultist"),
+        var possibleElites = new List<GameObject> {
+            Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/ElkCult/ElkDeacon"),
             Resources.Load<GameObject>("Prefabs/Grid/EnemyClasses/Undead/Decrepit Corpse"),
+        };
+        var pair = new KeyValuePair<GameObject, Vector2>(
+            possibleElites.RandomElement(),
             new Vector2(int.MaxValue, int.MaxValue)
         );
         return new List<KeyValuePair<GameObject, Vector2>>() {
