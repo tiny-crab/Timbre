@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EthreadMenu : MonoBehaviour {
+public class TownMenu : MonoBehaviour {
 
     private AllyInfo selectedAlly;
     public List<ThreadButtonGroup> threadButtonGroups = new List<ThreadButtonGroup>();
@@ -194,7 +194,6 @@ public class EthreadMenu : MonoBehaviour {
 
         selectedAllyDisplay = new SelectedAllyDisplay(this.gameObject);
 
-        returnButton = this.transform.Find("ReturnButton").GetComponent<Button>();
         continueButton = this.transform.Find("ContinueButton").GetComponent<Button>();
     }
 

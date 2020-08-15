@@ -41,16 +41,16 @@ My goal right now is to extract the CombatComponent into a more "functional" cla
 these actions as they are executed in a more utility-like fashion.
 
 Flow:
-    GridSystem -> determines mouseTile (tile that mouse is hovering over) and when clicked:
-        CombatComponent.GetUserDesignatedAction() : Action
-        returnedAction.Display(tilemap) -> calls TilemapUtils
-        returnedAction.Execute(combat) -> calls CombatUtils
+GridSystem -> determines mouseTile (tile that mouse is hovering over) and when clicked:
+    CombatComponent.GetUserDesignatedAction() : Action
+    returnedAction.Display(tilemap) -> calls TilemapUtils
+    returnedAction.Execute(combat) -> calls CombatUtils
 
-    Action class is designated outside of GridSystem, and uses instances of tilemap and combat instead of OO-style execution
+Action class is designated outside of GridSystem, and uses instances of tilemap and combat instead of OO-style execution
 
 Current bugs before I pick up and go home:
 * selectedEntity is not being updated in CombatComponent which leads to problems with the Move actions
-  * since this shouldn't be updated in CombatComponent anyway, just gotta store it somewhere.
+* since this shouldn't be updated in CombatComponent anyway, just gotta store it somewhere.
 
 ## 2019.12.11
 
@@ -73,7 +73,7 @@ This is growing to be quite a large change and I think I'm getting a bit lost in
 the end of Saturday morning. I'll hold off on the simplification of the Action/Transition class for now. What I would like to do there is:
 * Reduce the number of member variables in an action, instead keep that data in the StateData objects that will be passed in
 * Reduce the call in GridSystem to just currentState = stateMachine.Transition(currentState); instead of Execute, Display, etc.
-  * Those Display and Execute methods will still help the readability and structure, but they'll work only within the Action/Transition objects
+* Those Display and Execute methods will still help the readability and structure, but they'll work only within the Action/Transition objects
 
 ## 2019.12.14
 
@@ -187,8 +187,8 @@ Bug in move + attack in same AI turn, as two sequences instantiated in the same 
 ## 2020.01.13
 
 Working on the EthreadMenu, still need to figure out how to:
-    * keep inventory accessible between menu, Player class, and GridSystem class
-    * transmute RedThread prefabs -> "redThread" string -> +1 dmg on GridEntities.
+* keep inventory accessible between menu, Player class, and GridSystem class
+* transmute RedThread prefabs -> "redThread" string -> +1 dmg on GridEntities.
 
 Other slightly "tricky" is keeping party member and total party inventories consistent.
 
@@ -269,29 +269,41 @@ Going to add sprites finally for hazards.
 
 ## 2020.04.05
 
- I just realized it may be important to implement OnTurnEnd() for hazards, as some hazards maybe should be modified / destroyed after a number of turns.
- Haven't designed that part yet.
+I just realized it may be important to implement OnTurnEnd() for hazards, as some hazards maybe should be modified / destroyed after a number of turns.
+Haven't designed that part yet.
 
- I also am very fortunate to have a huge grid overlaid across the overworld for proper pathfinding for everything... however I may need to change the
- "active" property of tiles in order to allow lookups.
+I also am very fortunate to have a huge grid overlaid across the overworld for proper pathfinding for everything... however I may need to change the
+"active" property of tiles in order to allow lookups.
 
- ## 2020.05.08
+## 2020.05.08
 
- Working on implementing narrative for enemy actions is tough. I want to combine meaningful data about enemies, their targets, and their actions. However, the actions
- don't have that sort of granularity - i.e. the EvasiveTeleport behavior doesn't have any way of determining which state it's in: prepping or teleporting. Boss phases need
- this sort of granularity, and I'm sure I'll implement more two-turn Behaviors for enemies. So I'll need to either split the Behaviors (which seems prone to bugs in Behavior calculation)
- or provide information in the Behavior classes about what "stage" they're in. That also includes fantastic metadata like whether a MeleeAttack Behavior struck a target,
- or just moved toward one. There's a lot to unpack there that I didn't consider.
+Working on implementing narrative for enemy actions is tough. I want to combine meaningful data about enemies, their targets, and their actions. However, the actions
+don't have that sort of granularity - i.e. the EvasiveTeleport behavior doesn't have any way of determining which state it's in: prepping or teleporting. Boss phases need
+this sort of granularity, and I'm sure I'll implement more two-turn Behaviors for enemies. So I'll need to either split the Behaviors (which seems prone to bugs in Behavior calculation)
+or provide information in the Behavior classes about what "stage" they're in. That also includes fantastic metadata like whether a MeleeAttack Behavior struck a target,
+or just moved toward one. There's a lot to unpack there that I didn't consider.
 
- I'm also uncovering some bugs with fleeing mechanics too, but need to dig into that more later.
+I'm also uncovering some bugs with fleeing mechanics too, but need to dig into that more later.
 
- ## 2020.05.22
+## 2020.05.22
 
- As I'm creating the Gauntlet FSM, I'm trying a bit of a different FSM model than I have in the GridSystem.
+As I'm creating the Gauntlet FSM, I'm trying a bit of a different FSM model than I have in the GridSystem.
 
- The GridSystem one is a bit cumbersome, but I think it makes sense: States are FSM nodes, and Actions are FSM edges.
- I just wish I had named them a bit better; naming States as nouns (the Actions make sense as verbs).
+The GridSystem one is a bit cumbersome, but I think it makes sense: States are FSM nodes, and Actions are FSM edges.
+I just wish I had named them a bit better; naming States as nouns (the Actions make sense as verbs).
 
- This change with the Gauntlet FSM may bite me later, to remember two different models, but if I think of this as a learning
- experience, I think it makes sense to try out a new idea and see how it works. Next time I create an FSM model from scratch, maybe
- I can create a batch of scripts that I can import into new projects.
+This change with the Gauntlet FSM may bite me later, to remember two different models, but if I think of this as a learning
+experience, I think it makes sense to try out a new idea and see how it works. Next time I create an FSM model from scratch, maybe
+I can create a batch of scripts that I can import into new projects.
+
+## 2020.08.14
+Aaaaaaaand we're back.
+
+Figured out the different, sort of, between the onClick behavior vs Input.GetKeyDown() with respect to the changes in state in the Gauntlet class.
+
+Since onClick is a callback, and interrupts the thread, the Combat state will not be done initializing by the time the UpdateState method is called for the first time.
+On the first frame of the Combat state, the grid will be in an unfinished state, and thus the allEnemiesDefeated function will be "true". It's problematic, IMO, to wait
+at the start of that state. But it's what works for now. I'll fix it up tomorrow and move on to filling out the rest of the town menu... I hope.
+
+## 2020.08.15
+Considering implementing some wait condition in the ChangeState function in the Gauntlet. Ensure the next state is ready before starting to update on it.

@@ -43,8 +43,26 @@ public class GridSystem : MonoBehaviour {
 
     public State currentState = new NoSelectionState();
 
-    public bool allEnemiesDefeated;
-    public bool allAlliesDefeated;
+    public bool allEnemiesDefeated() {
+        if (factions.Count != 0) {
+            return factions
+                .Where(faction => faction.isHostileFaction)
+                .All(faction => {
+                    return faction.entities.Count != 0 && faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
+                });
+        }
+        return false;
+    }
+    public bool allAlliesDefeated() {
+        if (factions.Count != 0) {
+            return factions
+                .Where(faction => faction.isPlayerFaction)
+                .All(faction => {
+                    return faction.entities.Count != 0 && faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
+                });
+        }
+        return false;
+    }
 
     public int playerDamageDone = 0;
 
@@ -162,6 +180,7 @@ public class GridSystem : MonoBehaviour {
         factions = new Queue<Faction>();
 
         skillMenu.SetActive(false);
+
     }
 
     void ActivateTile(Tile tile) {
@@ -201,17 +220,6 @@ public class GridSystem : MonoBehaviour {
 
         lastSelectedAlly = currentState.source ?? gridPlayer;
         UpdateSkillMenu();
-
-        allEnemiesDefeated = factions
-                                    .Where(faction => faction.isHostileFaction)
-                                    .All(faction => {
-                                        return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
-                                    });
-        allAlliesDefeated = factions
-                                    .Where(faction => faction.isPlayerFaction)
-                                    .All(faction => {
-                                        return faction.entities.All(entity => entity.outOfHP || entity.currentHP <= 0);
-                                    });
 
         if (waiting) { return; }
         if (Input.GetKeyDown(KeyCode.Tab)) { ToggleSkillMenu(); }
@@ -486,7 +494,7 @@ public class GridSystem : MonoBehaviour {
         waiting = true;
         Debug.Log("Waiting for... " + name);
         yield return new WaitForSeconds(waitTime);
-        Debug.Log("Waiting for... " + name);
+        Debug.Log("Done waiting for... " + name);
         waiting = false;
     }
  }
